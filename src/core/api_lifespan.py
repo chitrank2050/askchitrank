@@ -14,6 +14,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from src.db.connection import init_db
+
 from .logger import logger
 
 
@@ -35,6 +37,14 @@ async def api_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """
     # ── Startup ───────────────────────────────────────────────────────────────
     logger.info("Starting Ask Chitrank API")
+
+    # Initialise database tables
+    await init_db()
+    try:
+        await init_db()
+    except Exception as e:
+        logger.error(f"Database initialisation failed: {e}")
+        logger.warning("API starting without database — monitoring disabled")
 
     yield
 
