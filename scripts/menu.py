@@ -3,7 +3,7 @@
 Polished interactive checkbox menu.
 
 Usage (via Makefile):
-  uv run --with questionary scripts/menu.py [obliviate|git]
+  uv run --with questionary scripts/menu.py [obliviate|git|docs]
 """
 
 import os
@@ -48,6 +48,17 @@ def run_make(*targets: str) -> None:
             print(f"\n  ⚠️  make {target!r} exited with code {result.returncode}\n")
 
 
+def _run_changelog_since() -> None:
+    tag = questionary.text("Since tag (e.g. v0.1.0): ", style=STYLE).ask()
+    if not tag:
+        _nothing_selected()
+        return
+    print(f"📝 Changelog since {tag}...")
+    subprocess.run(
+        ["uv", "run", "git-cliff", f"{tag}..HEAD", "--strip", "all"], cwd=ROOT
+    )
+
+
 # ── Execution Orders — never change regardless of selection order ────────────
 EXECUTION_ORDER_OBLIVIATE = [
     # Destructive first
@@ -62,16 +73,11 @@ EXECUTION_ORDER_OBLIVIATE = [
     ("format", lambda: run_make("format")),
 ]
 
-
-def _run_changelog_since() -> None:
-    tag = questionary.text("Since tag (e.g. v0.1.0): ", style=STYLE).ask()
-    if not tag:
-        _nothing_selected()
-        return
-    print(f"📝 Changelog since {tag}...")
-    subprocess.run(
-        ["uv", "run", "git-cliff", f"{tag}..HEAD", "--strip", "all"], cwd=ROOT
-    )
+EXECUTION_ORDER_DOCS = [
+    ("_docs-build", lambda: run_make("_docs-build")),
+    ("_docs-deploy", lambda: run_make("_docs-deploy")),
+    ("_docs", lambda: run_make("_docs")),
+]
 
 
 EXECUTION_ORDER_GIT = [
@@ -155,10 +161,30 @@ def mode_git() -> None:
     execute_choices(choices, EXECUTION_ORDER_GIT)
 
 
+# ── Mode: docs ───────────────────────────────────────────────────────────────
+def mode_docs() -> None:
+    choices = questionary.checkbox(
+        "📚 Docs — select actions",
+        choices=[
+            Choice("Start MkDocs dev server", value="_docs"),
+            Choice("Build static site", value="_docs-build"),
+            Choice("Deploy to GitHub Pages", value="_docs-deploy"),
+        ],
+        style=STYLE,
+    ).ask()
+
+    if not choices:
+        _nothing_selected()
+        return
+
+    execute_choices(choices, EXECUTION_ORDER_DOCS)
+
+
 # ── Entry point ──────────────────────────────────────────────────────────────
 MODES = {
     "obliviate": mode_obliviate,
     "git": mode_git,
+    "docs": mode_docs,
 }
 
 if __name__ == "__main__":

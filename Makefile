@@ -26,6 +26,7 @@ help:
 	@echo "Interactive Menus:"
 	@echo "  make git            - Generate changelogs & releases"
 	@echo "  make obliviate      - Interactive clean menu"
+	@echo "  make docs           - Manage & deploy MkDocs documentation"
 	@echo ""
 	@echo "Code Quality & Testing:"
 	@echo "  make lint           - Ruff check"
@@ -175,3 +176,26 @@ _git-release:
 		--notes "$$NOTES"; \
 	echo "✅ Released v$$VERSION"; \
 	echo "   https://github.com/chitrank2050/askchitrank/releases/tag/v$$VERSION"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Docs
+# ─────────────────────────────────────────────────────────────────────────────
+docs:
+	$(UV) run --with questionary scripts/menu.py docs
+
+_docs:
+	@echo "📚 Starting MkDocs server..."
+	@cp CHANGELOG.md docs/changelog.md
+	@$(UV) run mkdocs serve
+
+_docs-build:
+	@echo "📚 Building docs site..."
+	@cp CHANGELOG.md docs/changelog.md
+	@$(UV) run mkdocs build
+	@echo "✅ Docs built in site/"
+
+_docs-deploy:
+	@echo "📚 Deploying to GitHub Pages..."
+	@cp CHANGELOG.md docs/changelog.md
+	@$(UV) run mkdocs gh-deploy --force
+	@echo "✅ Deployed to https://chitrank2050.github.io/airsense-ml"
