@@ -174,4 +174,4 @@ _git-release:
 		--title "v$$VERSION" \
 		--notes "$$NOTES"; \
 	echo "✅ Released v$$VERSION"; \
-	echo "   https://github.com/chitrank2050/folio-ai/releases/tag/v$$VERSION"
+	echo "   https://github.com/chitrank2050/askchitrank/releases/tag/v$$VERSION"

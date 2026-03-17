@@ -1,5 +1,5 @@
 def main():
-    print("Hello from folio-ai!")
+    print("Hello from askchitrank!")
 
 
 if __name__ == "__main__":
