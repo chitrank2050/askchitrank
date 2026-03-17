@@ -4,11 +4,11 @@ First off, thank you for considering contributing to ML-Notebook-Library! It's p
 
 ## Where do I go from here?
 
-If you've noticed a bug or have a feature request, [make one](https://github.com/chitrank2050/ML-Notebook-Library/issues/new)! It's generally best if you get confirmation of your bug or approval for your feature request this way before starting to code.
+If you've noticed a bug or have a feature request, [make one](https://github.com/chitrank2050/askchitrank/issues/new)! It's generally best if you get confirmation of your bug or approval for your feature request this way before starting to code.
 
 ### Fork & create a branch
 
-If this is something you think you can fix, then [fork ML-Notebook-Library](https://github.com/chitrank2050/ML-Notebook-Library/fork) and create a branch with a descriptive name.
+If this is something you think you can fix, then [fork askchitrank](https://github.com/chitrank2050/askchitrank/fork) and create a branch with a descriptive name.
 
 A good branch name would be (where issue #325 is the ticket you're working on):
 
@@ -57,4 +57,4 @@ If the answer to either of those questions is "yes", then you're probably dealin
 
 ## How to suggest a feature or enhancement
 
-If you have a great idea for a new feature or an enhancement to an existing one, we'd love to hear about it! Please open an issue on our [GitHub issue tracker](https://github.com/chitrank2050/ML-Notebook-Library/issues) and we'll be sure to take a look.
+If you have a great idea for a new feature or an enhancement to an existing one, we'd love to hear about it! Please open an issue on our [GitHub issue tracker](https://github.com/chitrank2050/askchitrank/issues) and we'll be sure to take a look.

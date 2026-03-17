@@ -125,8 +125,6 @@ def mode_obliviate() -> None:
             Choice(
                 "Cache files    (__pycache__, .pyc, dist, .ruff_cache…)", value="cache"
             ),
-            Choice("Saved models   (models/)", value="models"),
-            Choice("MLflow data    (mlruns.db, mlruns/)", value="mlflow_clean"),
             Choice("Logs           (logs/)", value="logs"),
             Choice("Virtual env    (.venv)", value="venv"),
         ],
