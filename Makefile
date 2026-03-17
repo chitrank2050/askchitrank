@@ -198,4 +198,4 @@ _docs-deploy:
 	@echo "📚 Deploying to GitHub Pages..."
 	@cp CHANGELOG.md docs/changelog.md
 	@$(UV) run mkdocs gh-deploy --force
-	@echo "✅ Deployed to https://chitrank2050.github.io/airsense-ml"
+	@echo "✅ Deployed to https://chitrank2050.github.io/askchitrank"
