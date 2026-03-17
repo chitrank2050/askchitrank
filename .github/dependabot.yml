@@ -1,0 +1,18 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  - package-ecosystem: "pip" # This will work for uv, as it uses pyproject.toml
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "weekly"
+    ignore:
+      # diskcache is a transitive dependency of dvc.
+      # Unsafe pickle deserialization only exploitable with write access
+      # to local DVC cache. Never included in production Docker image.
+      # Risk accepted for local development only.
+      # Monitor: https://github.com/grantjenks/python-diskcache/releases
+      - dependency-name: "diskcache"
