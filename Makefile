@@ -8,7 +8,8 @@ PYTHON_VERSION := $(shell if [ -f .python-version ]; then cat .python-version; e
 .DEFAULT_GOAL := help
 .PHONY: help init install \
         lint format tree python-version obliviate \
-				git _changelog _changelog-preview _changelog-since _git-tag _git-release
+				git _changelog _changelog-preview _changelog-since _git-tag _git-release \
+				docs _docs _docs-build _docs-deploy
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Help
