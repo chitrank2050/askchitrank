@@ -4,6 +4,15 @@
 
 ---
 
+## Links
+
+| **Type**         | **URL**                                                             |
+|------------------|---------------------------------------------------------------------|
+| 📚 Documentation | [Project Documentation](https://chitrank2050.github.io/askchitrank) |
+| 👤 Portfolio     | [About me](https://chitrankagnihotri.com)                           |
+
+---
+
 ## What It Does
 
 Ask Chitrank is a conversational AI that answers questions about Chitrank Agnihotri — his experience, projects, skills, and background. It uses Retrieval-Augmented Generation (RAG) to ground every answer in real data from his resume and portfolio, preventing hallucination.
@@ -41,22 +50,25 @@ Return cached response      Search knowledge base
 
 ---
 
-## Links
+## Roadmap
 
-| | URL |
-|---|---|
-| 📚 Documentation | https://chitrank2050.github.io/askchitrank |
-| 👤 Portfolio | https://chitrankagnihotri.com |
-| 🐳 Docker Image | https://hub.docker.com/r/chitrank2050/askchitrank |
+- [x] Phase 1 — Database layer (pgvector, Supabase, Alembic migrations)
+- [ ] Phase 2 — Ingestion pipeline (resume PDF + Sanity CMS)
+- [ ] Phase 3 — RAG query pipeline (retrieval + Groq LLM)
+- [ ] Phase 4 — FastAPI + streaming (chat endpoint)
+- [ ] Phase 5 — Frontend chat widget (Next.js)
+- [ ] Phase 6 — Sanity webhook auto-sync
 
 ---
 
-## Status
+## Known Limitations
 
-| Phase | Status |
-|---|---|
-| Database + pgvector setup | ✅ Complete |
-| Ingestion pipeline | 📋 In Progress |
-| RAG query pipeline | 📋 Planned |
-| FastAPI + streaming | 📋 Planned |
-| Frontend chat widget | 📋 Planned |
+- Groq free tier has rate limits (6000 tokens/minute) — sufficient for personal portfolio traffic
+- Supabase free tier pauses after 1 week inactivity — first request after pause is slow (~2-3 seconds)
+- Response cache threshold (0.95) may miss semantically similar but differently phrased questions — tune based on usage
+
+---
+
+## Contributing
+
+This is a personal portfolio project. Issues and PRs welcome.

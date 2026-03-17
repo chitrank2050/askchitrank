@@ -66,6 +66,7 @@ nav:
   - Development:
     - Setup: development/setup.md
     - Database: development/database.md
+    - Tech Stack: development/tech_stack.md
   - Changelog: changelog.md
 
 extra:
