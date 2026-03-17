@@ -2,6 +2,25 @@
 
 All notable changes to Folio AI.
 
+## [0.3.0] - 2026-03-17
+
+### Documentation
+
+- Update project name references in CONTRIBUTING.md from ML-Notebook-Library to askchitrank.
+- Add dedicated tech stack documentation and enhance project overview in the README and main documentation.
+
+### Features
+
+- Introduce a new database module with SQLAlchemy async connection management and ORM models for knowledge chunks, response cache, and conversations.
+- Initialize Alembic for database migrations and define the initial schema for conversations, knowledge chunks, and response cache.up
+- Set up MkDocs and add initial documentation for development setup, architecture, and database.
+- Add or update Makefile target to execute the `menu.py` script.
+- Update Makefile to include new build targets and dependencies.
+
+### Refactoring
+
+- Adjust API lifespan management and event handling.
+
 ## [0.2.0] - 2026-03-17
 
 ### Documentation
