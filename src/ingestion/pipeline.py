@@ -71,7 +71,7 @@ async def _store_chunks(
             order as chunks. Must match len(chunks).
         db: Active async database session.
     """
-    for chunk, embedding in zip(chunks, embeddings):
+    for chunk, embedding in zip(chunks, embeddings, strict=False):
         db.add(
             KnowledgeChunk(
                 source=chunk["source"],

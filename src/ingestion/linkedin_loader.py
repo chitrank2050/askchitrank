@@ -24,6 +24,7 @@ Typical usage:
 """
 
 import csv
+from pathlib import Path
 
 from src.core.logger import logger
 from src.utils.paths import get_data_path
@@ -46,7 +47,7 @@ def _read_csv(filename: str) -> list[dict]:
         logger.warning(f"LinkedIn CSV not found: {path} — skipping")
         return []
 
-    with open(path, encoding="utf-8-sig") as f:  # utf-8-sig strips BOM
+    with Path.open(path, encoding="utf-8-sig") as f:  # utf-8-sig strips BOM
         reader = csv.DictReader(f)
         return list(reader)
 
