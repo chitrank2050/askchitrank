@@ -2,6 +2,16 @@
 
 All notable changes to Folio AI.
 
+## [0.4.2] - 2026-03-18
+
+### Documentation
+
+- Mark Phase 3 of the retrieval layer as complete in the project roadmap.
+
+### Features
+
+- Implement semantic response caching and knowledge base similarity search.
+
 ## [0.4.1] - 2026-03-18
 
 ### Refactoring
