@@ -1,0 +1,80 @@
+meta {
+  name: 02 Chat — SSE Stream
+  type: http
+  seq: 2
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POST /v1/chat  (stream: true)
+#
+# Authenticated endpoint — requires Bearer token in Authorization header.
+# Streams the LLM response token by token via Server-Sent Events (SSE).
+#
+# SSE event format:
+#   data: {"type": "token", "content": "Chitrank"}
+#   data: {"type": "token", "content": " has"}
+#   data: {"type": "done", "cached": false}
+#
+# The same session_id must be passed across requests to maintain
+# multi-turn conversation context.
+#
+# Pipeline:
+#   1. Embed question (Voyage AI)
+#   2. Check semantic cache (similarity > 0.95 → return cached)
+#   3. Search knowledge_chunks (top 2 per source)
+#   4. Build prompt (system prompt + context + question)
+#   5. Stream response (Groq Llama 3.3 70B)
+#   6. Store in response_cache
+#   7. Store in conversations table
+# ─────────────────────────────────────────────────────────────────────────────
+
+post {
+  url: {{baseUrl}}/v1/chat
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{apiToken}}
+}
+
+body:json {
+  {
+    "question": "What projects has Chitrank built?",
+    "session_id": "{{sessionId}}",
+    "use_cache": true,
+    "stream": true
+  }
+}
+
+tests {
+  // ── Status code ──────────────────────────────────────────────────────────
+  test("returns HTTP 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  // ── SSE content type ──────────────────────────────────────────────────────
+  test("content-type is text/event-stream", function() {
+    expect(res.headers["content-type"]).to.include("text/event-stream");
+  });
+
+  // ── SSE headers ───────────────────────────────────────────────────────────
+  test("cache-control is no-cache", function() {
+    expect(res.headers["cache-control"]).to.equal("no-cache");
+  });
+
+  // ── Request ID ───────────────────────────────────────────────────────────
+  test("response includes X-Request-ID header", function() {
+    expect(res.headers["x-request-id"]).to.be.a("string");
+    expect(res.headers["x-request-id"].length).to.equal(8);
+  });
+
+  // ── Security headers ─────────────────────────────────────────────────────
+  test("X-Content-Type-Options is set", function() {
+    expect(res.headers["x-content-type-options"]).to.equal("nosniff");
+  });
+
+  test("X-Frame-Options is set", function() {
+    expect(res.headers["x-frame-options"]).to.equal("DENY");
+  });
+}

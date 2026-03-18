@@ -5,6 +5,54 @@ Interactive docs available at `/docs` (Swagger UI) and `/redoc`.
 
 ---
 
+## Authentication
+
+All endpoints except `GET /v1/health` require a Bearer token.
+
+```
+Authorization: Bearer YOUR_API_TOKEN
+```
+
+Generate your token:
+
+```bash
+openssl rand -hex 32
+```
+
+Add to `.env.dev` and `.env.prod`:
+
+```bash
+API_TOKEN=your-generated-token
+```
+
+**What happens without a token:**
+
+```json
+{
+  "error": {
+    "code": 401,
+    "type": "MISSING_TOKEN",
+    "message": "API token is required. Include it as: Authorization: Bearer <your-token>",
+    "request_id": "abc12345"
+  }
+}
+```
+
+**What happens with a wrong token:**
+
+```json
+{
+  "error": {
+    "code": 401,
+    "type": "INVALID_TOKEN",
+    "message": "Invalid API token. Check your token and try again.",
+    "request_id": "abc12345"
+  }
+}
+```
+
+---
+
 ## Base URL
 
 | Environment | URL |
@@ -18,7 +66,9 @@ Interactive docs available at `/docs` (Swagger UI) and `/redoc`.
 
 ### `GET /v1/health`
 
-Check service health and version.
+Check service health and version. **Public — no auth required.**
+
+Used by Railway health checks and uptime monitors.
 
 **Response:**
 
@@ -34,25 +84,32 @@ Check service health and version.
 
 ### `POST /v1/chat`
 
-Ask a question about Chitrank. Returns a streamed or full response.
+Ask a question about Chitrank. Requires Bearer token.
+
+**Request headers:**
+
+```
+Authorization: Bearer YOUR_API_TOKEN
+Content-Type: application/json
+```
 
 **Request body:**
 
 ```json
 {
   "question": "What projects has Chitrank built?",
-  "session_id": "session-abc123",
+  "session_id": "550e8400-e29b-41d4-a716-446655440000",
   "use_cache": true,
   "stream": true
 }
 ```
 
-| Field | Type | Default | Description |
-|---|---|---|---|
-| `question` | string | required | Question to ask. 1–500 characters. |
-| `session_id` | string | required | Browser session ID for conversation history. Generate a UUID on first load and persist in localStorage. Pass the same ID across requests to maintain multi-turn context. |
-| `use_cache` | boolean | `true` | Check and populate the semantic cache. Set `false` during testing. |
-| `stream` | boolean | `true` | Stream tokens via SSE or return full JSON response. |
+| Field | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `question` | string | ✅ | — | Question to ask. 2–500 characters. Cannot be empty or whitespace only. |
+| `session_id` | string | ✅ | — | Browser session UUID. Generate once and persist in localStorage. Same ID maintains conversation context. |
+| `use_cache` | boolean | ❌ | `true` | Check and populate semantic cache. Set `false` during testing. |
+| `stream` | boolean | ❌ | `true` | Stream tokens via SSE (`true`) or return full JSON (`false`). |
 
 **Response — SSE streaming (`stream: true`):**
 
@@ -61,12 +118,11 @@ Content-Type: text/event-stream
 
 data: {"type": "token", "content": "Chitrank"}
 data: {"type": "token", "content": " has"}
+data: {"type": "token", "content": " built"}
 data: {"type": "done", "cached": false}
 ```
 
-Event types:
-
-| Type | Fields | When |
+| Event type | Fields | When |
 |---|---|---|
 | `token` | `content: string` | Token arrives from LLM |
 | `done` | `cached: boolean` | Stream complete |
@@ -83,12 +139,42 @@ Event types:
 
 **Rate limit:** 30 requests/minute per IP.
 
+**Error responses:**
+
+| Code | Type | When |
+|---|---|---|
+| 401 | `MISSING_TOKEN` | No Authorization header |
+| 401 | `INVALID_TOKEN` | Wrong token |
+| 422 | `VALIDATION_ERROR` | Invalid request body |
+| 429 | `RATE_LIMITED` | 30/minute exceeded |
+| 503 | `EMBEDDING_FAILED` | Voyage AI unavailable |
+| 503 | `LLM_FAILED` | Groq unavailable |
+| 500 | `INTERNAL_ERROR` | Unexpected server error |
+
 ---
 
 ### `POST /v1/ingest`
 
-Sanity CMS webhook — re-ingests all Sanity content and invalidates
-the response cache when portfolio content changes.
+Sanity CMS webhook — re-ingests content and clears cache.
+
+Protected by `API_TOKEN` passed as a **query parameter** (not Bearer header) because Sanity webhooks cannot send custom authorization headers.
+
+**Webhook URL format:**
+
+```
+https://your-api.railway.app/v1/ingest?token=YOUR_API_TOKEN
+```
+
+**Sanity webhook configuration:**
+
+1. Go to [sanity.io/manage](https://sanity.io/manage) → your project → API → Webhooks
+2. Click **Add webhook**
+3. Fill in:
+   - **Name:** Portfolio content sync
+   - **URL:** `https://your-api.railway.app/v1/ingest?token=YOUR_API_TOKEN`
+   - **Trigger on:** Create, Update, Delete
+   - **Filter:** `_type == "project" || _type == "testimonial"`
+4. Save
 
 **Response:**
 
@@ -101,74 +187,67 @@ the response cache when portfolio content changes.
 
 **Rate limit:** 10 requests/minute per IP.
 
+**Error responses:**
+
+| Code | Type | When |
+|---|---|---|
+| 401 | `MISSING_TOKEN` | No token query param |
+| 401 | `INVALID_TOKEN` | Wrong token |
+| 429 | `RATE_LIMITED` | 10/minute exceeded |
+| 500 | `INGESTION_FAILED` | Re-ingestion error |
+
 ---
 
-## Sanity Webhook Setup
+## Error Response Format
 
-The ingest endpoint is protected by HMAC-SHA256 signature verification.
-Only requests signed with your webhook secret are accepted.
+All errors return a consistent JSON structure:
 
-### Step 1 — Generate a webhook secret
-
-```bash
-openssl rand -hex 32
+```json
+{
+  "error": {
+    "code": 401,
+    "type": "MISSING_TOKEN",
+    "message": "Human-readable description of what went wrong",
+    "request_id": "abc12345"
+  }
+}
 ```
 
-Copy the output — this is your `INGEST_WEBHOOK_SECRET`.
+| Field | Description |
+|---|---|
+| `code` | HTTP status code |
+| `type` | Machine-readable error type — use this for programmatic handling |
+| `message` | Human-readable description — safe to show to users |
+| `request_id` | 8-character request ID for tracing in server logs |
 
-### Step 2 — Add to environment variables
+**All error types:**
 
-In `.env.prod` and Railway dashboard:
-
-```bash
-INGEST_WEBHOOK_SECRET=your-generated-secret-here
-```
-
-### Step 3 — Configure Sanity webhook
-
-1. Go to [sanity.io/manage](https://sanity.io/manage) → your project → API → Webhooks
-2. Click **Add webhook**
-3. Fill in:
-   - **Name:** Portfolio content sync
-   - **URL:** `https://your-deployment.up.railway.app/v1/ingest`
-   - **Trigger on:** Create, Update, Delete
-   - **Filter:** `_type == "project" || _type == "testimonial"`
-   - **Secret:** paste your `INGEST_WEBHOOK_SECRET`
-4. Save
-
-Every time you publish or delete a project or testimonial in Sanity Studio, the webhook fires — re-ingesting the content and clearing stale cache entries automatically.
-
-### How verification works
-
-Sanity signs the request body with HMAC-SHA256 using your shared secret and sends the signature in the `x-sanity-webhook-signature` header. The API verifies this signature before processing — ensuring only Sanity can trigger re-ingestion.
-
-If `INGEST_WEBHOOK_SECRET` is empty in config, signature verification is skipped. Never deploy without a secret set.
+| Type | Code | Description |
+|---|---|---|
+| `MISSING_TOKEN` | 401 | Authorization header or token param absent |
+| `INVALID_TOKEN` | 401 | Token present but wrong |
+| `UNAUTHORIZED` | 403 | Not authorized for this action |
+| `RATE_LIMITED` | 429 | Rate limit exceeded |
+| `VALIDATION_ERROR` | 422 | Request body failed schema validation |
+| `INVALID_INPUT` | 400 | A specific field has an invalid value |
+| `EMBEDDING_FAILED` | 503 | Voyage AI embedding service unavailable |
+| `LLM_FAILED` | 503 | Groq LLM service unavailable |
+| `INGESTION_FAILED` | 500 | Content ingestion pipeline failed |
+| `INVALID_SIGNATURE` | 401 | Webhook signature mismatch |
+| `INTERNAL_ERROR` | 500 | Unexpected server error |
+| `SERVICE_UNAVAILABLE` | 503 | External service temporarily unavailable |
 
 ---
 
 ## Cache Invalidation
 
-The response cache is cleared automatically whenever content is re-ingested:
+The response cache clears automatically on every ingestion:
 
 | Trigger | Action |
 |---|---|
 | `make ingest` (any source) | Cache cleared before new chunks stored |
 | Sanity webhook fires | Cache cleared, then Sanity re-ingested |
-| TTL expires | Entries older than `CACHE_TTL_DAYS` (default 7) ignored automatically |
-
-This means users always get fresh answers after you update your portfolio or re-ingest your resume.
-
----
-
-## CORS
-
-The API allows requests from:
-
-- `http://localhost:3000` (Next.js dev)
-- `http://localhost:5173` (Vite dev)
-- `https://chitrankagnihotri.com` (production portfolio)
-
-Add origins to `API_ALLOWED_ORIGINS` in `config.py` if needed.
+| TTL expires | Entries older than `CACHE_TTL_DAYS` (default 7) ignored |
 
 ---
 
@@ -178,50 +257,69 @@ In-memory rate limiting via slowapi. Limits reset on server restart.
 
 | Endpoint | Limit |
 |---|---|
-| `POST /v1/chat` | 30/minute |
-| `POST /v1/ingest` | 10/minute |
+| `POST /v1/chat` | 30/minute per IP |
+| `POST /v1/ingest` | 10/minute per IP |
+| `GET /v1/health` | Unlimited |
+
+---
+
+## CORS
+
+The API allows requests from:
+
+- `http://localhost:3000`
+- `http://localhost:5173`
+- `https://chitrankagnihotri.com`
+
+Add additional origins to `API_ALLOWED_ORIGINS` in `config.py`.
 
 ---
 
 ## Frontend Integration
 
-**SSE streaming in JavaScript:**
+**SSE streaming:**
 
 ```javascript
-const response = await fetch('https://your-api.railway.app/v1/chat', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    question: userInput,
-    session_id: getOrCreateSessionId(),
-    stream: true,
-  }),
-});
+async function askChitrank(question, sessionId, apiToken) {
+  const response = await fetch('https://your-api.railway.app/v1/chat', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiToken}`,
+    },
+    body: JSON.stringify({
+      question,
+      session_id: sessionId,
+      stream: true,
+    }),
+  });
 
-const reader = response.body.getReader();
-const decoder = new TextDecoder();
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error.message);
+  }
 
-while (true) {
-  const { done, value } = await reader.read();
-  if (done) break;
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
 
-  const lines = decoder.decode(value).split('\n');
-  for (const line of lines) {
-    if (!line.startsWith('data: ')) continue;
-    const event = JSON.parse(line.replace('data: ', ''));
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
 
-    if (event.type === 'token') {
-      appendToUI(event.content);
-    } else if (event.type === 'done') {
-      finishStreaming(event.cached);
-    } else if (event.type === 'error') {
-      showError(event.content);
+    const lines = decoder.decode(value).split('\n');
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue;
+      const event = JSON.parse(line.replace('data: ', ''));
+
+      if (event.type === 'token') appendToUI(event.content);
+      else if (event.type === 'done') finishStreaming(event.cached);
+      else if (event.type === 'error') showError(event.content);
     }
   }
 }
 ```
 
-**Session ID management:**
+**Session management:**
 
 ```javascript
 function getOrCreateSessionId() {

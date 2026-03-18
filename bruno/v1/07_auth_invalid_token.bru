@@ -1,0 +1,77 @@
+meta {
+  name: 07 Auth — Invalid Token (expect 401)
+  type: http
+  seq: 7
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POST /v1/chat  (wrong Bearer token)
+#
+# Tests that the API correctly rejects requests with a wrong token.
+# Authorization header is present but token value is intentionally wrong.
+#
+# Expected response:
+#   HTTP 401
+#   {
+#     "error": {
+#       "code": 401,
+#       "type": "INVALID_TOKEN",
+#       "message": "Invalid API token...",
+#       "request_id": "abc12345"
+#     }
+#   }
+# ─────────────────────────────────────────────────────────────────────────────
+
+post {
+  url: {{baseUrl}}/v1/chat
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: this-is-deliberately-wrong-token-12345
+}
+
+body:json {
+  {
+    "question": "What projects has Chitrank built?",
+    "session_id": "{{sessionId}}",
+    "stream": false
+  }
+}
+
+tests {
+  // ── Status code ──────────────────────────────────────────────────────────
+  test("returns HTTP 401", function() {
+    expect(res.status).to.equal(401);
+  });
+
+  // ── Error shape ───────────────────────────────────────────────────────────
+  test("error object is present", function() {
+    expect(res.body).to.have.property("error");
+  });
+
+  test("error.code is 401", function() {
+    expect(res.body.error.code).to.equal(401);
+  });
+
+  test("error.type is INVALID_TOKEN", function() {
+    expect(res.body.error.type).to.equal("INVALID_TOKEN");
+  });
+
+  test("error.message is a non-empty string", function() {
+    expect(res.body.error.message).to.be.a("string");
+    expect(res.body.error.message.length).to.be.greaterThan(0);
+  });
+
+  test("error.request_id is present", function() {
+    expect(res.body.error.request_id).to.be.a("string");
+  });
+
+  // ── No data leakage ───────────────────────────────────────────────────────
+  test("response does not reveal valid token format", function() {
+    const body = JSON.stringify(res.body);
+    expect(body).to.not.include("API_TOKEN");
+    expect(body).to.not.include("settings");
+  });
+}

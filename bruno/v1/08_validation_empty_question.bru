@@ -1,0 +1,69 @@
+meta {
+  name: 08 Validation — Empty Question (expect 422)
+  type: http
+  seq: 8
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POST /v1/chat  (empty question field)
+#
+# Tests that Pydantic schema validation rejects empty questions.
+# The ChatRequest schema enforces min_length=2 on question.
+#
+# Expected response:
+#   HTTP 422
+#   {
+#     "error": {
+#       "code": 422,
+#       "type": "VALIDATION_ERROR",
+#       "message": "Request validation failed: ...",
+#       "request_id": "abc12345"
+#     }
+#   }
+# ─────────────────────────────────────────────────────────────────────────────
+
+post {
+  url: {{baseUrl}}/v1/chat
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{apiToken}}
+}
+
+body:json {
+  {
+    "question": "",
+    "session_id": "{{sessionId}}",
+    "stream": false
+  }
+}
+
+tests {
+  // ── Status code ──────────────────────────────────────────────────────────
+  test("returns HTTP 422", function() {
+    expect(res.status).to.equal(422);
+  });
+
+  // ── Error shape ───────────────────────────────────────────────────────────
+  test("error object is present", function() {
+    expect(res.body).to.have.property("error");
+  });
+
+  test("error.code is 422", function() {
+    expect(res.body.error.code).to.equal(422);
+  });
+
+  test("error.type is VALIDATION_ERROR", function() {
+    expect(res.body.error.type).to.equal("VALIDATION_ERROR");
+  });
+
+  test("error.message mentions validation", function() {
+    expect(res.body.error.message.toLowerCase()).to.include("validation");
+  });
+
+  test("error.request_id is present", function() {
+    expect(res.body.error.request_id).to.be.a("string");
+  });
+}

@@ -1,0 +1,61 @@
+meta {
+  name: 10 Validation — Unknown Field (expect 422)
+  type: http
+  seq: 10
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POST /v1/chat  (unexpected field in request body)
+#
+# Tests that the schema rejects extra fields.
+# ChatRequest uses extra="forbid" in model_config — any field
+# not defined in the schema causes a 422 validation error.
+#
+# This prevents clients from accidentally sending sensitive data
+# in extra fields that the API silently ignores.
+#
+# Expected response:
+#   HTTP 422
+#   {
+#     "error": {
+#       "code": 422,
+#       "type": "VALIDATION_ERROR",
+#       ...
+#     }
+#   }
+# ─────────────────────────────────────────────────────────────────────────────
+
+post {
+  url: {{baseUrl}}/v1/chat
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{apiToken}}
+}
+
+body:json {
+  {
+    "question": "What projects has Chitrank built?",
+    "session_id": "{{sessionId}}",
+    "stream": false,
+    "unknown_field": "this should be rejected"
+  }
+}
+
+tests {
+  // ── Status code ──────────────────────────────────────────────────────────
+  test("returns HTTP 422", function() {
+    expect(res.status).to.equal(422);
+  });
+
+  // ── Error shape ───────────────────────────────────────────────────────────
+  test("error.type is VALIDATION_ERROR", function() {
+    expect(res.body.error.type).to.equal("VALIDATION_ERROR");
+  });
+
+  test("error.code is 422", function() {
+    expect(res.body.error.code).to.equal(422);
+  });
+}

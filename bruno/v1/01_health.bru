@@ -1,0 +1,69 @@
+meta {
+  name: 01 Health Check
+  type: http
+  seq: 1
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# GET /v1/health
+#
+# Public endpoint — no authentication required.
+# Used by Railway health checks, uptime monitors, and load balancers.
+#
+# Expected response:
+#   {
+#     "status": "healthy",
+#     "version": "0.4.0",
+#     "timestamp": "2026-03-18T10:00:00+00:00"
+#   }
+#
+# This is the ONLY endpoint that works without an API token.
+# ─────────────────────────────────────────────────────────────────────────────
+
+get {
+  url: {{baseUrl}}/v1/health
+  body: none
+  auth: none
+}
+
+tests {
+  // ── Status code ──────────────────────────────────────────────────────────
+  test("returns HTTP 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  // ── Response shape ────────────────────────────────────────────────────────
+  test("response has status field", function() {
+    expect(res.body).to.have.property("status");
+  });
+
+  test("response has version field", function() {
+    expect(res.body).to.have.property("version");
+  });
+
+  test("response has timestamp field", function() {
+    expect(res.body).to.have.property("timestamp");
+  });
+
+  // ── Response values ───────────────────────────────────────────────────────
+  test("status is healthy", function() {
+    expect(res.body.status).to.equal("healthy");
+  });
+
+  test("version is a non-empty string", function() {
+    expect(res.body.version).to.be.a("string");
+    expect(res.body.version.length).to.be.greaterThan(0);
+  });
+
+  test("timestamp is a valid ISO string", function() {
+    const ts = res.body.timestamp;
+    expect(ts).to.be.a("string");
+    expect(new Date(ts).toString()).to.not.equal("Invalid Date");
+  });
+
+  // ── No auth headers required ──────────────────────────────────────────────
+  test("does not require Authorization header", function() {
+    // If this request succeeded without auth, health is correctly public
+    expect(res.status).to.equal(200);
+  });
+}

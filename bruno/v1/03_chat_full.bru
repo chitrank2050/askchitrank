@@ -1,0 +1,80 @@
+meta {
+  name: 03 Chat — Full Response
+  type: http
+  seq: 3
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POST /v1/chat  (stream: false)
+#
+# Authenticated endpoint — requires Bearer token.
+# Returns the complete LLM response as a single JSON object.
+# Useful for testing, simple integrations, or non-streaming clients.
+#
+# cache is disabled (use_cache: false) so we always hit the LLM
+# and can verify the response content is correct.
+#
+# Expected response:
+#   {
+#     "response": "Chitrank's tech stack includes React, TypeScript...",
+#     "cached": false
+#   }
+# ─────────────────────────────────────────────────────────────────────────────
+
+post {
+  url: {{baseUrl}}/v1/chat
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{apiToken}}
+}
+
+body:json {
+  {
+    "question": "What is Chitrank's tech stack?",
+    "session_id": "{{sessionId}}",
+    "use_cache": false,
+    "stream": false
+  }
+}
+
+tests {
+  // ── Status code ──────────────────────────────────────────────────────────
+  test("returns HTTP 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  // ── Response shape ────────────────────────────────────────────────────────
+  test("response has 'response' field", function() {
+    expect(res.body).to.have.property("response");
+  });
+
+  test("response has 'cached' field", function() {
+    expect(res.body).to.have.property("cached");
+  });
+
+  // ── Response values ───────────────────────────────────────────────────────
+  test("response is a non-empty string", function() {
+    expect(res.body.response).to.be.a("string");
+    expect(res.body.response.length).to.be.greaterThan(0);
+  });
+
+  test("cached is false when use_cache is false", function() {
+    expect(res.body.cached).to.equal(false);
+  });
+
+  // ── Content quality ───────────────────────────────────────────────────────
+  test("response mentions a known technology", function() {
+    const response = res.body.response.toLowerCase();
+    const knownTech = ["react", "typescript", "javascript", "python", "fastapi"];
+    const mentionsTech = knownTech.some(tech => response.includes(tech));
+    expect(mentionsTech).to.equal(true);
+  });
+
+  // ── Request ID ───────────────────────────────────────────────────────────
+  test("response includes X-Request-ID header", function() {
+    expect(res.headers["x-request-id"]).to.be.a("string");
+  });
+}

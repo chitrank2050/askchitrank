@@ -1,0 +1,74 @@
+meta {
+  name: 06 Auth — Missing Token (expect 401)
+  type: http
+  seq: 6
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POST /v1/chat  (no Authorization header)
+#
+# Tests that the API correctly rejects requests with no auth.
+# No Authorization header is sent — auth: none.
+#
+# Expected response:
+#   HTTP 401
+#   {
+#     "error": {
+#       "code": 401,
+#       "type": "MISSING_TOKEN",
+#       "message": "API token is required...",
+#       "request_id": "abc12345"
+#     }
+#   }
+# ─────────────────────────────────────────────────────────────────────────────
+
+post {
+  url: {{baseUrl}}/v1/chat
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "question": "What projects has Chitrank built?",
+    "session_id": "{{sessionId}}",
+    "stream": false
+  }
+}
+
+tests {
+  // ── Status code ──────────────────────────────────────────────────────────
+  test("returns HTTP 401", function() {
+    expect(res.status).to.equal(401);
+  });
+
+  // ── Error shape ───────────────────────────────────────────────────────────
+  test("error object is present", function() {
+    expect(res.body).to.have.property("error");
+  });
+
+  test("error.code is 401", function() {
+    expect(res.body.error.code).to.equal(401);
+  });
+
+  test("error.type is MISSING_TOKEN", function() {
+    expect(res.body.error.type).to.equal("MISSING_TOKEN");
+  });
+
+  test("error.message is a non-empty string", function() {
+    expect(res.body.error.message).to.be.a("string");
+    expect(res.body.error.message.length).to.be.greaterThan(0);
+  });
+
+  test("error.request_id is an 8-char string", function() {
+    expect(res.body.error.request_id).to.be.a("string");
+    expect(res.body.error.request_id.length).to.equal(8);
+  });
+
+  // ── No data leakage ───────────────────────────────────────────────────────
+  test("response does not contain stack trace", function() {
+    const body = JSON.stringify(res.body);
+    expect(body).to.not.include("Traceback");
+    expect(body).to.not.include("File \"");
+  });
+}

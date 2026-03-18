@@ -1,0 +1,62 @@
+meta {
+  name: 05 Chat — Multi-turn Follow-up
+  type: http
+  seq: 5
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POST /v1/chat  (multi-turn conversation)
+#
+# Run 02_chat_stream.bru or 03_chat_full.bru first to establish context.
+# This request asks a follow-up question using the SAME session_id.
+#
+# The API fetches the last 6 messages from the conversations table
+# and includes them in the prompt — giving the LLM context from earlier
+# in the conversation.
+#
+# Expected behaviour:
+#   - LLM references context from previous question about projects
+#   - Response is coherent as a follow-up, not starting from scratch
+#
+# Uses the same {{sessionId}} environment variable as previous requests.
+# ─────────────────────────────────────────────────────────────────────────────
+
+post {
+  url: {{baseUrl}}/v1/chat
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{apiToken}}
+}
+
+body:json {
+  {
+    "question": "Which of those projects is the most recent?",
+    "session_id": "{{sessionId}}",
+    "use_cache": false,
+    "stream": false
+  }
+}
+
+tests {
+  // ── Status code ──────────────────────────────────────────────────────────
+  test("returns HTTP 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  // ── Response shape ────────────────────────────────────────────────────────
+  test("response is a non-empty string", function() {
+    expect(res.body.response).to.be.a("string");
+    expect(res.body.response.length).to.be.greaterThan(0);
+  });
+
+  // ── Multi-turn context ────────────────────────────────────────────────────
+  test("response mentions a specific project or company", function() {
+    const response = res.body.response.toLowerCase();
+    const knownProjects = ["humanform", "plural", "hudini", "hdfc", "lazard", "bihar"];
+    const mentionsProject = knownProjects.some(p => response.includes(p));
+    expect(mentionsProject).to.equal(true);
+  });
+}
