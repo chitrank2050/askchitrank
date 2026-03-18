@@ -64,6 +64,7 @@ class _Settings(BaseSettings):
     API_ALLOW_CREDENTIALS: bool = True
     API_ALLOWED_METHODS: list[str] = ["*"]
     API_ALLOWED_HEADERS: list[str] = ["*"]
+    API_TOKEN: str = ""
 
     # ----------------------------------------------------------------
     # 🤖  LLM
@@ -140,11 +141,6 @@ class _Settings(BaseSettings):
     LOG_FILE_FORMAT: str = (
         "{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function} - {message}"
     )
-
-    # ----------------------------------------------------------------
-    # ⚙️  Sanity Webhook
-    # ----------------------------------------------------------------
-    INGEST_WEBHOOK_SECRET: str = ""
 
     # ----------------------------------------------------------------
     # ✅  Validators

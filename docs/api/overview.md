@@ -96,7 +96,6 @@ the response cache when portfolio content changes.
 {
   "status": "ok",
   "chunks_ingested": 12,
-  "cache_invalidated": 5
 }
 ```
 

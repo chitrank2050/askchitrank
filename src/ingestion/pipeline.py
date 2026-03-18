@@ -51,13 +51,14 @@ async def _clear_source(source: list[str], db: AsyncSession) -> None:
         source: Source identifier to clear — 'resume', 'sanity', or 'linkedin'.
         db: Active async database session.
     """
-    await db.execute(delete(KnowledgeChunk).where(KnowledgeChunk.source.in_(source)))
-    await db.commit()
-    logger.info(f"Cleared existing '{source}' chunks")
 
     # Invalidate cache first — old answers are stale immediately
     invalidated = await invalidate_cache(db)
     logger.info(f"Invalidated {invalidated} cache entries")
+
+    await db.execute(delete(KnowledgeChunk).where(KnowledgeChunk.source.in_(source)))
+    await db.commit()
+    logger.info(f"Cleared existing '{source}' chunks")
 
 
 async def _store_chunks(

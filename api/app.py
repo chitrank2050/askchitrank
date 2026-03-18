@@ -1,8 +1,12 @@
-"""
+"""api/app.py
+
 FastAPI application factory.
 
 Creates and configures the FastAPI application — registers routes,
 middleware, lifespan, and exception handlers.
+
+All errors return standardized JSON via the APIError exception system.
+Stack traces are never exposed to clients in any environment.
 
 Responsibility: assemble the application. Nothing else.
 Does NOT: define routes, handle requests, or run business logic.
@@ -15,7 +19,7 @@ Usage:
 import sys
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -23,6 +27,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
+from api.utils.errors import APIError, api_error_handler
 from api.utils.middleware import add_request_id, add_security_headers
 from api.utils.rate_limit import limiter
 from api.v1 import router as v1_router
@@ -36,7 +41,7 @@ def create_app() -> FastAPI:
     """Create and configure the FastAPI application.
 
     Registers middleware, routes, lifespan, and exception handlers.
-    Called once at startup — never call this inside a request handler.
+    Called once at startup — never call inside a request handler.
 
     Returns:
         Configured FastAPI application instance.
@@ -51,61 +56,73 @@ def create_app() -> FastAPI:
         lifespan=api_lifespan,
     )
 
-    # ── Exception Handlers ────────────────────────────────────────────────
-    @app.exception_handler(HTTPException)
-    async def http_exception_handler(request: Request, exc: HTTPException):
-        """Standardized JSON response for HTTP exceptions."""
-        logger.error(f"HTTP Error {exc.status_code}: {exc.detail}")
-        return JSONResponse(
-            status_code=exc.status_code,
-            content={
-                "error": {
-                    "code": exc.status_code,
-                    "message": exc.detail,
-                    "request_id": getattr(request.state, "request_id", None),
-                }
-            },
-        )
+    # ── Exception handlers ────────────────────────────────────────────────
+    # All exceptions funnel through typed APIError responses.
+    # Stack traces never reach the client in any environment.
+
+    @app.exception_handler(APIError)
+    async def handle_api_error(request: Request, exc: APIError) -> JSONResponse:
+        """Handle all typed APIError exceptions.
+
+        These are raised deliberately throughout the application
+        with specific error codes and user-friendly messages.
+        """
+        return api_error_handler(request, exc)
 
     @app.exception_handler(RequestValidationError)
-    async def validation_exception_handler(
+    async def handle_validation_error(
         request: Request, exc: RequestValidationError
-    ):
-        """Standardized JSON response for schema validation errors."""
-        logger.warning(f"Validation Error: {exc.errors()}")
-        return JSONResponse(
-            status_code=422,
-            content={
-                "error": {
-                    "code": 422,
-                    "message": "Input validation failed. Please check your request parameters.",
-                    "details": exc.errors() if settings.API_DEBUG else None,
-                    "request_id": getattr(request.state, "request_id", None),
-                }
-            },
+    ) -> JSONResponse:
+        """Handle Pydantic/FastAPI request validation failures.
+
+        Converts FastAPI's default validation error format to our
+        standardized APIError shape. Details only shown in debug mode.
+        """
+        logger.warning(f"Validation error on {request.url.path}: {exc.errors()}")
+
+        # Build a readable summary of what failed
+        error_details = "; ".join(
+            f"{'.'.join(str(loc) for loc in err['loc'])}: {err['msg']}"
+            for err in exc.errors()
         )
+
+        error = APIError.validation_error(
+            error_details if settings.API_DEBUG else "Check your request body."
+        )
+        return api_error_handler(request, error)
+
+    @app.exception_handler(RateLimitExceeded)
+    async def handle_rate_limit(
+        request: Request, exc: RateLimitExceeded
+    ) -> JSONResponse:
+        """Handle slowapi rate limit exceeded errors."""
+        logger.warning(
+            f"Rate limit exceeded — IP: {request.client.host if request.client else 'unknown'}"
+        )
+        error = APIError.rate_limited()
+        return api_error_handler(request, error)
 
     @app.exception_handler(Exception)
-    async def global_exception_handler(request: Request, exc: Exception):
-        """Catch-all for internal server errors — prevents leaking stack traces."""
-        logger.critical(f"Unhandled Exception: {exc}", exc_info=True)
-        return JSONResponse(
-            status_code=500,
-            content={
-                "error": {
-                    "code": 500,
-                    "message": "An unexpected error occurred. Our team has been notified.",
-                    "request_id": getattr(request.state, "request_id", None),
-                }
-            },
-        )
+    async def handle_unexpected_error(request: Request, exc: Exception) -> JSONResponse:
+        """Catch-all for any unhandled exceptions.
 
-    # ── Middleware ────────────────────────────────────────────────────────
-    # Order: Request ID (first) -> Security -> Rate Limit -> CORS
+        Logs full traceback internally. Client always receives a generic
+        500 message — stack traces never leak to the caller.
+        """
+        logger.critical(
+            f"Unhandled exception on {request.url.path}: {exc}",
+            exc_info=True,
+        )
+        error = APIError.internal()
+        return api_error_handler(request, error)
+
+    # ── Middleware ─────────────────────────────────────────────────────────
+    # Execution order is LIFO — last registered runs first on request.
+    # CORS → SlowAPI → Security headers → Request ID
+
     app.middleware("http")(add_request_id)
     app.middleware("http")(add_security_headers)
 
-    # ── Rate limiting ──────────────────────────────────────────────────────
     app.state.limiter = limiter
     app.add_exception_handler(
         RateLimitExceeded,
@@ -113,11 +130,8 @@ def create_app() -> FastAPI:
     )
     app.add_middleware(SlowAPIMiddleware)  # type: ignore[arg-type]
 
-    # ── CORS ───────────────────────────────────────────────────────────────
-    # Allow portfolio frontend to call the API from the browser
     app.add_middleware(
         CORSMiddleware,  # type: ignore[arg-type]
-        # Restrict in production — expand only for known frontend origins
         allow_origins=settings.API_ALLOWED_ORIGINS,
         allow_credentials=settings.API_ALLOW_CREDENTIALS,
         allow_methods=settings.API_ALLOWED_METHODS,
@@ -125,7 +139,6 @@ def create_app() -> FastAPI:
     )
 
     # ── Routes ─────────────────────────────────────────────────────────────
-    # Mount v1 — all endpoints live under /v1
     app.include_router(v1_router, prefix=settings.API_PREFIX)
 
     return app
@@ -155,5 +168,5 @@ if __name__ == "__main__":
         bootstrap()
         main()
     except KeyboardInterrupt:
-        logger.warning("🛑 Application interrupted by user.")
+        logger.warning("Application interrupted by user.")
         sys.exit(0)
