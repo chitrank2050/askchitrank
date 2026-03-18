@@ -15,7 +15,6 @@ Usage:
 import sys
 
 import uvicorn
-from api.v1 import router as v1_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
@@ -24,6 +23,7 @@ from slowapi.middleware import SlowAPIMiddleware
 
 from api.utils.middleware import add_request_id
 from api.utils.rate_limit import limiter
+from api.v1 import router as v1_router
 from src.core import bootstrap
 from src.core.api_lifespan import api_lifespan
 from src.core.config import settings
