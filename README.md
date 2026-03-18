@@ -8,7 +8,7 @@
 ![Voyage AI](https://img.shields.io/badge/Voyage_AI-voyage--3--lite-purple)
 ![Supabase](https://img.shields.io/badge/Supabase-pgvector-green)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-![Version](https://img.shields.io/badge/version-0.4.2-brightgreen)
+![Version](https://img.shields.io/badge/version-0.4.3-brightgreen)
 
 ---
 
