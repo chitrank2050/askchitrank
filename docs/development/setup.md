@@ -118,12 +118,12 @@ make api
 
 ## API Keys
 
-| Service | URL | Cost |
-|---|---|---|
-| Groq | [console.groq.com](https://console.groq.com) | Free tier, no card |
-| Voyage AI | [voyageai.com](https://www.voyageai.com) | 200M tokens/month free |
-| Supabase | [supabase.com](https://supabase.com) | Free tier |
-| Anthropic (future) | [console.anthropic.com](https://console.anthropic.com) | $5 credit on signup |
+| Service            | URL                                                    | Cost                   |
+|--------------------|--------------------------------------------------------|------------------------|
+| Groq               | [console.groq.com](https://console.groq.com)           | Free tier, no card     |
+| Voyage AI          | [voyageai.com](https://www.voyageai.com)               | 200M tokens/month free |
+| Supabase           | [supabase.com](https://supabase.com)                   | Free tier              |
+| Anthropic (future) | [console.anthropic.com](https://console.anthropic.com) | $5 credit on signup    |
 
 ---
 

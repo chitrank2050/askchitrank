@@ -26,10 +26,6 @@ This enables the `VECTOR` column type used for storing embeddings.
 
 Go to **Settings** → **Database** → **Connection string**.
 
-Copy:
-- **URI** — for Alembic migrations (psycopg2 driver)
-- Modify the URI prefix for async usage (asyncpg driver)
-
 ```bash
 # Async — FastAPI runtime
 DATABASE_URL=postgresql+asyncpg://postgres:[PASSWORD]@db.[REF].supabase.co:5432/postgres
@@ -59,45 +55,45 @@ make db-rollback
 
 ### `knowledge_chunks`
 
-Stores embedded text chunks from resume and Sanity CMS.
+Stores embedded text chunks from all ingestion sources.
 
-| Column | Type | Description |
-|---|---|---|
-| `id` | UUID | Primary key |
-| `source` | VARCHAR | `resume` or `sanity` |
-| `source_id` | VARCHAR | Filename or Sanity document ID |
-| `content` | TEXT | Raw chunk text shown to LLM |
-| `embedding` | VECTOR(512) | Voyage AI embedding |
-| `chunk_index` | INTEGER | Position in source document |
-| `created_at` | TIMESTAMPTZ | Ingestion timestamp |
-| `updated_at` | TIMESTAMPTZ | Last update timestamp |
+| Column       | Type        | Description                                               |
+|--------------|-------------|-----------------------------------------------------------|
+| `id`         | UUID        | Primary key                                               |
+| `source`     | VARCHAR     | `resume`, `sanity`, or `linkedin`                         |
+| `source_id`  | VARCHAR     | Section name, Sanity doc ID, or CSV row identifier        |
+| `content`    | TEXT        | Raw chunk text shown to LLM as context                    |
+| `embedding`  | VECTOR(512) | Voyage AI voyage-3-lite embedding                         |
+| `chunk_index`| INTEGER     | Position in source document                               |
+| `created_at` | TIMESTAMPTZ | Ingestion timestamp                                       |
+| `updated_at` | TIMESTAMPTZ | Last update timestamp                                     |
 
 ### `response_cache`
 
 Caches question→response pairs to reduce LLM API costs.
 
-| Column | Type | Description |
-|---|---|---|
-| `id` | UUID | Primary key |
-| `question` | TEXT | Original user question |
-| `question_embedding` | VECTOR(512) | For similarity lookup |
-| `response` | TEXT | Cached LLM response |
-| `source_chunk_ids` | TEXT | JSON array of chunk UUIDs used |
-| `hit_count` | INTEGER | Times this cache entry was served |
-| `created_at` | TIMESTAMPTZ | Cache entry creation time |
-| `invalidated_at` | TIMESTAMPTZ | Null = valid. Set on webhook invalidation |
+| Column               | Type        | Description                               |
+|----------------------|-------------|-------------------------------------------|
+| `id`                 | UUID        | Primary key                               |
+| `question`           | TEXT        | Original user question                    |
+| `question_embedding` | VECTOR(512) | For similarity lookup                     |
+| `response`           | TEXT        | Cached LLM response                       |
+| `source_chunk_ids`   | TEXT        | JSON array of chunk UUIDs used            |
+| `hit_count`          | INTEGER     | Times this cache entry was served         |
+| `created_at`         | TIMESTAMPTZ | Cache entry creation time                 |
+| `invalidated_at`     | TIMESTAMPTZ | Null = valid. Set on webhook invalidation |
 
 ### `conversations`
 
 Stores conversation history per browser session.
 
-| Column | Type | Description |
-|---|---|---|
-| `id` | UUID | Primary key |
-| `session_id` | VARCHAR | Browser session identifier |
-| `role` | VARCHAR | `user` or `assistant` |
-| `content` | TEXT | Message text |
-| `created_at` | TIMESTAMPTZ | Message timestamp |
+| Column           | Type            | Description                |
+|------------------|-----------------|----------------------------|
+| `id`             | UUID            | Primary key                |
+| `session_id`     | VARCHAR         | Browser session identifier |
+| `role`           | VARCHAR         | `user` or `assistant`      |
+| `content`        | TEXT            | Message text               |
+| `created_at`     | TIMESTAMPTZ     | Message timestamp          |
 
 ---
 
@@ -105,16 +101,20 @@ Stores conversation history per browser session.
 
 Supabase free tier pauses the database after 1 week of inactivity. The first request after a pause will be slow (~2-3 seconds) as the database wakes up.
 
-This is handled by `pool_pre_ping=True` in `connection.py` and retry logic in the API — subsequent requests are fast once the database is awake.
+This is handled by `pool_pre_ping=True` in `connection.py` — subsequent requests are fast once the database is awake.
 
 ---
 
 ## Alembic Version Table
 
-The migration version table is named `alembic_version_askchitrank` — separate from any other project using the same Supabase database. This prevents migration conflicts when sharing a Supabase project across multiple applications.
+The migration version table is named `alembic_version_askchitrank` — separate from any other project using the same Supabase database.
 
 Configured in `alembic.ini`:
 
 ```ini
 version_table = alembic_version_askchitrank
 ```
+
+---
+
+Developed by [Chitrank Agnihotri](https://www.chitrankagnihotri.com)
