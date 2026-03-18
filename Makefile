@@ -11,7 +11,8 @@ PYTHON_VERSION := $(shell if [ -f .python-version ]; then cat .python-version; e
         lint format tree python-version obliviate \
         git _changelog _changelog-preview _changelog-since _git-tag _git-release \
         docs _docs _docs-build _docs-deploy \
-        api ingest
+        api token \
+				ingest _ingest-resume _ingest-sanity _ingest-linkedin \
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -29,6 +30,7 @@ help:
 	@echo ""
 	@echo "API:"
 	@echo "  make api            - Start FastAPI server"
+	@echo "  make token          - Generate API token using openssl"
 	@echo ""
 	@echo "Interactive Menus:"
 	@echo "  make git            - Changelog & release menu"
@@ -124,6 +126,12 @@ api:
 	@echo "🚀 Starting API server..."
 	@$(UV) run python -m src.main api
 
+token:
+	@echo "🔑 Generating API token..."
+	@openssl rand -hex 32
+	@echo "✅ API token generated."
+	@echo ""
+	@echo "💡 Copy it and set it as API_TOKEN in your .env file"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Git
