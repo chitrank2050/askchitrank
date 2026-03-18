@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Folio AI.
+All notable changes to Ask Chitrank.
 
 ## [0.4.5] - 2026-03-18
 
