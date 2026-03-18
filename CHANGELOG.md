@@ -2,6 +2,27 @@
 
 All notable changes to Ask Chitrank.
 
+## [0.5.0] - 2026-03-18
+
+### Documentation
+
+- Add API and chat layer overviews, update project progress, and rename Sanity webhook secret configuration.
+
+### Features
+
+- Implement source-diverse retrieval by limiting results per source and refine ingestion to categorize testimonials separately.
+- Implement RAG chat functionality with Groq LLM integration and streaming capabilities.
+- Introduce a new FastAPI server with rate limiting, accessible via a dedicated CLI command.
+- Establish core API with v1 endpoints for health, streaming chat, and Sanity content ingestion, including their respective schemas and routing.
+- Add `stream` option to chat requests, allowing clients to choose between SSE streaming and a single JSON response.
+- Introduce Bruno API collection with local environment, chat, health, and ingest endpoints.
+- Implement API security headers, update documentation with new concepts and Sanity webhook setup, and add cache invalidation to the ingestion pipeline.
+
+### Maintenance
+
+- Update project name from Folio AI to Ask Chitrank in changelog and config.
+- Update GROQ_MODEL to llama-3.3-70b-versatile in configuration and documentation.
+
 ## [0.4.5] - 2026-03-18
 
 ### Bug Fixes
