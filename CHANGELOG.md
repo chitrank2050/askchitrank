@@ -12,7 +12,7 @@ All notable changes to Ask Chitrank.
 ### Features
 
 - Introduce a new database module with SQLAlchemy async connection management and ORM models for knowledge chunks, response cache, and conversations.
-- Initialize Alembic for database migrations and define the initial schema for conversations, knowledge chunks, and response cache.up
+- Initialize Alembic for database migrations and define the initial schema for conversations, knowledge chunks, and response cache.
 - Set up MkDocs and add initial documentation for development setup, architecture, and database.
 - Add or update Makefile target to execute the `menu.py` script.
 - Update Makefile to include new build targets and dependencies.
@@ -30,7 +30,7 @@ All notable changes to Ask Chitrank.
 ### Features
 
 - Establish core configuration, logging, and warning suppression utilities.
-- Rename project to `folio-ai` to `askchitrank` and
+- Rename project from `folio-ai` to `askchitrank`.
 
 ### Refactoring
 

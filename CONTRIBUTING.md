@@ -38,7 +38,7 @@ Push your branch and open a PR against `main`. Include:
 
 ## Reporting Security Issues
 
-Do NOT open a public issue for security vulnerabilities. Email chitrank2050@gmail.com instead.
+Do NOT open a public issue for security vulnerabilities. Please follow the instructions in [SECURITY.md](SECURITY.md).
 
 ---
 

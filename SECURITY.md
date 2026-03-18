@@ -14,3 +14,5 @@ Use GitHub's built-in vulnerability reporting:
 1. Go to the Security tab on this repository
 2. Click "Report a vulnerability"
 3. Fill in the details
+
+Alternatively, you can contact the maintainer directly at [chitrank2050@gmail.com](mailto:chitrank2050@gmail.com).

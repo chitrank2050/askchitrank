@@ -111,4 +111,4 @@ This is a personal portfolio project. Issues and PRs welcome.
 
 ## License
 
-MIT — see [LICENCE](LICENCE).
+MIT — see [LICENSE](LICENSE).
