@@ -1,0 +1,30 @@
+meta {
+  name: Chat
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/chat
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "question": "What projects has Chitrank built?",
+    "session_id": "session-test-123",
+    "use_cache": true,
+    "stream": true
+  }
+}
+
+docs {
+  Streams a RAG-powered response via Server-Sent Events (SSE).
+  
+  ### Body Parameters:
+  - `question`: The user question to answer.
+  - `session_id`: Unique identifier to maintain conversation history.
+  - `use_cache`: (Optional) Whether to check semantic response cache. Defaults to true.
+  - `stream`: (Optional) If true, uses SSE. If false, returns full JSON response. Defaults to true.
+}
