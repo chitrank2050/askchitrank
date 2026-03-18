@@ -219,6 +219,6 @@ _ingest-sanity:
 	@echo "🌐 Ingesting Sanity CMS..."
 	@$(UV) run python -m src.main ingest --source sanity
 
-_ingest-all:
-	@echo "📥 Ingesting all sources..."
-	@$(UV) run python -m src.main ingest --source all
+_ingest-linkedin:
+	@echo "💼 Ingesting LinkedIn PDF..."
+	@$(UV) run python -m src.main ingest --source linkedin

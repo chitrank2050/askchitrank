@@ -1,4 +1,5 @@
-"""
+"""src/main.py
+
 Unified command-line entry point.
 
 All pipeline operations run through here — ingestion and API startup.
@@ -7,12 +8,11 @@ Single interface, consistent behaviour across all environments.
 Does NOT: define business logic, load documents, or handle HTTP.
 
 Usage:
-    make api
-    make ingest-resume
-    make ingest-sanity
-    make ingest-all
-    uv run python -m src.main ingest --source resume sanity
-    uv run python -m src.main ingest --source all
+    make ingest                                     — interactive menu
+    uv run python -m src.main ingest --source resume
+    uv run python -m src.main ingest --source sanity
+    uv run python -m src.main ingest --source linkedin
+    uv run python -m src.main ingest --source resume sanity linkedin
 """
 
 import argparse
@@ -25,14 +25,13 @@ def main() -> None:
     """Parse CLI arguments and dispatch to the correct pipeline command.
 
     Commands:
-        api     — start FastAPI server
-        ingest  — ingest documents into the knowledge base
+        ingest  — ingest documents into the knowledge base from one
+                  or more sources (resume, sanity, linkedin)
 
     Example:
-        >>> # via Makefile
-        >>> make api
-        >>> make ingest-all
-        >>> # via CLI
+        >>> # via Makefile interactive menu
+        >>> make ingest
+        >>> # via CLI directly
         >>> uv run python -m src.main ingest --source resume sanity
     """
     parser = argparse.ArgumentParser(
@@ -41,39 +40,30 @@ def main() -> None:
     )
     subparsers = parser.add_subparsers(dest="command")
 
-    # ── api ────────────────────────────────────────────────────────────────
-    subparsers.add_parser(
-        "api",
-        help="Start FastAPI server",
-    )
-
     # ── ingest ─────────────────────────────────────────────────────────────
     ingest_parser = subparsers.add_parser(
         "ingest",
         help="Ingest documents into the knowledge base",
     )
-
     ingest_parser.add_argument(
         "--source",
         choices=["resume", "sanity", "linkedin"],
-        nargs="+",
+        nargs="+",  # accepts one or more values
         default=["resume", "sanity", "linkedin"],
-        help="Sources to ingest",
+        help=(
+            "Sources to ingest. Pass one or more: "
+            "--source resume sanity linkedin "
+            "(default: all three)"
+        ),
     )
-
     ingest_parser.add_argument(
         "--resume-url",
         default=None,
-        help="Override resume URL from config",
+        help="Override RESUME_URL from config for this run only",
     )
 
     args = parser.parse_args()
     bootstrap()
-
-    # if args.command == "api":
-    #     from src.api.app import main as run_api
-    #     logger.info("Starting API server")
-    #     run_api()
 
     if args.command == "ingest":
         asyncio.run(_run_ingest(args))
@@ -85,22 +75,25 @@ def main() -> None:
 async def _run_ingest(args: argparse.Namespace) -> None:
     """Run ingestion pipeline sequentially for specified sources.
 
-    Expands 'all' to individual sources and runs each in order.
+    Sources are always processed in a fixed order regardless of
+    the order they were passed on the CLI — resume → sanity → linkedin.
     Uses a single database session across all sources for consistency.
 
     Args:
-        args: Parsed CLI arguments containing source list and resume_url.
+        args: Parsed CLI arguments containing:
+            - source: list of source names to ingest
+            - resume_url: optional URL override for resume PDF
     """
     from src.core.config import settings
     from src.db.connection import AsyncSessionLocal
-    from src.ingestion.pipeline import ingest_resume, ingest_sanity
+    from src.ingestion.pipeline import ingest_linkedin, ingest_resume, ingest_sanity
 
+    # Use CLI override if provided, otherwise fall back to config
     resume_url = args.resume_url or settings.RESUME_URL
 
-    # Expand "all" to individual sources in fixed order
-    sources = args.source if isinstance(args.source, list) else [args.source]
-    if "all" in sources:
-        sources = ["resume", "sanity"]
+    # Fixed processing order — predictable regardless of CLI argument order
+    source_order = ["resume", "sanity", "linkedin"]
+    sources = [s for s in source_order if s in args.source]
 
     total_chunks = 0
 
@@ -116,6 +109,12 @@ async def _run_ingest(args: argparse.Namespace) -> None:
                 logger.info("Ingesting Sanity CMS")
                 count = await ingest_sanity(db)
                 logger.success(f"Sanity — {count} chunks stored")
+                total_chunks += count
+
+            elif source == "linkedin":
+                logger.info("Ingesting LinkedIn PDF")
+                count = await ingest_linkedin(db)
+                logger.success(f"LinkedIn — {count} chunks stored")
                 total_chunks += count
 
     logger.success(f"Ingestion complete — {total_chunks} total chunks stored")

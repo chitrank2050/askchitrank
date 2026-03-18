@@ -1,18 +1,27 @@
 """
 Ingestion pipeline package.
 
-Loads documents from resume PDF and Sanity CMS,
-chunks them into 500-word segments with 50-word overlap,
-embeds via Voyage AI voyage-3-lite, and stores in
-the knowledge_chunks table.
+Loads documents from three sources:
+    resume   — PDF fetched from RESUME_URL in config
+    sanity   — Projects and Testimonials from Sanity CMS API
+    linkedin — PDF exported from LinkedIn at data/linkedin.pdf
+
+Each source is chunked into 500-word segments with 50-word overlap,
+embedded via Voyage AI voyage-3-lite (512 dimensions), and stored
+in the knowledge_chunks table for vector similarity search.
 
 Typical usage:
-    from src.ingestion import ingest_resume, ingest_sanity
+    from src.ingestion import ingest_resume, ingest_sanity, ingest_linkedin
 
     await ingest_resume("https://chitrankagnihotri.com/resume.pdf", db)
     await ingest_sanity(db)
+    await ingest_linkedin(db)
 """
 
-from src.ingestion.pipeline import ingest_resume, ingest_sanity
+from src.ingestion.pipeline import ingest_linkedin, ingest_resume, ingest_sanity
 
-__all__ = ["ingest_resume", "ingest_sanity"]
+__all__ = [
+    "ingest_linkedin",
+    "ingest_resume",
+    "ingest_sanity",
+]
