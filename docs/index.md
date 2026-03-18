@@ -23,7 +23,7 @@ Ask Chitrank is a conversational AI that answers questions about Chitrank Agniho
 - "What is his tech stack?"
 - "How many years of experience does he have?"
 - "What do his colleagues say about him?"
-- "Has he worked with machine learning?"
+- "Has he worked with AI companies?"
 
 ---
 
@@ -67,18 +67,19 @@ Return cached response      Search knowledge base
 - [x] Phase 1 — Database layer (pgvector, Supabase, Alembic migrations)
 - [x] Phase 2 — Ingestion pipeline (resume PDF, Sanity CMS, LinkedIn)
 - [x] Phase 3 — Retrieval layer (vector search + semantic cache)
-- [ ] Phase 4 — Chat layer (prompt engineering + Groq LLM)
-- [ ] Phase 5 — FastAPI + streaming (chat endpoint)
-- [ ] Phase 6 — Frontend chat widget (Next.js)
-- [ ] Phase 7 — Sanity webhook auto-sync
+- [x] Phase 4 — Chat layer (prompt engineering + Groq LLM)
+- [x] Phase 5 — FastAPI + streaming (SSE chat endpoint)
+- [ ] Phase 6 — Sanity webhook auto-sync + Railway deployment
+- [ ] Phase 7 — Frontend chat widget (Next.js)
 
 ---
 
 ## Known Limitations
 
-- Groq free tier has rate limits (6000 tokens/minute) — sufficient for personal portfolio traffic
+- Groq free tier: 6000 tokens/minute — sufficient for personal portfolio traffic
 - Supabase free tier pauses after 1 week inactivity — first request after pause is slow (~2-3 seconds)
-- Response cache threshold (0.95) may miss semantically similar but differently phrased questions — tune based on usage
+- Response cache threshold (0.95) may miss semantically similar but differently phrased questions
+- voyage-3-lite similarity scores are lower than OpenAI embeddings numerically — ranking is correct even when scores appear low
 
 ---
 
