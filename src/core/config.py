@@ -97,7 +97,7 @@ class _Settings(BaseSettings):
     # ----------------------------------------------------------------
     CHUNK_SIZE: int = 500
     CHUNK_OVERLAP: int = 50
-    TOP_K_RESULTS: int = 5
+    TOP_K_RESULTS: int = 8
 
     # ----------------------------------------------------------------
     # 💾  Cache

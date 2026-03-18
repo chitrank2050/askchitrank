@@ -30,66 +30,60 @@ async def search_knowledge_base(
     query_embedding: Sequence[float],
     db: AsyncSession,
     top_k: int | None = None,
-    source_filter: str | None = None,
+    top_k_per_source: int = 2,
 ) -> list[dict]:
-    """Find the most relevant knowledge chunks for a query embedding.
+    """Find the most relevant knowledge chunks with source diversity.
 
-    Performs cosine similarity search over all knowledge_chunks using
-    pgvector's <=> operator. Returns chunks ordered by relevance
-    (highest similarity first).
+    Returns top_k_per_source results per source to prevent any single
+    source from dominating results. Testimonials and recommendations
+    are rich narrative text that can match any query — source diversity
+    ensures factual chunks (skills, projects) always appear.
 
     Args:
         query_embedding: Vector embedding of the user question.
-            Must match the dimensions of stored embeddings (512).
         db: Active async database session.
-        top_k: Maximum number of chunks to return.
-            Defaults to settings.TOP_K_RESULTS.
-        source_filter: Optional source to restrict search to.
-            One of 'resume', 'sanity', 'linkedin'. None searches all.
+        top_k: Maximum total chunks to return. Defaults to settings.TOP_K_RESULTS.
+        top_k_per_source: Maximum chunks per source. Default 2.
 
     Returns:
-        List of chunk dicts ordered by similarity descending. Each dict
-        contains: id, source, source_id, content, similarity, chunk_index.
-        Empty list if no chunks found.
-
-    Example:
-        >>> embedding = await embed_query("What projects has Chitrank built?")
-        >>> chunks = await search_knowledge_base(embedding, db)
-        >>> chunks[0]["similarity"]
-        0.92
+        List of chunk dicts ordered by similarity descending.
     """
     top_k = top_k or settings.TOP_K_RESULTS
-
-    # Build embedding as PostgreSQL vector literal
     embedding_str = "[" + ",".join(str(x) for x in query_embedding) + "]"
 
-    # Base query — cosine distance converted to similarity score
-    # 1 - (embedding <=> query) gives similarity: 1.0 = identical
+    # Use window function to rank within each source then filter
+    # This guarantees representation from resume, sanity, and linkedin
     query = """
-        SELECT
-            id::text,
-            source,
-            source_id,
-            content,
-            chunk_index,
-            1 - (embedding <=> CAST(:embedding AS vector)) AS similarity
-        FROM knowledge_chunks
-        {source_clause}
-        ORDER BY embedding <=> CAST(:embedding AS vector)
+        WITH ranked AS (
+            SELECT
+                id::text,
+                source,
+                source_id,
+                content,
+                chunk_index,
+                1 - (embedding <=> CAST(:embedding AS vector)) AS similarity,
+                ROW_NUMBER() OVER (
+                    PARTITION BY source
+                    ORDER BY embedding <=> CAST(:embedding AS vector)
+                ) AS source_rank
+            FROM knowledge_chunks
+        )
+        SELECT id, source, source_id, content, chunk_index, similarity
+        FROM ranked
+        WHERE source_rank <= :top_k_per_source
+        ORDER BY similarity DESC
         LIMIT :top_k
     """
 
-    # Optional source filter — restricts search to a single source
-    source_clause = ""
-    params: dict = {"embedding": embedding_str, "top_k": top_k}
+    result = await db.execute(
+        text(query),
+        {
+            "embedding": embedding_str,
+            "top_k_per_source": top_k_per_source,
+            "top_k": top_k,
+        },
+    )
 
-    if source_filter:
-        source_clause = "WHERE source = :source"
-        params["source"] = source_filter
-
-    query = query.format(source_clause=source_clause)
-
-    result = await db.execute(text(query), params)
     rows = result.fetchall()
 
     chunks = [

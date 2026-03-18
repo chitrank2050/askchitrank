@@ -40,7 +40,7 @@ from src.utils.paths import get_data_path
 from .pdf_loader import load_pdf_from_data
 
 
-async def _clear_source(source: str, db: AsyncSession) -> None:
+async def _clear_source(source: list[str], db: AsyncSession) -> None:
     """Delete all existing chunks for a given source before re-ingesting.
 
     Called at the start of each ingest function to ensure idempotency.
@@ -50,7 +50,7 @@ async def _clear_source(source: str, db: AsyncSession) -> None:
         source: Source identifier to clear — 'resume', 'sanity', or 'linkedin'.
         db: Active async database session.
     """
-    await db.execute(delete(KnowledgeChunk).where(KnowledgeChunk.source == source))
+    await db.execute(delete(KnowledgeChunk).where(KnowledgeChunk.source.in_(source)))
     await db.commit()
     logger.info(f"Cleared existing '{source}' chunks")
 
@@ -147,7 +147,7 @@ async def ingest_linkedin(db: AsyncSession) -> int:
 
     logger.info(f"Starting LinkedIn ingestion from: {linkedin_dir}")
 
-    await _clear_source("linkedin", db)
+    await _clear_source(["linkedin"], db)
 
     documents = await load_linkedin_documents()
 
@@ -202,7 +202,7 @@ async def ingest_sanity(db: AsyncSession) -> int:
     """
     logger.info("Starting Sanity CMS ingestion")
 
-    await _clear_source("sanity", db)
+    await _clear_source(["sanity", "testimonial"], db)
 
     # Fetch all documents from Sanity CMS
     documents = await load_sanity_documents()
@@ -262,7 +262,7 @@ async def ingest_resume(db: AsyncSession) -> int:
         )
 
     logger.info(f"Starting resume ingestion from: {local_path}")
-    await _clear_source("resume", db)
+    await _clear_source(["resume"], db)
 
     text = await load_pdf_from_data(local_path=local_path)
 

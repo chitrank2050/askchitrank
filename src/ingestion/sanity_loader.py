@@ -194,7 +194,7 @@ async def load_sanity_documents() -> list[dict]:
             documents.append(
                 {
                     "text": text,
-                    "source": "sanity",
+                    "source": "testimonial",
                     "source_id": testimonial["_id"],
                 }
             )
