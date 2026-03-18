@@ -8,7 +8,7 @@
 ![Voyage AI](https://img.shields.io/badge/Voyage_AI-voyage--3--lite-purple)
 ![Supabase](https://img.shields.io/badge/Supabase-pgvector-green)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-![Version](https://img.shields.io/badge/version-0.6.0-brightgreen)
+![Version](https://img.shields.io/badge/version-0.6.1-brightgreen)
 
 ---
 
@@ -16,6 +16,7 @@
 
 | **Type**         | **URL**                                                             |
 |------------------|---------------------------------------------------------------------|
+| 🌐 API           | [Live API](https://askchitrank-production.up.railway.app)           |
 | 📚 Documentation | [Project Documentation](https://chitrank2050.github.io/askchitrank) |
 | 👤 Portfolio     | [About me](https://chitrankagnihotri.com)                           |
 
