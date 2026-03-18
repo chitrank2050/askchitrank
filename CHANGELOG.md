@@ -2,6 +2,24 @@
 
 All notable changes to Ask Chitrank.
 
+## [0.6.0] - 2026-03-18
+
+### Documentation
+
+- Add descriptive comments to Makefile targets and commands.
+
+### Features
+
+- Implement unified API token authentication and custom error handling across API endpoints, and refine the ingestion pipeline.
+
+### Maintenance
+
+- Reorder MkDocs navigation entries.
+
+### Refactoring
+
+- Restructure Bruno API collection into granular tests and enhance API documentation with auth, validation, and error details.
+
 ## [0.5.0] - 2026-03-18
 
 ### Documentation
