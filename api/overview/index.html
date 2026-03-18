@@ -12,13 +12,13 @@
         <meta name="author" content="Chitrank Agnihotri">
       
       
-        <link rel="canonical" href="https://chitrank2050.github.io/askchitrank/retrieval/overview/">
+        <link rel="canonical" href="https://chitrank2050.github.io/askchitrank/api/overview/">
       
       
-        <link rel="prev" href="../../ingestion/overview/">
+        <link rel="prev" href="../../chat/overview/">
       
       
-        <link rel="next" href="../../chat/overview/">
+        <link rel="next" href="../../development/setup/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>Overview - Ask Chitrank</title>
+        <title>Reference - Ask Chitrank</title>
       
     
     
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#retrieval-layer" class="md-skip">
+        <a href="#api-reference" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Overview
+              Reference
             
           </span>
         </div>
@@ -267,13 +267,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../retrieval/overview/" class="md-tabs__link">
           
   
   
@@ -309,11 +307,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../api/overview/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
           
   
   
@@ -611,31 +611,28 @@
       
   
   
-    
   
   
-  
     
     
     
     
-      
-        
-        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
             
   
   
@@ -653,7 +650,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -668,37 +665,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Overview
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../retrieval/overview/" class="md-nav__link">
         
   
   
@@ -714,126 +684,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Overview
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#similarity-search" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Similarity Search
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Similarity Search">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#optional-source-filtering" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Optional source filtering
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#semantic-cache" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Semantic Cache
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Semantic Cache">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#why-095-threshold" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why 0.95 threshold
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cache-invalidation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cache invalidation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cache-effectiveness" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cache effectiveness
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#files" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Files
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -939,28 +789,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
-        
-          
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
   
   
@@ -978,7 +831,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -993,10 +846,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../api/overview/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1012,6 +892,192 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#base-url" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Base URL
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Endpoints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Endpoints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-v1health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/health
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-v1chat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /v1/chat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-v1ingest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /v1/ingest
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sanity-webhook-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sanity Webhook Setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sanity Webhook Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-generate-a-webhook-secret" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Generate a webhook secret
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-add-to-environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Add to environment variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-configure-sanity-webhook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Configure Sanity webhook
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-verification-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How verification works
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cache-invalidation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cache Invalidation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CORS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rate-limiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rate Limiting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frontend-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend Integration
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1312,10 +1378,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#base-url" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Overview
+        Base URL
       
     </span>
   </a>
@@ -1323,22 +1389,44 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#similarity-search" class="md-nav__link">
+  <a href="#endpoints" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Similarity Search
+        Endpoints
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Similarity Search">
+    <nav class="md-nav" aria-label="Endpoints">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#optional-source-filtering" class="md-nav__link">
+  <a href="#get-v1health" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Optional source filtering
+        GET /v1/health
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-v1chat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /v1/chat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-v1ingest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /v1/ingest
       
     </span>
   </a>
@@ -1351,22 +1439,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#semantic-cache" class="md-nav__link">
+  <a href="#sanity-webhook-setup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Semantic Cache
+        Sanity Webhook Setup
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Semantic Cache">
+    <nav class="md-nav" aria-label="Sanity Webhook Setup">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#why-095-threshold" class="md-nav__link">
+  <a href="#step-1-generate-a-webhook-secret" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why 0.95 threshold
+        Step 1 — Generate a webhook secret
       
     </span>
   </a>
@@ -1374,37 +1462,81 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#step-2-add-to-environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Add to environment variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-configure-sanity-webhook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Configure Sanity webhook
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-verification-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How verification works
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cache-invalidation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Cache invalidation
+        Cache Invalidation
       
     </span>
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cache-effectiveness" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cache effectiveness
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#files" class="md-nav__link">
+  <a href="#cors" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Files
+        CORS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rate-limiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rate Limiting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frontend-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend Integration
       
     </span>
   </a>
@@ -1431,55 +1563,171 @@
   
 
 
-<h1 id="retrieval-layer">Retrieval Layer<a class="headerlink" href="#retrieval-layer" title="Permanent link">&para;</a></h1>
-<p>The retrieval layer finds relevant knowledge chunks for a user question
-and manages a semantic cache to avoid redundant LLM calls.</p>
+<h1 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h1>
+<p>The FastAPI backend exposes three endpoints under <code>/v1</code>.
+Interactive docs available at <code>/docs</code> (Swagger UI) and <code>/redoc</code>.</p>
 <hr />
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>User question
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>      ↓
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>embed_query() — Voyage AI voyage-3-lite, &#39;query&#39; input type
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>      ↓
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>find_cached_response() — cosine similarity &gt; 0.95?
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>      ↓ hit                          ↓ miss
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>Return cached response         search_knowledge_base()
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>Increment hit_count                   ↓
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                               Top K chunks by similarity
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                                      ↓
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                               Feed to chat layer → LLM
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                                      ↓
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                               store_cached_response()
+<h2 id="base-url">Base URL<a class="headerlink" href="#base-url" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Environment</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local</td>
+<td><code>http://localhost:8000</code></td>
+</tr>
+<tr>
+<td>Production</td>
+<td><code>https://your-deployment.up.railway.app</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="endpoints">Endpoints<a class="headerlink" href="#endpoints" title="Permanent link">&para;</a></h2>
+<h3 id="get-v1health"><code>GET /v1/health</code><a class="headerlink" href="#get-v1health" title="Permanent link">&para;</a></h3>
+<p>Check service health and version.</p>
+<p><strong>Response:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;healthy&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.4.0&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-03-18T10:00:00+00:00&quot;</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="p">}</span>
 </code></pre></div>
 <hr />
-<h2 id="similarity-search">Similarity Search<a class="headerlink" href="#similarity-search" title="Permanent link">&para;</a></h2>
-<p><code>search_knowledge_base()</code> performs cosine similarity search using pgvector's
-<code>&lt;=&gt;</code> operator (cosine distance). Results are ordered by relevance with the
-highest similarity chunk first.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">source</span><span class="p">,</span><span class="w"> </span><span class="n">content</span><span class="p">,</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">       </span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">(</span><span class="n">embedding</span><span class="w"> </span><span class="o">&lt;=&gt;</span><span class="w"> </span><span class="n">query_vector</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">similarity</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="k">FROM</span><span class="w"> </span><span class="n">knowledge_chunks</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">embedding</span><span class="w"> </span><span class="o">&lt;=&gt;</span><span class="w"> </span><span class="n">query_vector</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="k">LIMIT</span><span class="w"> </span><span class="mi">5</span>
+<h3 id="post-v1chat"><code>POST /v1/chat</code><a class="headerlink" href="#post-v1chat" title="Permanent link">&para;</a></h3>
+<p>Ask a question about Chitrank. Returns a streamed or full response.</p>
+<p><strong>Request body:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&quot;question&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;What projects has Chitrank built?&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">&quot;session_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;session-abc123&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">&quot;use_cache&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">&quot;stream&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="p">}</span>
 </code></pre></div>
-<p>The <code>&lt;=&gt;</code> operator returns cosine distance (0 = identical, 2 = opposite).
-Converted to similarity score: <code>1 - distance</code> (1.0 = identical, 0.0 = opposite).</p>
-<h3 id="optional-source-filtering">Optional source filtering<a class="headerlink" href="#optional-source-filtering" title="Permanent link">&para;</a></h3>
-<p>Restrict search to a single source when needed:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">chunks</span> <span class="o">=</span> <span class="k">await</span> <span class="n">search_knowledge_base</span><span class="p">(</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">embedding</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">source_filter</span><span class="o">=</span><span class="s2">&quot;resume&quot;</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="p">)</span>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>question</code></td>
+<td>string</td>
+<td>required</td>
+<td>Question to ask. 1–500 characters.</td>
+</tr>
+<tr>
+<td><code>session_id</code></td>
+<td>string</td>
+<td>required</td>
+<td>Browser session ID for conversation history. Generate a UUID on first load and persist in localStorage. Pass the same ID across requests to maintain multi-turn context.</td>
+</tr>
+<tr>
+<td><code>use_cache</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Check and populate the semantic cache. Set <code>false</code> during testing.</td>
+</tr>
+<tr>
+<td><code>stream</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Stream tokens via SSE or return full JSON response.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Response — SSE streaming (<code>stream: true</code>):</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Content-Type: text/event-stream
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>data: {&quot;type&quot;: &quot;token&quot;, &quot;content&quot;: &quot;Chitrank&quot;}
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>data: {&quot;type&quot;: &quot;token&quot;, &quot;content&quot;: &quot; has&quot;}
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>data: {&quot;type&quot;: &quot;done&quot;, &quot;cached&quot;: false}
 </code></pre></div>
+<p>Event types:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Fields</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>token</code></td>
+<td><code>content: string</code></td>
+<td>Token arrives from LLM</td>
+</tr>
+<tr>
+<td><code>done</code></td>
+<td><code>cached: boolean</code></td>
+<td>Stream complete</td>
+</tr>
+<tr>
+<td><code>error</code></td>
+<td><code>content: string</code></td>
+<td>Pipeline failure</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Response — full response (<code>stream: false</code>):</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&quot;response&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Chitrank has built several projects including Humanform...&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">&quot;cached&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Rate limit:</strong> 30 requests/minute per IP.</p>
 <hr />
-<h2 id="semantic-cache">Semantic Cache<a class="headerlink" href="#semantic-cache" title="Permanent link">&para;</a></h2>
-<p>The response cache stores question→response pairs. Before calling the LLM,
-the query embedding is compared against all cached question embeddings. If
-a similar question was previously answered (similarity &gt; 0.95), the cached
-response is returned immediately.</p>
-<h3 id="why-095-threshold">Why 0.95 threshold<a class="headerlink" href="#why-095-threshold" title="Permanent link">&para;</a></h3>
-<p>At 0.95 cosine similarity, questions must be nearly identical in meaning to
-hit the cache. This is intentionally strict — a slightly different question
-might need a meaningfully different answer. Start strict and tune based on usage.</p>
-<h3 id="cache-invalidation">Cache invalidation<a class="headerlink" href="#cache-invalidation" title="Permanent link">&para;</a></h3>
+<h3 id="post-v1ingest"><code>POST /v1/ingest</code><a class="headerlink" href="#post-v1ingest" title="Permanent link">&para;</a></h3>
+<p>Sanity CMS webhook — re-ingests all Sanity content and invalidates
+the response cache when portfolio content changes.</p>
+<p><strong>Response:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">&quot;chunks_ingested&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">&quot;cache_invalidated&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Rate limit:</strong> 10 requests/minute per IP.</p>
+<hr />
+<h2 id="sanity-webhook-setup">Sanity Webhook Setup<a class="headerlink" href="#sanity-webhook-setup" title="Permanent link">&para;</a></h2>
+<p>The ingest endpoint is protected by HMAC-SHA256 signature verification.
+Only requests signed with your webhook secret are accepted.</p>
+<h3 id="step-1-generate-a-webhook-secret">Step 1 — Generate a webhook secret<a class="headerlink" href="#step-1-generate-a-webhook-secret" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>openssl<span class="w"> </span>rand<span class="w"> </span>-hex<span class="w"> </span><span class="m">32</span>
+</code></pre></div>
+<p>Copy the output — this is your <code>INGEST_WEBHOOK_SECRET</code>.</p>
+<h3 id="step-2-add-to-environment-variables">Step 2 — Add to environment variables<a class="headerlink" href="#step-2-add-to-environment-variables" title="Permanent link">&para;</a></h3>
+<p>In <code>.env.prod</code> and Railway dashboard:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nv">INGEST_WEBHOOK_SECRET</span><span class="o">=</span>your-generated-secret-here
+</code></pre></div>
+<h3 id="step-3-configure-sanity-webhook">Step 3 — Configure Sanity webhook<a class="headerlink" href="#step-3-configure-sanity-webhook" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Go to <a href="https://sanity.io/manage">sanity.io/manage</a> → your project → API → Webhooks</li>
+<li>Click <strong>Add webhook</strong></li>
+<li>Fill in:</li>
+<li><strong>Name:</strong> Portfolio content sync</li>
+<li><strong>URL:</strong> <code>https://your-deployment.up.railway.app/v1/ingest</code></li>
+<li><strong>Trigger on:</strong> Create, Update, Delete</li>
+<li><strong>Filter:</strong> <code>_type == "project" || _type == "testimonial"</code></li>
+<li><strong>Secret:</strong> paste your <code>INGEST_WEBHOOK_SECRET</code></li>
+<li>Save</li>
+</ol>
+<p>Every time you publish or delete a project or testimonial in Sanity Studio, the webhook fires — re-ingesting the content and clearing stale cache entries automatically.</p>
+<h3 id="how-verification-works">How verification works<a class="headerlink" href="#how-verification-works" title="Permanent link">&para;</a></h3>
+<p>Sanity signs the request body with HMAC-SHA256 using your shared secret and sends the signature in the <code>x-sanity-webhook-signature</code> header. The API verifies this signature before processing — ensuring only Sanity can trigger re-ingestion.</p>
+<p>If <code>INGEST_WEBHOOK_SECRET</code> is empty in config, signature verification is skipped. Never deploy without a secret set.</p>
+<hr />
+<h2 id="cache-invalidation">Cache Invalidation<a class="headerlink" href="#cache-invalidation" title="Permanent link">&para;</a></h2>
+<p>The response cache is cleared automatically whenever content is re-ingested:</p>
 <table>
 <thead>
 <tr>
@@ -1489,51 +1737,95 @@ might need a meaningfully different answer. Start strict and tune based on usage
 </thead>
 <tbody>
 <tr>
+<td><code>make ingest</code> (any source)</td>
+<td>Cache cleared before new chunks stored</td>
+</tr>
+<tr>
 <td>Sanity webhook fires</td>
-<td><code>invalidate_cache()</code> clears all entries</td>
+<td>Cache cleared, then Sanity re-ingested</td>
 </tr>
 <tr>
-<td>Manual</td>
-<td>Call <code>DELETE /v1/cache</code> (planned)</td>
-</tr>
-<tr>
-<td>TTL</td>
-<td>Entries older than <code>CACHE_TTL_DAYS</code> (default 7) are ignored</td>
+<td>TTL expires</td>
+<td>Entries older than <code>CACHE_TTL_DAYS</code> (default 7) ignored automatically</td>
 </tr>
 </tbody>
 </table>
-<h3 id="cache-effectiveness">Cache effectiveness<a class="headerlink" href="#cache-effectiveness" title="Permanent link">&para;</a></h3>
-<p><code>hit_count</code> is incremented every time a cache entry is served. Query Supabase
-to see which questions are being cached and how often:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">question</span><span class="p">,</span><span class="w"> </span><span class="n">hit_count</span><span class="p">,</span><span class="w"> </span><span class="n">created_at</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">FROM</span><span class="w"> </span><span class="n">response_cache</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">invalidated_at</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">hit_count</span><span class="w"> </span><span class="k">DESC</span><span class="p">;</span>
-</code></pre></div>
+<p>This means users always get fresh answers after you update your portfolio or re-ingest your resume.</p>
 <hr />
-<h2 id="files">Files<a class="headerlink" href="#files" title="Permanent link">&para;</a></h2>
+<h2 id="cors">CORS<a class="headerlink" href="#cors" title="Permanent link">&para;</a></h2>
+<p>The API allows requests from:</p>
+<ul>
+<li><code>http://localhost:3000</code> (Next.js dev)</li>
+<li><code>http://localhost:5173</code> (Vite dev)</li>
+<li><code>https://chitrankagnihotri.com</code> (production portfolio)</li>
+</ul>
+<p>Add origins to <code>API_ALLOWED_ORIGINS</code> in <code>config.py</code> if needed.</p>
+<hr />
+<h2 id="rate-limiting">Rate Limiting<a class="headerlink" href="#rate-limiting" title="Permanent link">&para;</a></h2>
+<p>In-memory rate limiting via slowapi. Limits reset on server restart.</p>
 <table>
 <thead>
 <tr>
-<th>File</th>
-<th>Responsibility</th>
+<th>Endpoint</th>
+<th>Limit</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>src/retrieval/search.py</code></td>
-<td>pgvector similarity search against knowledge_chunks</td>
+<td><code>POST /v1/chat</code></td>
+<td>30/minute</td>
 </tr>
 <tr>
-<td><code>src/retrieval/cache.py</code></td>
-<td>Semantic response cache — lookup, store, invalidate</td>
-</tr>
-<tr>
-<td><code>src/ingestion/embedder.py</code></td>
-<td>Voyage AI embedding (shared by ingestion and retrieval)</td>
+<td><code>POST /v1/ingest</code></td>
+<td>10/minute</td>
 </tr>
 </tbody>
 </table>
+<hr />
+<h2 id="frontend-integration">Frontend Integration<a class="headerlink" href="#frontend-integration" title="Permanent link">&para;</a></h2>
+<p><strong>SSE streaming in JavaScript:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;https://your-api.railway.app/v1/chat&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;application/json&#39;</span><span class="w"> </span><span class="p">},</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="nx">question</span><span class="o">:</span><span class="w"> </span><span class="nx">userInput</span><span class="p">,</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">    </span><span class="nx">session_id</span><span class="o">:</span><span class="w"> </span><span class="nx">getOrCreateSessionId</span><span class="p">(),</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">    </span><span class="nx">stream</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">  </span><span class="p">}),</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="p">});</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="kd">const</span><span class="w"> </span><span class="nx">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">getReader</span><span class="p">();</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="kd">const</span><span class="w"> </span><span class="nx">decoder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">TextDecoder</span><span class="p">();</span>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="kc">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">done</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">reader</span><span class="p">.</span><span class="nx">read</span><span class="p">();</span>
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">done</span><span class="p">)</span><span class="w"> </span><span class="k">break</span><span class="p">;</span>
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">lines</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">decoder</span><span class="p">.</span><span class="nx">decode</span><span class="p">(</span><span class="nx">value</span><span class="p">).</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;\n&#39;</span><span class="p">);</span>
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">const</span><span class="w"> </span><span class="nx">line</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nx">lines</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">line</span><span class="p">.</span><span class="nx">startsWith</span><span class="p">(</span><span class="s1">&#39;data: &#39;</span><span class="p">))</span><span class="w"> </span><span class="k">continue</span><span class="p">;</span>
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a><span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">line</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;data: &#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">));</span>
+<a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a>
+<a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">type</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">&#39;token&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a><span class="w">      </span><span class="nx">appendToUI</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">content</span><span class="p">);</span>
+<a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">type</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">&#39;done&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a><span class="w">      </span><span class="nx">finishStreaming</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">cached</span><span class="p">);</span>
+<a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">type</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">&#39;error&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-28" name="__codelineno-7-28" href="#__codelineno-7-28"></a><span class="w">      </span><span class="nx">showError</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">content</span><span class="p">);</span>
+<a id="__codelineno-7-29" name="__codelineno-7-29" href="#__codelineno-7-29"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-7-30" name="__codelineno-7-30" href="#__codelineno-7-30"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-7-31" name="__codelineno-7-31" href="#__codelineno-7-31"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Session ID management:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">getOrCreateSessionId</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="nx">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">&#39;askchitrank-session&#39;</span><span class="p">);</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="nx">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">crypto</span><span class="p">.</span><span class="nx">randomUUID</span><span class="p">();</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">    </span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">&#39;askchitrank-session&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">id</span><span class="p">);</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">id</span><span class="p">;</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="p">}</span>
+</code></pre></div>
 <hr />
 <p>Developed by <a href="https://www.chitrankagnihotri.com">Chitrank Agnihotri</a></p>
 
