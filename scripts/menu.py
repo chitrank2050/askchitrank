@@ -211,9 +211,9 @@ def mode_ingest() -> None:
     choices = questionary.checkbox(
         "📥 Ingest — select sources",
         choices=[
-            Choice("Resume PDF    (from RESUME_URL in config)", value="resume"),
+            Choice("Resume PDF    (from data/resume.pdf)", value="resume"),
             Choice("Sanity CMS    (projects + testimonials)", value="sanity"),
-            Choice("LinkedIn PDF  (from data/linkedin.pdf)", value="linkedin"),
+            Choice("LinkedIn CSVs (from data/linkedin/)", value="linkedin"),
         ],
         style=STYLE,
     ).ask()

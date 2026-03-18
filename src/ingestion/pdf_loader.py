@@ -24,6 +24,31 @@ from pypdf import PdfReader
 from src.core.logger import logger
 
 
+def _extract_text(reader: PdfReader) -> str:
+    """Extract and clean text from a PdfReader instance."""
+    pages = []
+
+    for i, page in enumerate(reader.pages):
+        text = page.extract_text()
+        if text and text.strip():
+            pages.append(text.strip())
+            logger.debug(f"Extracted page {i + 1}/{len(reader.pages)}")
+
+    full_text = "\n\n".join(pages)
+
+    # Normalise whitespace — pypdf produces double spaces in PDF text
+    import re
+
+    full_text = re.sub(r" {2,}", " ", full_text)  # collapse multiple spaces
+    full_text = re.sub(r"\n{3,}", "\n\n", full_text)  # collapse multiple newlines
+
+    lines = [line.strip() for line in full_text.splitlines()]
+    clean_text = "\n".join(line for line in lines if line)
+
+    logger.info(f"Extracted {len(clean_text)} characters from PDF")
+    return clean_text
+
+
 async def load_pdf_from_data(local_path: str | Path) -> str:
     """Extract plain text from a local PDF file.
 
@@ -100,33 +125,3 @@ async def _fetch_url(url: str) -> bytes:
         response = await client.get(url)
         response.raise_for_status()
         return response.content
-
-
-def _extract_text(reader: PdfReader) -> str:
-    """Extract and clean text from a PdfReader instance.
-
-    Joins all pages with double newlines and normalises
-    excessive whitespace that pypdf sometimes produces.
-
-    Args:
-        reader: Initialised PdfReader with loaded PDF.
-
-    Returns:
-        Clean plain text from all pages.
-    """
-    pages = []
-
-    for i, page in enumerate(reader.pages):
-        text = page.extract_text()
-        if text and text.strip():
-            pages.append(text.strip())
-            logger.debug(f"Extracted page {i + 1}/{len(reader.pages)}")
-
-    full_text = "\n\n".join(pages)
-
-    # Normalise whitespace — pypdf sometimes produces excessive spaces
-    lines = [line.strip() for line in full_text.splitlines()]
-    clean_text = "\n".join(line for line in lines if line)
-
-    logger.info(f"Extracted {len(clean_text)} characters from PDF")
-    return clean_text

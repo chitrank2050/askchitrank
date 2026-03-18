@@ -2,9 +2,9 @@
 Ingestion pipeline package.
 
 Loads documents from three sources:
-    resume   — PDF fetched from RESUME_URL in config
+    resume   — PDF fetched from data/resume.pdf
     sanity   — Projects and Testimonials from Sanity CMS API
-    linkedin — PDF exported from LinkedIn at data/linkedin.pdf
+    linkedin — CSV exported from LinkedIn at data/linkedin/*.csv
 
 Each source is chunked into 500-word segments with 50-word overlap,
 embedded via Voyage AI voyage-3-lite (512 dimensions), and stored

@@ -1,4 +1,5 @@
-"""
+"""src/main.py
+
 Unified command-line entry point.
 
 All pipeline operations run through here — ingestion and API startup.
@@ -7,7 +8,7 @@ Single interface, consistent behaviour across all environments.
 Does NOT: define business logic, load documents, or handle HTTP.
 
 Usage:
-    make ingest                                     — interactive menu
+    make ingest                                      — interactive menu
     uv run python -m src.main ingest --source resume
     uv run python -m src.main ingest --source sanity
     uv run python -m src.main ingest --source linkedin
@@ -55,11 +56,6 @@ def main() -> None:
             "(default: all three)"
         ),
     )
-    ingest_parser.add_argument(
-        "--resume-url",
-        default=None,
-        help="Override RESUME_URL from config for this run only",
-    )
 
     args = parser.parse_args()
     bootstrap()
@@ -80,8 +76,7 @@ async def _run_ingest(args: argparse.Namespace) -> None:
 
     Args:
         args: Parsed CLI arguments containing:
-            - source: list of source names to ingest
-            - resume_url: optional URL override for resume PDF
+            source: list of source names to ingest.
     """
     from src.db.connection import AsyncSessionLocal
     from src.ingestion.pipeline import ingest_linkedin, ingest_resume, ingest_sanity
@@ -107,7 +102,7 @@ async def _run_ingest(args: argparse.Namespace) -> None:
                 total_chunks += count
 
             elif source == "linkedin":
-                logger.info("Ingesting LinkedIn PDF")
+                logger.info("Ingesting LinkedIn data")
                 count = await ingest_linkedin(db)
                 logger.success(f"LinkedIn — {count} chunks stored")
                 total_chunks += count

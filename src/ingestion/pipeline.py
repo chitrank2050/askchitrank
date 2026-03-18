@@ -9,9 +9,9 @@ for the source and re-ingests fresh data. Safe to run
 multiple times without creating duplicates.
 
 Sources:
-    resume   — PDF fetched from RESUME_URL in config
+    resume   — PDF fetched from data/resume.pdf
     sanity   — Projects and Testimonials from Sanity CMS API
-    linkedin — PDF exported from LinkedIn, stored at data/linkedin.pdf
+    linkedin — CSV exported from LinkedIn at data/linkedin/*.csv
 
 Responsibility: orchestrate ingestion. Nothing else.
 Does NOT: define loading, chunking, or embedding logic.
@@ -303,6 +303,7 @@ def _chunk_resume_by_section(text: str) -> list[dict]:
     section_headers = [
         "Summary",
         "Professional Experience",
+        "Professional  Experience",  # double space fallback
         "Employment History",
         "Education",
         "Technical Skills",
