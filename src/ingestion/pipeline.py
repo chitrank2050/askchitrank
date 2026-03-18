@@ -35,7 +35,7 @@ from src.db.models import KnowledgeChunk
 from src.ingestion.chunker import chunk_document
 from src.ingestion.embedder import embed_texts
 from src.ingestion.sanity_loader import load_sanity_documents
-from src.utils.paths import PROJECT_ROOT
+from src.utils.paths import PROJECT_ROOT, get_data_path
 
 from .pdf_loader import load_pdf_from_data
 
@@ -251,9 +251,8 @@ async def ingest_resume(db: AsyncSession) -> int:
         FileNotFoundError: If data/resume.pdf does not exist.
         pypdf.errors.PdfReadError: If file is not a valid PDF.
     """
-    from src.utils.paths import PROJECT_ROOT
 
-    local_path = PROJECT_ROOT / "data" / "resume.pdf"
+    local_path = get_data_path("resume.pdf")
 
     if not local_path.exists():
         raise FileNotFoundError(

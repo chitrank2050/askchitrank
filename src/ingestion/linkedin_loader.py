@@ -1,4 +1,5 @@
-"""
+"""src/ingestion/linkedin_loader.py
+
 LinkedIn profile data loader.
 
 Reads CSV files exported from LinkedIn and converts them
@@ -10,9 +11,8 @@ LinkedIn export instructions:
     Place extracted CSVs in data/linkedin/
 
 Files used:
-    Recommendations.csv  — written recommendations from colleagues
-    Positions.csv        — work history
-    Skills.csv           — endorsed skills
+    Profile.csv                 — headline, summary, industry, location
+    Recommendations_Received.csv — written recommendations (VISIBLE only)
 
 Responsibility: load and format LinkedIn CSV data. Nothing else.
 Does NOT: chunk, embed, or store documents.
@@ -24,10 +24,9 @@ Typical usage:
 """
 
 import csv
-from pathlib import Path
 
 from src.core.logger import logger
-from src.utils.paths import get_data_path
+from utils.paths import get_data_path
 
 # Directory containing LinkedIn CSV exports
 LINKEDIN_DIR = get_data_path("linkedin")
@@ -35,6 +34,9 @@ LINKEDIN_DIR = get_data_path("linkedin")
 
 def _read_csv(filename: str) -> list[dict]:
     """Read a LinkedIn CSV export file into a list of row dicts.
+
+    Uses utf-8-sig encoding to strip the BOM character that
+    LinkedIn adds to CSV exports.
 
     Args:
         filename: CSV filename within data/linkedin/.
@@ -47,84 +49,112 @@ def _read_csv(filename: str) -> list[dict]:
         logger.warning(f"LinkedIn CSV not found: {path} — skipping")
         return []
 
-    with Path.open(path, encoding="utf-8-sig") as f:  # utf-8-sig strips BOM
+    with open(path, encoding="utf-8-sig") as f:
         reader = csv.DictReader(f)
         return list(reader)
+
+
+def _format_profile(profile: dict) -> str:
+    """Format the Profile CSV row as plain text.
+
+    Includes professional headline, summary, industry, location,
+    and website URLs. Skips personal fields (birth date, address)
+    that are not relevant for the chatbot.
+
+    Args:
+        profile: Row dict from Profile.csv.
+
+    Returns:
+        Formatted plain text string ready for chunking.
+        Empty string if profile has no meaningful content.
+    """
+    parts = []
+
+    # Full name for context
+    first = profile.get("First Name", "").strip()
+    last = profile.get("Last Name", "").strip()
+    if first or last:
+        parts.append(f"Name: {first} {last}".strip())
+
+    if profile.get("Headline"):
+        parts.append(f"Headline: {profile['Headline'].strip()}")
+
+    if profile.get("Summary"):
+        parts.append(f"Summary: {profile['Summary'].strip()}")
+
+    if profile.get("Industry"):
+        parts.append(f"Industry: {profile['Industry'].strip()}")
+
+    if profile.get("Geo Location"):
+        parts.append(f"Location: {profile['Geo Location'].strip()}")
+
+    # Parse website URLs — stored as "[TYPE:url,TYPE:url]"
+    websites_raw = profile.get("Websites", "").strip()
+    if websites_raw and websites_raw not in ("", "[]"):
+        # Strip brackets and split by comma
+        websites_clean = websites_raw.strip("[]")
+        urls = [
+            entry.split(":")[-1].strip()
+            for entry in websites_clean.split(",")
+            if ":" in entry
+        ]
+        # Reconstruct full URLs — split on ":" removes "https"
+        raw_entries = websites_clean.split(",")
+        full_urls = []
+        for entry in raw_entries:
+            # Format is "TYPE:https://..." — join everything after first colon
+            parts_split = entry.strip().split(":", 1)
+            if len(parts_split) == 2:
+                full_urls.append(parts_split[1].strip())
+        if full_urls:
+            parts.append(f"Websites: {', '.join(full_urls)}")
+
+    return "\n".join(parts)
 
 
 def _format_recommendation(rec: dict) -> str:
     """Format a single recommendation row as plain text.
 
-    Args:
-        rec: Row dict from Recommendations.csv.
-
-    Returns:
-        Formatted plain text string.
-    """
-    parts = []
-
-    if rec.get("First Name") and rec.get("Last Name"):
-        name = f"{rec['First Name']} {rec['Last Name']}".strip()
-        parts.append(f"Recommendation from: {name}")
-    if rec.get("Company"):
-        parts.append(f"Company: {rec['Company']}")
-    if rec.get("Job Title"):
-        parts.append(f"Their role: {rec['Job Title']}")
-    if rec.get("Text"):
-        parts.append(f'"{rec["Text"]}"')
-
-    return "\n".join(parts)
-
-
-def _format_position(pos: dict) -> str:
-    """Format a single position row as plain text.
+    Only includes recommendations with Status == 'VISIBLE'.
+    Skips hidden or pending recommendations.
 
     Args:
-        pos: Row dict from Positions.csv.
+        rec: Row dict from Recommendations_Received.csv.
 
     Returns:
-        Formatted plain text string.
+        Formatted plain text string ready for chunking.
+        Empty string if recommendation is not visible or has no text.
     """
-    parts = []
-
-    if pos.get("Title"):
-        parts.append(f"Role: {pos['Title']}")
-    if pos.get("Company Name"):
-        parts.append(f"Company: {pos['Company Name']}")
-    if pos.get("Started On") and pos.get("Finished On"):
-        parts.append(f"Period: {pos['Started On']} — {pos['Finished On']}")
-    elif pos.get("Started On"):
-        parts.append(f"Period: {pos['Started On']} — Present")
-    if pos.get("Description"):
-        parts.append(f"Description: {pos['Description']}")
-
-    return "\n".join(parts)
-
-
-def _format_skills(skills: list[dict]) -> str:
-    """Format all skills rows as a single plain text block.
-
-    Skills are short — grouping them into one document avoids
-    creating dozens of tiny chunks.
-
-    Args:
-        skills: List of row dicts from Skills.csv.
-
-    Returns:
-        Formatted plain text string with all skills listed.
-    """
-    skill_names = [
-        s.get("Name", "").strip() for s in skills if s.get("Name", "").strip()
-    ]
-    if not skill_names:
+    # Skip non-visible recommendations
+    if rec.get("Status", "").strip().upper() != "VISIBLE":
         return ""
-    return "Skills: " + ", ".join(skill_names)
+
+    # Skip empty recommendations
+    if not rec.get("Text", "").strip():
+        return ""
+
+    parts = []
+
+    first = rec.get("First Name", "").strip()
+    last = rec.get("Last Name", "").strip()
+    if first or last:
+        parts.append(f"Recommendation from: {first} {last}".strip())
+
+    if rec.get("Job Title"):
+        parts.append(f"Their role: {rec['Job Title'].strip()}")
+
+    if rec.get("Company"):
+        parts.append(f"Company: {rec['Company'].strip()}")
+
+    parts.append(f'"{rec["Text"].strip()}"')
+
+    return "\n".join(parts)
 
 
 async def load_linkedin_documents() -> list[dict]:
-    """Load and format all LinkedIn CSV exports as plain text.
+    """Load and format all LinkedIn CSV exports as plain text documents.
 
-    Reads Recommendations, Positions, and Skills CSVs from
+    Reads Profile and Recommendations_Received CSVs from
     data/linkedin/ and formats each as plain text ready for
     chunking and embedding.
 
@@ -134,7 +164,7 @@ async def load_linkedin_documents() -> list[dict]:
     Returns:
         List of dicts with keys: text, source, source_id.
         source is always 'linkedin'.
-        source_id identifies the originating CSV file.
+        source_id identifies the originating record.
 
     Example:
         >>> docs = await load_linkedin_documents()
@@ -143,9 +173,26 @@ async def load_linkedin_documents() -> list[dict]:
     """
     documents = []
 
-    # Recommendations — one document per recommendation
-    recommendations = _read_csv("Recommendations.csv")
-    logger.info(f"Loaded {len(recommendations)} LinkedIn recommendations")
+    # Profile — single document from first row
+    profiles = _read_csv("Profile.csv")
+    if profiles:
+        # LinkedIn Profile.csv always has exactly one row
+        text = _format_profile(profiles[0])
+        if text.strip():
+            documents.append(
+                {
+                    "text": text,
+                    "source": "linkedin",
+                    "source_id": "linkedin-profile",
+                }
+            )
+        logger.info("Loaded LinkedIn profile")
+    else:
+        logger.warning("Profile.csv empty or missing")
+
+    # Recommendations — one document per visible recommendation
+    recommendations = _read_csv("Recommendations_Received.csv")
+    visible_count = 0
     for i, rec in enumerate(recommendations):
         text = _format_recommendation(rec)
         if text.strip():
@@ -156,33 +203,12 @@ async def load_linkedin_documents() -> list[dict]:
                     "source_id": f"linkedin-recommendation-{i}",
                 }
             )
+            visible_count += 1
 
-    # Positions — one document per role
-    positions = _read_csv("Positions.csv")
-    logger.info(f"Loaded {len(positions)} LinkedIn positions")
-    for i, pos in enumerate(positions):
-        text = _format_position(pos)
-        if text.strip():
-            documents.append(
-                {
-                    "text": text,
-                    "source": "linkedin",
-                    "source_id": f"linkedin-position-{i}",
-                }
-            )
-
-    # Skills — all grouped into one document
-    skills = _read_csv("Skills.csv")
-    logger.info(f"Loaded {len(skills)} LinkedIn skills")
-    skills_text = _format_skills(skills)
-    if skills_text:
-        documents.append(
-            {
-                "text": skills_text,
-                "source": "linkedin",
-                "source_id": "linkedin-skills",
-            }
-        )
+    logger.info(
+        f"Loaded {visible_count} visible recommendations "
+        f"({len(recommendations) - visible_count} skipped)"
+    )
 
     logger.info(f"Total LinkedIn documents loaded: {len(documents)}")
     return documents
