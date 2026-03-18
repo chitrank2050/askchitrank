@@ -27,6 +27,7 @@ Typical usage:
 """
 
 import json
+from collections.abc import Sequence
 from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import text, update
@@ -38,7 +39,7 @@ from src.db.models import ResponseCache
 
 
 async def find_cached_response(
-    query_embedding: list[float],
+    query_embedding: Sequence[float],
     db: AsyncSession,
     threshold: float | None = None,
 ) -> dict | None:
@@ -123,7 +124,7 @@ async def find_cached_response(
 
 async def store_cached_response(
     question: str,
-    question_embedding: list[float],
+    question_embedding: Sequence[float],
     response: str,
     source_chunk_ids: list[str],
     db: AsyncSession,
