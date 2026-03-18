@@ -1,5 +1,4 @@
-"""src/db/models.py
-
+"""
 SQLAlchemy ORM models.
 
 Defines three tables:

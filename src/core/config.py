@@ -1,5 +1,4 @@
-"""src/core/config.py
-
+"""
 Central configuration module for askchitrank.
 
 Defines application settings using Pydantic BaseSettings.
@@ -137,6 +136,11 @@ class _Settings(BaseSettings):
     LOG_FILE_FORMAT: str = (
         "{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function} - {message}"
     )
+
+    # ----------------------------------------------------------------
+    # 📄  Resume
+    # ----------------------------------------------------------------
+    RESUME_URL: str = "https://chitrankagnihotri.com/chitrank_agnihotri_resume.pdf"
 
     # ----------------------------------------------------------------
     # ✅  Validators

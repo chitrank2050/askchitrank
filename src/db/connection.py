@@ -1,5 +1,4 @@
-"""src/db/connection.py
-
+"""
 Database connection and session management.
 
 Provides async SQLAlchemy engine and session factory for FastAPI

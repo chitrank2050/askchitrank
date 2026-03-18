@@ -1,5 +1,4 @@
-"""src/db
-
+"""
 Database package.
 
 Provides SQLAlchemy async engine, session management,

@@ -1,9 +1,13 @@
-"""src/ingestion/sanity_loader.py
-
+"""
 Sanity CMS data loader.
 
 Fetches Project and Testimonial documents from Sanity CMS
 via the HTTP API and converts them to plain text for chunking.
+
+Document types:
+    Project     — title, role, company, overview, vision,
+                  technologies, contribution, liveUrl, githubUrl
+    Testimonial — author, role, quote, linkedinUrl
 
 Responsibility: fetch and format Sanity CMS data. Nothing else.
 Does NOT: chunk, embed, or store documents.
@@ -19,14 +23,14 @@ import httpx
 from src.core.config import settings
 from src.core.logger import logger
 
-# Sanity CDN base URL — read-only, no auth required for public data
-SANITY_API_BASE = (
+# Sanity CDN base URL for GROQ queries
+_SANITY_API_BASE = (
     f"https://{settings.SANITY_PROJECT_ID}.api.sanity.io"
     f"/v{settings.SANITY_API_VERSION}/data/query/{settings.SANITY_DATASET}"
 )
 
-# GROQ query — fetch all projects with full detail
-PROJECTS_QUERY = """
+# Fetch all projects with full detail fields
+_PROJECTS_QUERY = """
 *[_type == "project"] | order(_createdAt desc) {
     _id,
     title,
@@ -41,8 +45,8 @@ PROJECTS_QUERY = """
 }
 """
 
-# GROQ query — fetch all testimonials
-TESTIMONIALS_QUERY = """
+# Fetch all testimonials
+_TESTIMONIALS_QUERY = """
 *[_type == "testimonial"] | order(_createdAt desc) {
     _id,
     author,
@@ -56,14 +60,16 @@ TESTIMONIALS_QUERY = """
 def _format_project(project: dict) -> str:
     """Convert a Project document to plain text for chunking.
 
-    Formats all meaningful fields into a structured text block
+    Formats all meaningful fields into a structured plain text block
     that provides full context about the project to the LLM.
+    Excludes image fields — not useful for text retrieval.
 
     Args:
-        project: Raw project dict from Sanity API.
+        project: Raw project dict from Sanity API response.
 
     Returns:
         Formatted plain text string ready for chunking.
+        Empty string if project has no meaningful content.
     """
     parts = []
 
@@ -95,10 +101,11 @@ def _format_testimonial(testimonial: dict) -> str:
     """Convert a Testimonial document to plain text for chunking.
 
     Args:
-        testimonial: Raw testimonial dict from Sanity API.
+        testimonial: Raw testimonial dict from Sanity API response.
 
     Returns:
         Formatted plain text string ready for chunking.
+        Empty string if testimonial has no meaningful content.
     """
     parts = []
 
@@ -113,27 +120,28 @@ def _format_testimonial(testimonial: dict) -> str:
 
 
 async def _fetch(query: str) -> list[dict]:
-    """Execute a GROQ query against the Sanity API.
+    """Execute a GROQ query against the Sanity HTTP API.
 
     Args:
-        query: GROQ query string.
+        query: GROQ query string to execute.
 
     Returns:
         List of document dicts returned by the query.
+        Empty list if query returns no results.
 
     Raises:
-        httpx.HTTPError: If the API request fails.
+        httpx.HTTPError: If the API request fails or returns non-200.
     """
     headers = {}
     if settings.SANITY_API_TOKEN:
+        # API token required for draft documents and private datasets
         headers["Authorization"] = f"Bearer {settings.SANITY_API_TOKEN}"
 
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=30) as client:
         response = await client.get(
-            SANITY_API_BASE,
+            _SANITY_API_BASE,
             params={"query": query},
             headers=headers,
-            timeout=30,
         )
         response.raise_for_status()
         return response.json().get("result", [])
@@ -142,8 +150,9 @@ async def _fetch(query: str) -> list[dict]:
 async def load_sanity_documents() -> list[dict]:
     """Fetch all documents from Sanity CMS and format as plain text.
 
-    Fetches Projects and Testimonials, formats each as plain text,
-    and returns a list of dicts ready for chunking and embedding.
+    Fetches Projects and Testimonials, formats each document as
+    plain text, and returns a list of dicts ready for chunking
+    and embedding.
 
     Returns:
         List of dicts with keys: text, source, source_id.
@@ -161,7 +170,7 @@ async def load_sanity_documents() -> list[dict]:
     documents = []
 
     # Fetch and format projects
-    projects = await _fetch(PROJECTS_QUERY)
+    projects = await _fetch(_PROJECTS_QUERY)
     logger.info(f"Fetched {len(projects)} projects from Sanity")
 
     for project in projects:
@@ -176,7 +185,7 @@ async def load_sanity_documents() -> list[dict]:
             )
 
     # Fetch and format testimonials
-    testimonials = await _fetch(TESTIMONIALS_QUERY)
+    testimonials = await _fetch(_TESTIMONIALS_QUERY)
     logger.info(f"Fetched {len(testimonials)} testimonials from Sanity")
 
     for testimonial in testimonials:

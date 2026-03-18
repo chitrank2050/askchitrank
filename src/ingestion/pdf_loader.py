@@ -1,9 +1,9 @@
-"""src/ingestion/pdf_loader.py
-
+"""
 Resume PDF loader.
 
-Extracts plain text from a PDF file — either from a local path
-or a remote URL. Cleans extracted text for consistent chunking.
+Extracts plain text from a PDF file — either from a local
+path or a remote HTTPS URL. Cleans extracted text for
+consistent chunking.
 
 Responsibility: extract text from PDF. Nothing else.
 Does NOT: chunk, embed, or store the document.
@@ -34,11 +34,11 @@ async def load_pdf(source: str | Path) -> str:
         source: Local file path or HTTPS URL to the PDF.
 
     Returns:
-        Extracted plain text from all pages.
+        Extracted plain text from all pages joined with newlines.
 
     Raises:
         FileNotFoundError: If local path does not exist.
-        httpx.HTTPError: If URL fetch fails.
+        httpx.HTTPError: If URL fetch fails or returns non-200.
         pypdf.errors.PdfReadError: If file is not a valid PDF.
 
     Example:
@@ -63,13 +63,13 @@ async def load_pdf(source: str | Path) -> str:
 
 
 async def _fetch_url(url: str) -> bytes:
-    """Fetch PDF bytes from a remote URL.
+    """Fetch raw PDF bytes from a remote HTTPS URL.
 
     Args:
-        url: HTTPS URL to the PDF file.
+        url: HTTPS URL pointing to the PDF file.
 
     Returns:
-        Raw PDF bytes.
+        Raw PDF bytes ready for PdfReader.
 
     Raises:
         httpx.HTTPError: If the request fails or returns non-200.
@@ -83,11 +83,14 @@ async def _fetch_url(url: str) -> bytes:
 def _extract_text(reader: PdfReader) -> str:
     """Extract and clean text from a PdfReader instance.
 
+    Joins all pages with double newlines and normalises
+    excessive whitespace that pypdf sometimes produces.
+
     Args:
-        reader: Initialised PdfReader object.
+        reader: Initialised PdfReader with loaded PDF.
 
     Returns:
-        Clean plain text from all pages joined with newlines.
+        Clean plain text from all pages.
     """
     pages = []
 

@@ -9,9 +9,9 @@ Responsibility: split text into chunks. Nothing else.
 Does NOT: embed, store, or load documents.
 
 Typical usage:
-    from src.ingestion.chunker import chunk_text
+    from src.ingestion.chunker import chunk_text, chunk_document
 
-    chunks = chunk_text("long document text...")
+    chunks = chunk_document(text, source="resume", source_id="resume.pdf")
 """
 
 from src.core.config import settings
@@ -39,7 +39,7 @@ def chunk_text(
         List of text chunks. Empty list if text is empty.
 
     Example:
-        >>> chunks = chunk_text("long document...", chunk_size=500)
+        >>> chunks = chunk_text("long document text...", chunk_size=500)
         >>> len(chunks)
         3
     """
@@ -62,7 +62,7 @@ def chunk_text(
         chunks.append(chunk)
 
         # Move forward by chunk_size minus overlap
-        # ensures consecutive chunks share context
+        # ensures consecutive chunks share context at boundaries
         start += chunk_size - chunk_overlap
 
         if start >= len(words):
@@ -79,23 +79,23 @@ def chunk_document(
     chunk_size: int | None = None,
     chunk_overlap: int | None = None,
 ) -> list[dict]:
-    """Split a document into chunks with metadata.
+    """Split a document into chunks with source metadata.
 
-    Wraps chunk_text with source metadata so each chunk
-    can be stored and traced back to its origin document.
+    Wraps chunk_text with source metadata so each chunk can be
+    stored and traced back to its origin document.
 
     Args:
         text: Raw document text to chunk.
         source: Document origin — 'resume' or 'sanity'.
-        source_id: Filename or Sanity document ID.
+        source_id: Filename or Sanity document ID for traceability.
         chunk_size: Target words per chunk.
-        chunk_overlap: Words of overlap between chunks.
+        chunk_overlap: Words of overlap between consecutive chunks.
 
     Returns:
         List of dicts with keys: content, source, source_id, chunk_index.
 
     Example:
-        >>> chunks = chunk_document(text, "sanity", "project-123")
+        >>> chunks = chunk_document(text, "sanity", "project-abc123")
         >>> chunks[0].keys()
         dict_keys(['content', 'source', 'source_id', 'chunk_index'])
     """

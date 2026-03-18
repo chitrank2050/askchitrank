@@ -1,5 +1,4 @@
-"""src/ingestion/embedder.py
-
+"""
 Text embedding via Voyage AI.
 
 Converts text chunks into vector representations for
@@ -23,15 +22,18 @@ import voyageai
 from src.core.config import settings
 from src.core.logger import logger
 
-# Voyage AI client — initialised once, reused across calls
+# Voyage AI async client — initialised once, reused across calls
 _client = voyageai.AsyncClient(api_key=settings.VOYAGE_API_KEY)
+
+# Voyage AI maximum texts per batch request
+_BATCH_SIZE = 128
 
 
 async def embed_texts(texts: list[str]) -> Sequence[Sequence[float]]:
     """Embed a list of text chunks for storage in knowledge_chunks.
 
     Batches texts in groups of 128 — Voyage AI's maximum batch size.
-    Uses 'document' input type which is optimised for storage and retrieval.
+    Uses 'document' input type optimised for storage and retrieval.
 
     Args:
         texts: List of text chunks to embed.
@@ -52,17 +54,16 @@ async def embed_texts(texts: list[str]) -> Sequence[Sequence[float]]:
         return []
 
     all_embeddings = []
-    batch_size = 128  # Voyage AI maximum batch size
 
-    for i in range(0, len(texts), batch_size):
-        batch = texts[i : i + batch_size]
+    for i in range(0, len(texts), _BATCH_SIZE):
+        batch = texts[i : i + _BATCH_SIZE]
         result = await _client.embed(
             texts=batch,
             model=settings.VOYAGE_MODEL,
             input_type="document",  # optimised for storage + retrieval
         )
         all_embeddings.extend(result.embeddings)
-        logger.debug(f"Embedded batch {i // batch_size + 1} — {len(batch)} texts")
+        logger.debug(f"Embedded batch {i // _BATCH_SIZE + 1} — {len(batch)} texts")
 
     logger.info(f"Embedded {len(texts)} chunks via {settings.VOYAGE_MODEL}")
     return all_embeddings
@@ -71,8 +72,9 @@ async def embed_texts(texts: list[str]) -> Sequence[Sequence[float]]:
 async def embed_query(query: str) -> Sequence[float]:
     """Embed a single user query for similarity search.
 
-    Uses 'query' input type which is optimised for retrieval
-    against document embeddings — asymmetric embedding.
+    Uses 'query' input type optimised for retrieval against
+    document embeddings — asymmetric embedding improves retrieval
+    accuracy compared to using the same input type for both.
 
     Args:
         query: User question text to embed.
