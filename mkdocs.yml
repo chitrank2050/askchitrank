@@ -1,6 +1,6 @@
 site_name: Ask Chitrank
 site_description: RAG-powered AI assistant that answers questions about Chitrank using resume, portfolio, and Sanity CMS data.
-site_author: Chitrank Agnihoti
+site_author: Chitrank Agnihotri
 site_url: https://chitrank2050.github.io/askchitrank
 repo_url: https://github.com/chitrank2050/askchitrank
 repo_name: chitrank2050/askchitrank
@@ -84,4 +84,4 @@ extra:
       link: https://www.linkedin.com/in/chitrank-agnihotri/
       name: LinkedIn
 
-copyright: Copyright &copy; 2026 Chitrank Agnihoti
+copyright: Copyright &copy; 2026 Chitrank Agnihotri
