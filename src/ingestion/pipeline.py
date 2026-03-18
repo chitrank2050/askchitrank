@@ -35,6 +35,7 @@ from src.db.models import KnowledgeChunk
 from src.ingestion.chunker import chunk_document
 from src.ingestion.embedder import embed_texts
 from src.ingestion.sanity_loader import load_sanity_documents
+from src.retrieval import invalidate_cache
 from src.utils.paths import get_data_path
 
 from .pdf_loader import load_pdf_from_data
@@ -53,6 +54,10 @@ async def _clear_source(source: list[str], db: AsyncSession) -> None:
     await db.execute(delete(KnowledgeChunk).where(KnowledgeChunk.source.in_(source)))
     await db.commit()
     logger.info(f"Cleared existing '{source}' chunks")
+
+    # Invalidate cache first — old answers are stale immediately
+    invalidated = await invalidate_cache(db)
+    logger.info(f"Invalidated {invalidated} cache entries")
 
 
 async def _store_chunks(

@@ -11,7 +11,8 @@ PYTHON_VERSION := $(shell if [ -f .python-version ]; then cat .python-version; e
         lint format tree python-version obliviate \
         git _changelog _changelog-preview _changelog-since _git-tag _git-release \
         docs _docs _docs-build _docs-deploy \
-				ingest
+        api ingest
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Help

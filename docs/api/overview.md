@@ -50,8 +50,8 @@ Ask a question about Chitrank. Returns a streamed or full response.
 | Field | Type | Default | Description |
 |---|---|---|---|
 | `question` | string | required | Question to ask. 1–500 characters. |
-| `session_id` | string | required | Browser session ID for conversation history. Generate a UUID on first load and persist in localStorage. |
-| `use_cache` | boolean | `true` | Whether to check and populate the semantic cache. Set `false` during testing. |
+| `session_id` | string | required | Browser session ID for conversation history. Generate a UUID on first load and persist in localStorage. Pass the same ID across requests to maintain multi-turn context. |
+| `use_cache` | boolean | `true` | Check and populate the semantic cache. Set `false` during testing. |
 | `stream` | boolean | `true` | Stream tokens via SSE or return full JSON response. |
 
 **Response — SSE streaming (`stream: true`):**
@@ -61,17 +61,16 @@ Content-Type: text/event-stream
 
 data: {"type": "token", "content": "Chitrank"}
 data: {"type": "token", "content": " has"}
-data: {"type": "token", "content": " built"}
 data: {"type": "done", "cached": false}
 ```
 
 Event types:
 
-| Type | Content | When |
+| Type | Fields | When |
 |---|---|---|
-| `token` | Response text fragment | As tokens stream from LLM |
-| `done` | `""` + `cached: bool` | Stream complete |
-| `error` | Error message | Pipeline failure |
+| `token` | `content: string` | Token arrives from LLM |
+| `done` | `cached: boolean` | Stream complete |
+| `error` | `content: string` | Pipeline failure |
 
 **Response — full response (`stream: false`):**
 
@@ -84,34 +83,12 @@ Event types:
 
 **Rate limit:** 30 requests/minute per IP.
 
-**Status codes:**
-
-| Code | Meaning |
-|---|---|
-| `200` | Success |
-| `422` | Validation error — check field constraints |
-| `429` | Rate limit exceeded |
-| `500` | Pipeline error |
-
 ---
 
 ### `POST /v1/ingest`
 
 Sanity CMS webhook — re-ingests all Sanity content and invalidates
 the response cache when portfolio content changes.
-
-**Setup in Sanity:**
-
-1. Go to Sanity dashboard → API → Webhooks → Create webhook
-2. URL: `https://your-deployment.up.railway.app/v1/ingest`
-3. Trigger: on publish, on delete
-4. Secret: set `INGEST_WEBHOOK_SECRET` in Railway environment variables
-
-**Headers:**
-
-| Header | Description |
-|---|---|
-| `x-sanity-webhook-signature` | HMAC-SHA256 signature. Verified if `INGEST_WEBHOOK_SECRET` is set. |
 
 **Response:**
 
@@ -127,16 +104,60 @@ the response cache when portfolio content changes.
 
 ---
 
-## Rate Limiting
+## Sanity Webhook Setup
 
-All endpoints use in-memory rate limiting via slowapi. Limits reset
-when the server restarts. For multi-instance deployments, swap to
-Redis-backed rate limiting.
+The ingest endpoint is protected by HMAC-SHA256 signature verification.
+Only requests signed with your webhook secret are accepted.
 
-| Endpoint | Limit |
+### Step 1 — Generate a webhook secret
+
+```bash
+openssl rand -hex 32
+```
+
+Copy the output — this is your `INGEST_WEBHOOK_SECRET`.
+
+### Step 2 — Add to environment variables
+
+In `.env.prod` and Railway dashboard:
+
+```bash
+INGEST_WEBHOOK_SECRET=your-generated-secret-here
+```
+
+### Step 3 — Configure Sanity webhook
+
+1. Go to [sanity.io/manage](https://sanity.io/manage) → your project → API → Webhooks
+2. Click **Add webhook**
+3. Fill in:
+   - **Name:** Portfolio content sync
+   - **URL:** `https://your-deployment.up.railway.app/v1/ingest`
+   - **Trigger on:** Create, Update, Delete
+   - **Filter:** `_type == "project" || _type == "testimonial"`
+   - **Secret:** paste your `INGEST_WEBHOOK_SECRET`
+4. Save
+
+Every time you publish or delete a project or testimonial in Sanity Studio, the webhook fires — re-ingesting the content and clearing stale cache entries automatically.
+
+### How verification works
+
+Sanity signs the request body with HMAC-SHA256 using your shared secret and sends the signature in the `x-sanity-webhook-signature` header. The API verifies this signature before processing — ensuring only Sanity can trigger re-ingestion.
+
+If `INGEST_WEBHOOK_SECRET` is empty in config, signature verification is skipped. Never deploy without a secret set.
+
+---
+
+## Cache Invalidation
+
+The response cache is cleared automatically whenever content is re-ingested:
+
+| Trigger | Action |
 |---|---|
-| `POST /v1/chat` | 30/minute |
-| `POST /v1/ingest` | 10/minute |
+| `make ingest` (any source) | Cache cleared before new chunks stored |
+| Sanity webhook fires | Cache cleared, then Sanity re-ingested |
+| TTL expires | Entries older than `CACHE_TTL_DAYS` (default 7) ignored automatically |
+
+This means users always get fresh answers after you update your portfolio or re-ingest your resume.
 
 ---
 
@@ -148,7 +169,18 @@ The API allows requests from:
 - `http://localhost:5173` (Vite dev)
 - `https://chitrankagnihotri.com` (production portfolio)
 
-Add additional origins to `API_ALLOWED_ORIGINS` in `config.py`.
+Add origins to `API_ALLOWED_ORIGINS` in `config.py` if needed.
+
+---
+
+## Rate Limiting
+
+In-memory rate limiting via slowapi. Limits reset on server restart.
+
+| Endpoint | Limit |
+|---|---|
+| `POST /v1/chat` | 30/minute |
+| `POST /v1/ingest` | 10/minute |
 
 ---
 

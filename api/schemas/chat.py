@@ -8,7 +8,7 @@ Responsibility: define API contracts. Nothing else.
 Does NOT: handle requests, call the LLM, or manage sessions.
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class ChatRequest(BaseModel):
@@ -45,3 +45,17 @@ class ChatRequest(BaseModel):
         default=True,
         description="Whether to stream response via SSE or return full response at once",
     )
+
+    @field_validator("question", "session_id", mode="before")
+    @classmethod
+    def strip_whitespace(cls, v: str) -> str:
+        """Strip whitespace from multi-line questions or messy IDs."""
+        if isinstance(v, str):
+            return v.strip()
+        return v
+
+    model_config = {
+        "extra": "forbid",  # Prevent unexpected fields
+        "str_strip_whitespace": True,
+        "validate_assignment": True,
+    }

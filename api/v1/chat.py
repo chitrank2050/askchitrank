@@ -35,6 +35,7 @@ router = APIRouter()
         "Pass the same session_id across requests to maintain conversation context."
     ),
     response_class=StreamingResponse,
+    response_model=None,
 )
 @limiter.limit("30/minute")
 async def chat(

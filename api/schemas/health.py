@@ -33,3 +33,8 @@ class HealthResponse(BaseModel):
     status: str = Field(..., description="Service status: healthy or degraded")
     version: str = Field(..., description="Application version")
     timestamp: str = Field(..., description="UTC ISO timestamp of health check")
+
+    model_config = {
+        "extra": "ignore",
+        "validate_assignment": True,
+    }

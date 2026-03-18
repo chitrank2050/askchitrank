@@ -33,32 +33,47 @@ router = APIRouter()
 
 def _verify_webhook_signature(
     payload: bytes,
-    signature: str | None,
+    signature_header: str | None,
     secret: str,
 ) -> bool:
-    """Verify Sanity webhook HMAC signature.
+    """Verify Sanity webhook signature.
 
-    Sanity signs webhooks with HMAC-SHA256 using the webhook secret.
-    We verify this to ensure only Sanity can trigger re-ingestion.
+    Sanity signs webhooks with format: t=<timestamp>,v1=<hmac>
+    Signature is HMAC-SHA256 of "<timestamp>.<body>" using the secret.
 
     Args:
         payload: Raw request body bytes.
-        signature: Value of the sanity-webhook-signature header.
+        signature_header: Value of x-sanity-webhook-signature header.
         secret: Webhook secret from config.
 
     Returns:
         True if signature is valid, False otherwise.
     """
-    if not signature:
+    if not signature_header:
         return False
 
-    expected = hmac.new(
-        secret.encode(),
-        payload,
-        hashlib.sha256,
-    ).hexdigest()
+    try:
+        # Parse "t=1234567890,v1=abc123..."
+        parts = dict(part.split("=", 1) for part in signature_header.split(","))
+        timestamp = parts.get("t", "")
+        signature = parts.get("v1", "")
 
-    return hmac.compare_digest(expected, signature)
+        if not timestamp or not signature:
+            return False
+
+        # Sanity signs: "<timestamp>.<body>"
+        signed_content = f"{timestamp}.".encode() + payload
+
+        expected = hmac.new(
+            secret.encode("utf-8"),
+            signed_content,
+            hashlib.sha256,
+        ).hexdigest()
+
+        return hmac.compare_digest(expected, signature)
+
+    except Exception:
+        return False
 
 
 @router.post(
@@ -121,8 +136,9 @@ async def ingest_webhook(
         }
 
     except Exception as e:
-        logger.error(f"Webhook ingestion failed: {e}")
+        logger.error(f"Webhook ingestion failed: {e}", exc_info=True)
+        # generic message for security, don't leak internals
         raise HTTPException(
             status_code=500,
-            detail=f"Ingestion failed: {e}",
+            detail="Ingestion process failed on the server. Our team has been notified.",
         ) from e

@@ -9,19 +9,21 @@ Does NOT: define routes, handle requests, or run business logic.
 
 Usage:
     make api
-    uv run python -m src.api.app
+    uv run python -m src.main api
 """
 
 import sys
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
-from api.utils.middleware import add_request_id
+from api.utils.middleware import add_request_id, add_security_headers
 from api.utils.rate_limit import limiter
 from api.v1 import router as v1_router
 from src.core import bootstrap
@@ -49,7 +51,59 @@ def create_app() -> FastAPI:
         lifespan=api_lifespan,
     )
 
+    # ── Exception Handlers ────────────────────────────────────────────────
+    @app.exception_handler(HTTPException)
+    async def http_exception_handler(request: Request, exc: HTTPException):
+        """Standardized JSON response for HTTP exceptions."""
+        logger.error(f"HTTP Error {exc.status_code}: {exc.detail}")
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={
+                "error": {
+                    "code": exc.status_code,
+                    "message": exc.detail,
+                    "request_id": getattr(request.state, "request_id", None),
+                }
+            },
+        )
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_exception_handler(
+        request: Request, exc: RequestValidationError
+    ):
+        """Standardized JSON response for schema validation errors."""
+        logger.warning(f"Validation Error: {exc.errors()}")
+        return JSONResponse(
+            status_code=422,
+            content={
+                "error": {
+                    "code": 422,
+                    "message": "Input validation failed. Please check your request parameters.",
+                    "details": exc.errors() if settings.API_DEBUG else None,
+                    "request_id": getattr(request.state, "request_id", None),
+                }
+            },
+        )
+
+    @app.exception_handler(Exception)
+    async def global_exception_handler(request: Request, exc: Exception):
+        """Catch-all for internal server errors — prevents leaking stack traces."""
+        logger.critical(f"Unhandled Exception: {exc}", exc_info=True)
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": {
+                    "code": 500,
+                    "message": "An unexpected error occurred. Our team has been notified.",
+                    "request_id": getattr(request.state, "request_id", None),
+                }
+            },
+        )
+
+    # ── Middleware ────────────────────────────────────────────────────────
+    # Order: Request ID (first) -> Security -> Rate Limit -> CORS
     app.middleware("http")(add_request_id)
+    app.middleware("http")(add_security_headers)
 
     # ── Rate limiting ──────────────────────────────────────────────────────
     app.state.limiter = limiter
@@ -57,9 +111,7 @@ def create_app() -> FastAPI:
         RateLimitExceeded,
         _rate_limit_exceeded_handler,  # type: ignore[arg-type]
     )
-    app.add_middleware(
-        SlowAPIMiddleware  # ty:ignore[invalid-argument-type]
-    )
+    app.add_middleware(SlowAPIMiddleware)  # type: ignore[arg-type]
 
     # ── CORS ───────────────────────────────────────────────────────────────
     # Allow portfolio frontend to call the API from the browser
@@ -90,7 +142,7 @@ def main() -> None:
     Called by 'make api' via src.main.
     """
     uvicorn.run(
-        "src.api.app:app",
+        "api.app:app",
         host=settings.API_HOST,
         port=int(settings.API_PORT),
         reload=settings.API_RELOAD,
