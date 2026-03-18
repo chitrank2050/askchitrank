@@ -8,7 +8,7 @@
 ![Voyage AI](https://img.shields.io/badge/Voyage_AI-voyage--3--lite-purple)
 ![Supabase](https://img.shields.io/badge/Supabase-pgvector-green)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-![Version](https://img.shields.io/badge/version-0.4.5-brightgreen)
+![Version](https://img.shields.io/badge/version-0.5.0-brightgreen)
 
 ---
 
@@ -93,10 +93,10 @@ Cache is invalidated automatically when Sanity CMS content changes via webhook.
 - [x] Phase 1 — Database layer (pgvector, Supabase, Alembic migrations)
 - [x] Phase 2 — Ingestion pipeline (resume PDF, Sanity CMS, LinkedIn)
 - [x] Phase 3 — Retrieval layer (vector search + semantic cache)
-- [ ] Phase 4 — Chat layer (prompt engineering + Groq LLM)
-- [ ] Phase 5 — FastAPI + streaming (chat endpoint)
+- [x] Phase 4 — Chat layer (prompt engineering + Groq LLM)
+- [x] Phase 5 — FastAPI + streaming (chat endpoint)
+- [x] Phase 7 — Sanity webhook auto-sync
 - [ ] Phase 6 — Frontend chat widget (Next.js)
-- [ ] Phase 7 — Sanity webhook auto-sync
 
 ---
 

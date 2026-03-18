@@ -53,12 +53,13 @@ Return cached response      Search knowledge base
 
 ## Knowledge Base
 
-| Source     | Content                                | Chunks |
-|------------|----------------------------------------|--------|
-| Resume PDF | Experience, skills, education          | 6      |
-| Sanity CMS | Projects, testimonials                 | 12     |
-| LinkedIn   | Recommendations, positions, skills     | 4      |
-| **Total**  |                                        | **22** |
+| Source       | Content                                | Chunks |
+|--------------|----------------------------------------|--------|
+| Resume PDF   | Experience, skills, education          | 6      |
+| Sanity CMS   | Projects                               | 9      |
+| Testimonials | Colleague recommendations              | 3      |
+| LinkedIn     | Recommendations, positions, skills     | 4      |
+| **Total**    |                                        | **22** |
 
 ---
 
