@@ -12,10 +12,8 @@
         <meta name="author" content="Chitrank Agnihoti">
       
       
-        <link rel="canonical" href="https://chitrank2050.github.io/askchitrank/development/tech_stack/">
+        <link rel="canonical" href="https://chitrank2050.github.io/askchitrank/retrival/overview/">
       
-      
-        <link rel="prev" href="../database/">
       
       
       
@@ -27,7 +25,7 @@
     
     
       
-        <title>Tech Stack - Ask Chitrank</title>
+        <title>Retrieval Layer - Ask Chitrank</title>
       
     
     
@@ -80,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#tech-stack" class="md-skip">
+        <a href="#retrieval-layer" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Tech Stack
+              Retrieval Layer
             
           </span>
         </div>
@@ -304,13 +302,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../setup/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../development/setup/" class="md-tabs__link">
           
   
   
@@ -665,31 +661,28 @@
       
   
   
-    
   
   
-  
     
     
     
     
-      
-        
-        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   
@@ -707,7 +700,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -725,7 +718,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../setup/" class="md-nav__link">
+      <a href="../../development/setup/" class="md-nav__link">
         
   
   
@@ -753,7 +746,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../database/" class="md-nav__link">
+      <a href="../../development/database/" class="md-nav__link">
         
   
   
@@ -778,37 +771,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Tech Stack
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../development/tech_stack/" class="md-nav__link">
         
   
   
@@ -824,70 +790,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#core-stack" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Core Stack
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ingestion-stack" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Ingestion Stack
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#why-no-langchain-or-llamaindex" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why No LangChain or LlamaIndex
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#provider-swap-strategy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Provider Swap Strategy
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -927,10 +829,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#core-stack" class="md-nav__link">
+  <a href="#overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Core Stack
+        Overview
       
     </span>
   </a>
@@ -938,32 +840,88 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#ingestion-stack" class="md-nav__link">
+  <a href="#similarity-search" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Ingestion Stack
+        Similarity Search
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Similarity Search">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#optional-source-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optional source filtering
       
     </span>
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#why-no-langchain-or-llamaindex" class="md-nav__link">
+  <a href="#semantic-cache" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why No LangChain or LlamaIndex
+        Semantic Cache
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Semantic Cache">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-095-threshold" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why 0.95 threshold
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#provider-swap-strategy" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#cache-invalidation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Provider Swap Strategy
+        Cache invalidation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cache-effectiveness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cache effectiveness
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Files
       
     </span>
   </a>
@@ -990,125 +948,109 @@
   
 
 
-<h1 id="tech-stack">Tech Stack<a class="headerlink" href="#tech-stack" title="Permanent link">&para;</a></h1>
+<h1 id="retrieval-layer">Retrieval Layer<a class="headerlink" href="#retrieval-layer" title="Permanent link">&para;</a></h1>
+<p>The retrieval layer finds relevant knowledge chunks for a user question
+and manages a semantic cache to avoid redundant LLM calls.</p>
 <hr />
-<h2 id="core-stack">Core Stack<a class="headerlink" href="#core-stack" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Layer</th>
-<th>Tool</th>
-<th>Why</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>LLM</td>
-<td>Groq (Llama 3.1 70B)</td>
-<td>Free tier, 10-20x faster than GPU inference</td>
-</tr>
-<tr>
-<td>Embeddings</td>
-<td>Voyage AI voyage-3-lite</td>
-<td>200M tokens/month free, Anthropic recommended</td>
-</tr>
-<tr>
-<td>Vector store</td>
-<td>Supabase pgvector</td>
-<td>PostgreSQL extension — no extra service needed</td>
-</tr>
-<tr>
-<td>Semantic cache</td>
-<td>pgvector similarity search</td>
-<td>Reduces LLM calls for repeated questions</td>
-</tr>
-<tr>
-<td>API</td>
-<td>FastAPI</td>
-<td>Async, Pydantic validation, streaming support</td>
-</tr>
-<tr>
-<td>Database</td>
-<td>Supabase PostgreSQL</td>
-<td>Free tier, excellent dashboard</td>
-</tr>
-<tr>
-<td>Config</td>
-<td>pydantic-settings</td>
-<td>Type-safe, env var override</td>
-</tr>
-<tr>
-<td>Logging</td>
-<td>Loguru</td>
-<td>Structured, stdlib interception</td>
-</tr>
-<tr>
-<td>Package manager</td>
-<td>uv</td>
-<td>Fast, PEP 517, lockfile reproducibility</td>
-</tr>
-<tr>
-<td>Code quality</td>
-<td>Ruff</td>
-<td>Linter + formatter, fast</td>
-</tr>
-<tr>
-<td>Changelog</td>
-<td>git-cliff</td>
-<td>Conventional commit changelog</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="ingestion-stack">Ingestion Stack<a class="headerlink" href="#ingestion-stack" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Layer</th>
-<th>Tool</th>
-<th>Why</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>PDF parsing</td>
-<td>pypdf</td>
-<td>Pure Python, no system dependencies</td>
-</tr>
-<tr>
-<td>HTTP client</td>
-<td>httpx</td>
-<td>Async, used for Sanity API + PDF fetch</td>
-</tr>
-<tr>
-<td>Sanity CMS</td>
-<td>GROQ HTTP API</td>
-<td>Direct queries, no SDK needed</td>
-</tr>
-<tr>
-<td>LinkedIn</td>
-<td>CSV export</td>
-<td>Official LinkedIn data export</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="why-no-langchain-or-llamaindex">Why No LangChain or LlamaIndex<a class="headerlink" href="#why-no-langchain-or-llamaindex" title="Permanent link">&para;</a></h2>
-<p>Both frameworks are designed for complex multi-step agent pipelines. A personal portfolio RAG has a fixed, simple pipeline — parse, chunk, embed, retrieve, generate. Raw API calls give full control and the entire pipeline is readable in under 300 lines of code.</p>
-<hr />
-<h2 id="provider-swap-strategy">Provider Swap Strategy<a class="headerlink" href="#provider-swap-strategy" title="Permanent link">&para;</a></h2>
-<p>The system is designed so the LLM and embedding providers can be swapped in one config change:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Current — free tier</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">GROQ_API_KEY</span><span class="o">=</span>...
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nv">GROQ_MODEL</span><span class="o">=</span>llama-3.1-70b-versatile
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nv">VOYAGE_API_KEY</span><span class="o">=</span>...
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nv">VOYAGE_MODEL</span><span class="o">=</span>voyage-3-lite
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Future — when Anthropic API key available</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="nv">ANTHROPIC_API_KEY</span><span class="o">=</span>...
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1"># embedding model swap handled in embedder.py</span>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>User question
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>      ↓
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>embed_query() — Voyage AI voyage-3-lite, &#39;query&#39; input type
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>      ↓
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>find_cached_response() — cosine similarity &gt; 0.95?
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>      ↓ hit                          ↓ miss
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>Return cached response         search_knowledge_base()
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>Increment hit_count                   ↓
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                               Top K chunks by similarity
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                                      ↓
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                               Feed to chat layer → LLM
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                                      ↓
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                               store_cached_response()
 </code></pre></div>
-<p>No code changes required — only config.</p>
+<hr />
+<h2 id="similarity-search">Similarity Search<a class="headerlink" href="#similarity-search" title="Permanent link">&para;</a></h2>
+<p><code>search_knowledge_base()</code> performs cosine similarity search using pgvector's
+<code>&lt;=&gt;</code> operator (cosine distance). Results are ordered by relevance with the
+highest similarity chunk first.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">source</span><span class="p">,</span><span class="w"> </span><span class="n">content</span><span class="p">,</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">       </span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">(</span><span class="n">embedding</span><span class="w"> </span><span class="o">&lt;=&gt;</span><span class="w"> </span><span class="n">query_vector</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">similarity</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="k">FROM</span><span class="w"> </span><span class="n">knowledge_chunks</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">embedding</span><span class="w"> </span><span class="o">&lt;=&gt;</span><span class="w"> </span><span class="n">query_vector</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="k">LIMIT</span><span class="w"> </span><span class="mi">5</span>
+</code></pre></div>
+<p>The <code>&lt;=&gt;</code> operator returns cosine distance (0 = identical, 2 = opposite).
+Converted to similarity score: <code>1 - distance</code> (1.0 = identical, 0.0 = opposite).</p>
+<h3 id="optional-source-filtering">Optional source filtering<a class="headerlink" href="#optional-source-filtering" title="Permanent link">&para;</a></h3>
+<p>Restrict search to a single source when needed:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">chunks</span> <span class="o">=</span> <span class="k">await</span> <span class="n">search_knowledge_base</span><span class="p">(</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">embedding</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">source_filter</span><span class="o">=</span><span class="s2">&quot;resume&quot;</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h2 id="semantic-cache">Semantic Cache<a class="headerlink" href="#semantic-cache" title="Permanent link">&para;</a></h2>
+<p>The response cache stores question→response pairs. Before calling the LLM,
+the query embedding is compared against all cached question embeddings. If
+a similar question was previously answered (similarity &gt; 0.95), the cached
+response is returned immediately.</p>
+<h3 id="why-095-threshold">Why 0.95 threshold<a class="headerlink" href="#why-095-threshold" title="Permanent link">&para;</a></h3>
+<p>At 0.95 cosine similarity, questions must be nearly identical in meaning to
+hit the cache. This is intentionally strict — a slightly different question
+might need a meaningfully different answer. Start strict and tune based on usage.</p>
+<h3 id="cache-invalidation">Cache invalidation<a class="headerlink" href="#cache-invalidation" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sanity webhook fires</td>
+<td><code>invalidate_cache()</code> clears all entries</td>
+</tr>
+<tr>
+<td>Manual</td>
+<td>Call <code>DELETE /v1/cache</code> (planned)</td>
+</tr>
+<tr>
+<td>TTL</td>
+<td>Entries older than <code>CACHE_TTL_DAYS</code> (default 7) are ignored</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cache-effectiveness">Cache effectiveness<a class="headerlink" href="#cache-effectiveness" title="Permanent link">&para;</a></h3>
+<p><code>hit_count</code> is incremented every time a cache entry is served. Query Supabase
+to see which questions are being cached and how often:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">question</span><span class="p">,</span><span class="w"> </span><span class="n">hit_count</span><span class="p">,</span><span class="w"> </span><span class="n">created_at</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">FROM</span><span class="w"> </span><span class="n">response_cache</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">invalidated_at</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">hit_count</span><span class="w"> </span><span class="k">DESC</span><span class="p">;</span>
+</code></pre></div>
+<hr />
+<h2 id="files">Files<a class="headerlink" href="#files" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/retrieval/search.py</code></td>
+<td>pgvector similarity search against knowledge_chunks</td>
+</tr>
+<tr>
+<td><code>src/retrieval/cache.py</code></td>
+<td>Semantic response cache — lookup, store, invalidate</td>
+</tr>
+<tr>
+<td><code>src/ingestion/embedder.py</code></td>
+<td>Voyage AI embedding (shared by ingestion and retrieval)</td>
+</tr>
+</tbody>
+</table>
 <hr />
 <p>Developed by <a href="https://www.chitrankagnihotri.com">Chitrank Agnihotri</a></p>
 

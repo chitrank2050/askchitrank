@@ -18,7 +18,7 @@
         <link rel="prev" href="../..">
       
       
-        <link rel="next" href="../../development/setup/">
+        <link rel="next" href="../../ingestion/overview/">
       
       
         
@@ -272,11 +272,11 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../development/setup/" class="md-tabs__link">
+        <a href="../../ingestion/overview/" class="md-tabs__link">
           
   
   
-  Development
+  Ingestion
 
         </a>
       </li>
@@ -289,17 +289,38 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../../changelog/" class="md-tabs__link">
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../retrieval/overview.md" class="md-tabs__link">
+          
+  
+  
+  Retrieval
+
+        </a>
+      </li>
+    
+  
+
+      
         
   
   
-    
   
-  Changelog
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/setup/" class="md-tabs__link">
+          
+  
+  
+  Development
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -673,7 +694,7 @@
   <span class="md-ellipsis">
     
   
-    Development
+    Ingestion
   
 
     
@@ -686,6 +707,184 @@
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Ingestion
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ingestion/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retrieval
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Retrieval
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../retrieval/overview.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -782,33 +981,6 @@
           </ul>
         </nav>
       
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../changelog/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Changelog
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -992,12 +1164,12 @@
 <h2 id="system-overview">System Overview<a class="headerlink" href="#system-overview" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>┌─────────────────────────────────────────────────────────────┐
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>│                     Data Sources                             │
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│   Resume PDF          Sanity CMS          LinkedIn           │
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│   Resume PDF      Sanity CMS       LinkedIn CSVs            │
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>└──────────────┬─────────────┬──────────────────┬────────────┘
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>               │             │                  │
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>┌──────────────▼─────────────▼──────────────────▼────────────┐
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│                  Ingestion Pipeline                          │
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│   Parse → Chunk (500 tokens) → Embed (Voyage AI) → Store   │
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│   Parse → Chunk → Embed (Voyage AI) → Store                 │
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>└─────────────────────────┬───────────────────────────────────┘
 <a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                          │
 <a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>┌─────────────────────────▼───────────────────────────────────┐
@@ -1006,26 +1178,31 @@
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>└─────────────────────────┬───────────────────────────────────┘
 <a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                          │
 <a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>┌─────────────────────────▼───────────────────────────────────┐
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>│                   Query Pipeline                             │
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>│   Embed question → Cache lookup → Vector search → LLM call  │
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>│                   Retrieval Layer                            │
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>│   Embed question → Cache lookup → Vector search             │
 <a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>└─────────────────────────┬───────────────────────────────────┘
 <a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>                          │
 <a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>┌─────────────────────────▼───────────────────────────────────┐
-<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>│                    FastAPI Backend                           │
-<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>│   POST /v1/chat    POST /v1/ingest    GET /v1/health        │
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>│                    Chat Layer                                │
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>│   System prompt + context → Groq LLM → Stream response      │
 <a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>└─────────────────────────┬───────────────────────────────────┘
 <a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>                          │
 <a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>┌─────────────────────────▼───────────────────────────────────┐
-<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>│                  Next.js Frontend                            │
-<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>│   Chat widget on portfolio — streaming responses            │
-<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>└─────────────────────────────────────────────────────────────┘
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>│                    FastAPI Backend                           │
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>│   POST /v1/chat    POST /v1/ingest    GET /v1/health        │
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>└─────────────────────────┬───────────────────────────────────┘
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>                          │
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>┌─────────────────────────▼───────────────────────────────────┐
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>│                  Next.js Frontend                            │
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>│   Chat widget on portfolio — streaming responses            │
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>└─────────────────────────────────────────────────────────────┘
 </code></pre></div>
 <hr />
 <h2 id="key-design-decisions">Key Design Decisions<a class="headerlink" href="#key-design-decisions" title="Permanent link">&para;</a></h2>
 <h3 id="why-rag-over-fine-tuning">Why RAG over fine-tuning<a class="headerlink" href="#why-rag-over-fine-tuning" title="Permanent link">&para;</a></h3>
 <p>Fine-tuning a model on personal data is expensive, slow to update, and overkill for a personal portfolio chatbot. RAG retrieves relevant context at query time — when the resume or portfolio updates, re-ingest and the chatbot is immediately current. No retraining required.</p>
 <h3 id="why-pgvector-over-a-dedicated-vector-database">Why pgvector over a dedicated vector database<a class="headerlink" href="#why-pgvector-over-a-dedicated-vector-database" title="Permanent link">&para;</a></h3>
-<p>Pinecone, Weaviate, and Qdrant are purpose-built vector databases with excellent performance at scale. For a personal portfolio chatbot with low traffic and a small knowledge base (~200 chunks), a dedicated vector database adds operational overhead without benefit.</p>
+<p>Pinecone, Weaviate, and Qdrant are purpose-built vector databases with excellent performance at scale. For a personal portfolio chatbot with low traffic and a small knowledge base (~22 chunks), a dedicated vector database adds operational overhead without benefit.</p>
 <p>pgvector is a PostgreSQL extension — it runs inside the existing Supabase database, meaning one less service to manage, one less bill to pay, and no context-switching between database clients.</p>
 <h3 id="why-voyage-ai-for-embeddings">Why Voyage AI for embeddings<a class="headerlink" href="#why-voyage-ai-for-embeddings" title="Permanent link">&para;</a></h3>
 <p>Anthropic recommends Voyage AI as their embedding partner. <code>voyage-3-lite</code> produces 512-dimensional embeddings — smaller than OpenAI's 1536 dimensions, which means faster similarity search and lower storage costs. Quality is competitive with OpenAI for English text retrieval tasks.</p>
@@ -1039,19 +1216,20 @@
 <p>Cache entries are invalidated via Sanity webhook when portfolio content changes.</p>
 <h3 id="no-langchain-or-llamaindex">No LangChain or LlamaIndex<a class="headerlink" href="#no-langchain-or-llamaindex" title="Permanent link">&para;</a></h3>
 <p>Both frameworks are designed for complex multi-step agent pipelines with many data sources. A personal portfolio RAG has a fixed, simple pipeline — parse, chunk, embed, retrieve, generate. Framework abstractions add complexity without benefit here.</p>
-<p>Raw API calls give full control over prompt structure, streaming behaviour, and error handling. The entire pipeline is ~200 lines of readable code.</p>
+<p>Raw API calls give full control over prompt structure, streaming behaviour, and error handling.</p>
 <hr />
 <h2 id="data-flow-ingestion">Data Flow — Ingestion<a class="headerlink" href="#data-flow-ingestion" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>1. PDF loaded via pypdf → raw text
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>2. Sanity CMS queried via GROQ API → structured JSON
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>3. Text split into 500-token chunks with 50-token overlap
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>4. Each chunk embedded via Voyage AI voyage-3-lite → 512-dim vector
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>5. Chunk + embedding stored in knowledge_chunks table
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>6. Ingestion idempotent — re-running updates existing chunks
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>1. Resume PDF read from data/resume.pdf → text extracted via pypdf
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>2. Resume split by section headers (Summary, Experience, Skills...)
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>3. Sanity CMS queried via GROQ API → Projects + Testimonials
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>4. LinkedIn CSVs read from data/linkedin/ → Recommendations, Positions, Skills
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>5. Each document chunk embedded via Voyage AI voyage-3-lite → 512-dim vector
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>6. Chunk + embedding stored in knowledge_chunks table
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>7. Ingestion idempotent — re-running clears and re-ingests source
 </code></pre></div>
 <h2 id="data-flow-query">Data Flow — Query<a class="headerlink" href="#data-flow-query" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>1. User sends question via POST /v1/chat
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>2. Question embedded via Voyage AI
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>2. Question embedded via Voyage AI (query input type)
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>3. Check response_cache — cosine similarity &gt; 0.95?
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>   → Cache hit: return cached response, increment hit_count
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>   → Cache miss: continue
@@ -1065,9 +1243,9 @@
 <h2 id="database-schema">Database Schema<a class="headerlink" href="#database-schema" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>knowledge_chunks
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    id UUID PK
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    source          VARCHAR  — &quot;resume&quot; | &quot;sanity&quot;
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    source_id       VARCHAR  — filename or Sanity doc ID
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    content         TEXT     — raw chunk text
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    source          VARCHAR  — &quot;resume&quot; | &quot;sanity&quot; | &quot;linkedin&quot;
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    source_id       VARCHAR  — section name, Sanity doc ID, or CSV row identifier
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    content         TEXT     — raw chunk text shown to LLM
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    embedding       VECTOR(512)
 <a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    chunk_index     INTEGER
 <a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    created_at      TIMESTAMPTZ
@@ -1078,7 +1256,7 @@
 <a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>    question            TEXT
 <a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>    question_embedding  VECTOR(512)
 <a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>    response            TEXT
-<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>    source_chunk_ids    TEXT    — JSON array of chunk UUIDs
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>    source_chunk_ids    TEXT    — JSON array of chunk UUIDs used
 <a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>    hit_count           INTEGER
 <a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>    created_at          TIMESTAMPTZ
 <a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>    invalidated_at      TIMESTAMPTZ  — null = valid
@@ -1090,6 +1268,8 @@
 <a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>    content         TEXT
 <a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>    created_at      TIMESTAMPTZ
 </code></pre></div>
+<hr />
+<p>Developed by <a href="https://www.chitrankagnihotri.com">Chitrank Agnihotri</a></p>
 
 
 

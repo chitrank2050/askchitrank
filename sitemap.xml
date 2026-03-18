@@ -2,26 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://chitrank2050.github.io/askchitrank/</loc>
-         <lastmod>2026-03-17</lastmod>
+         <lastmod>2026-03-18</lastmod>
     </url>
     <url>
          <loc>https://chitrank2050.github.io/askchitrank/changelog/</loc>
-         <lastmod>2026-03-17</lastmod>
+         <lastmod>2026-03-18</lastmod>
     </url>
     <url>
          <loc>https://chitrank2050.github.io/askchitrank/architecture/overview/</loc>
-         <lastmod>2026-03-17</lastmod>
+         <lastmod>2026-03-18</lastmod>
     </url>
     <url>
          <loc>https://chitrank2050.github.io/askchitrank/development/database/</loc>
-         <lastmod>2026-03-17</lastmod>
+         <lastmod>2026-03-18</lastmod>
     </url>
     <url>
          <loc>https://chitrank2050.github.io/askchitrank/development/setup/</loc>
-         <lastmod>2026-03-17</lastmod>
+         <lastmod>2026-03-18</lastmod>
     </url>
     <url>
          <loc>https://chitrank2050.github.io/askchitrank/development/tech_stack/</loc>
-         <lastmod>2026-03-17</lastmod>
+         <lastmod>2026-03-18</lastmod>
+    </url>
+    <url>
+         <loc>https://chitrank2050.github.io/askchitrank/ingestion/overview/</loc>
+         <lastmod>2026-03-18</lastmod>
+    </url>
+    <url>
+         <loc>https://chitrank2050.github.io/askchitrank/retrival/overview/</loc>
+         <lastmod>2026-03-18</lastmod>
     </url>
 </urlset>
