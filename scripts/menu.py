@@ -109,6 +109,12 @@ EXECUTION_ORDER_DB = [
     ("_db-migrate", lambda: run_make("_db-migrate")),
 ]
 
+EXECUTION_ORDER_INGEST: list[tuple[str, Any]] = [
+    ("resume", lambda: run_make("_ingest-resume")),
+    ("sanity", lambda: run_make("_ingest-sanity")),
+    ("linkedin", lambda: run_make("_ingest-linkedin")),
+]
+
 
 def execute_choices(choices: list[str], order_list: list[tuple[str, Any]]) -> None:
     """Execute selected actions in fixed dependency order, never user-selection order."""
@@ -201,12 +207,31 @@ def mode_db() -> None:
     execute_choices(choices, EXECUTION_ORDER_DB)
 
 
+def mode_ingest() -> None:
+    choices = questionary.checkbox(
+        "📥 Ingest — select sources",
+        choices=[
+            Choice("Resume PDF    (from RESUME_URL in config)", value="resume"),
+            Choice("Sanity CMS    (projects + testimonials)", value="sanity"),
+            Choice("LinkedIn PDF  (from data/linkedin.pdf)", value="linkedin"),
+        ],
+        style=STYLE,
+    ).ask()
+
+    if not choices:
+        _nothing_selected()
+        return
+
+    execute_choices(choices, EXECUTION_ORDER_INGEST)
+
+
 # ── Entry point ──────────────────────────────────────────────────────────────
 MODES = {
     "obliviate": mode_obliviate,
     "git": mode_git,
     "docs": mode_docs,
     "db": mode_db,
+    "ingest": mode_ingest,
 }
 
 if __name__ == "__main__":

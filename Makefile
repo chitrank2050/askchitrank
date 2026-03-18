@@ -7,11 +7,11 @@ PYTHON_VERSION := $(shell if [ -f .python-version ]; then cat .python-version; e
 
 .DEFAULT_GOAL := help
 .PHONY: help init install install-prod \
-        api ingest-resume ingest-sanity ingest-all \
-        db-migrate db-migration db-rollback \
+        db _db-migrate _db-migration _db-rollback \
         lint format tree python-version obliviate \
         git _changelog _changelog-preview _changelog-since _git-tag _git-release \
-        docs _docs _docs-build _docs-deploy
+        docs _docs _docs-build _docs-deploy \
+				ingest
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Help
@@ -191,7 +191,7 @@ db:
 
 _db-migrate:
 	@echo "🗄️  Running database migrations..."
-	$(UV) run alembic upgrade head
+	@$(UV) run alembic upgrade head
 	@echo "✅ Migrations complete."
 
 _db-migration:
@@ -204,3 +204,21 @@ _db-rollback:
 	@echo "🗄️  Rolling back last migration..."
 	@$(UV) run alembic downgrade -1
 	@echo "✅ Rolled back."
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Ingestion — interactive menu selects source
+# ─────────────────────────────────────────────────────────────────────────────
+ingest:
+	$(UV) run --with questionary scripts/menu.py ingest
+
+_ingest-resume:
+	@echo "📄 Ingesting resume..."
+	@$(UV) run python -m src.main ingest --source resume
+
+_ingest-sanity:
+	@echo "🌐 Ingesting Sanity CMS..."
+	@$(UV) run python -m src.main ingest --source sanity
+
+_ingest-all:
+	@echo "📥 Ingesting all sources..."
+	@$(UV) run python -m src.main ingest --source all

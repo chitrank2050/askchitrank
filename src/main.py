@@ -52,13 +52,15 @@ def main() -> None:
         "ingest",
         help="Ingest documents into the knowledge base",
     )
+
     ingest_parser.add_argument(
         "--source",
-        choices=["resume", "sanity", "all"],
+        choices=["resume", "sanity", "linkedin"],
         nargs="+",
-        default=["all"],
-        help="Sources to ingest. Pass multiple: --source resume sanity (default: all)",
+        default=["resume", "sanity", "linkedin"],
+        help="Sources to ingest",
     )
+
     ingest_parser.add_argument(
         "--resume-url",
         default=None,
