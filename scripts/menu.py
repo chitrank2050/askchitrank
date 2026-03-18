@@ -6,7 +6,6 @@ Usage (via Makefile):
   uv run --with questionary scripts/menu.py [obliviate|git|docs]
 """
 
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -59,6 +58,22 @@ def _run_changelog_since() -> None:
     )
 
 
+def _run_db_migration() -> None:
+    name = questionary.text("Migration name: ", style=STYLE).ask()
+    if not name:
+        _nothing_selected()
+        return
+    print(f"🗄️  Creating migration: {name}...")
+    result = subprocess.run(
+        ["uv", "run", "alembic", "revision", "--autogenerate", "-m", name],
+        cwd=ROOT,
+    )
+    if result.returncode == 0:
+        print("✅ Migration created.")
+    else:
+        print(f"⚠️  Migration creation failed with code {result.returncode}.")
+
+
 # ── Execution Orders — never change regardless of selection order ────────────
 EXECUTION_ORDER_OBLIVIATE = [
     # Destructive first
@@ -88,22 +103,11 @@ EXECUTION_ORDER_GIT = [
     ("_git-release", lambda: run_make("_git-release")),
 ]
 
-
-def _run_db_migration() -> None:
-    name = questionary.text("Migration name: ", style=STYLE).ask()
-    if not name:
-        _nothing_selected()
-        return
-    print(f"🗄️  Creating migration: {name}...")
-    result = subprocess.run(
-        ["uv", "run", "alembic", "revision", "--autogenerate", "-m", name],
-        cwd=ROOT,
-        env={**os.environ, "APP_ENV": "dev"},
-    )
-    if result.returncode == 0:
-        print("✅ Migration created.")
-    else:
-        print(f"⚠️  Migration creation failed with code {result.returncode}.")
+EXECUTION_ORDER_DB = [
+    ("_db-rollback", lambda: run_make("_db-rollback")),
+    ("_db-migration", _run_db_migration),
+    ("_db-migrate", lambda: run_make("_db-migrate")),
+]
 
 
 def execute_choices(choices: list[str], order_list: list[tuple[str, Any]]) -> None:
@@ -178,11 +182,31 @@ def mode_docs() -> None:
     execute_choices(choices, EXECUTION_ORDER_DOCS)
 
 
+# ── Mode: db ─────────────────────────────────────────────────────────────────
+def mode_db() -> None:
+    choices = questionary.checkbox(
+        "🗄️ Database — select actions",
+        choices=[
+            Choice("Run database migrations", value="_db-migrate"),
+            Choice("Create new migration", value="_db-migration"),
+            Choice("Rollback last migration (-1)", value="_db-rollback"),
+        ],
+        style=STYLE,
+    ).ask()
+
+    if not choices:
+        _nothing_selected()
+        return
+
+    execute_choices(choices, EXECUTION_ORDER_DB)
+
+
 # ── Entry point ──────────────────────────────────────────────────────────────
 MODES = {
     "obliviate": mode_obliviate,
     "git": mode_git,
     "docs": mode_docs,
+    "db": mode_db,
 }
 
 if __name__ == "__main__":

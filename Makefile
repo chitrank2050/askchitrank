@@ -1,35 +1,39 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# Makefile for Folio AI
+# Makefile for Ask Chitrank
 # ─────────────────────────────────────────────────────────────────────────────
 VENV := .venv
 UV   := uv
 PYTHON_VERSION := $(shell if [ -f .python-version ]; then cat .python-version; else echo "3.12"; fi)
 
 .DEFAULT_GOAL := help
-.PHONY: help init install \
+.PHONY: help init install install-prod \
+        api ingest-resume ingest-sanity ingest-all \
+        db-migrate db-migration db-rollback \
         lint format tree python-version obliviate \
-				git _changelog _changelog-preview _changelog-since _git-tag _git-release \
-				docs _docs _docs-build _docs-deploy
+        git _changelog _changelog-preview _changelog-since _git-tag _git-release \
+        docs _docs _docs-build _docs-deploy
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Help
 # ─────────────────────────────────────────────────────────────────────────────
 help:
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@echo "  Folio AI"
+	@echo "  Ask Chitrank"
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 	@echo ""
 	@echo "Setup:"
 	@echo "  make init           - Create virtual environment"
 	@echo "  make install        - Install all dependencies"
-	@echo "  make install-prod   - Install production dependencies only (Lightweight)"
+	@echo "  make install-prod   - Install production dependencies only"
 	@echo ""
 	@echo "Interactive Menus:"
-	@echo "  make git            - Generate changelogs & releases"
-	@echo "  make obliviate      - Interactive clean menu"
-	@echo "  make docs           - Manage & deploy MkDocs documentation"
+	@echo "  make git            - Changelog & release menu"
+	@echo "  make obliviate      - Clean menu"
+	@echo "  make docs           - Documentation menu"
+	@echo "  make db             - Manage Alembic database migrations"
+	@echo "  make ingest         - Ingest data into the database"
 	@echo ""
-	@echo "Code Quality & Testing:"
+	@echo "Code Quality:"
 	@echo "  make lint           - Ruff check"
 	@echo "  make format         - Ruff format"
 	@echo ""
@@ -53,13 +57,12 @@ init:
 install:
 	@echo "📥 Installing dependencies..."
 	$(UV) sync --all-groups
-	@echo "✅ Done. Run 'make dev' to start the pipeline."
+	@echo "✅ Done."
 
 install-prod:
 	@echo "📥 Installing production dependencies..."
 	@$(UV) sync --no-dev
-	@echo "✅ Done. Run 'make dev' to start the pipeline."
-
+	@echo "✅ Done."
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Code Quality
@@ -81,27 +84,16 @@ tree:
 		-not -path './.venv/*' \
 		-not -path './.git/*' \
 		-not -path '*/__pycache__/*' \
-		-not -path './data/raw/*' \
-		-not -path './.dvc/*' \
 		-not -path './.ruff_cache/*' \
 		| sort | sed 's/[^/]*\//  /g'
 
 _clean_cache:
 	@echo "🧹 Removing cache files..."
-	@ find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
-	@ find . -type f -name "*.pyc" -delete 2>/dev/null || true
-	@ find . -type f -name "*.pyo" -delete 2>/dev/null || true
-	@ find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
-	@ find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
-	@ find . -type d -name ".ruff_cache" -exec rm -rf {} + 2>/dev/null || true
-	@ rm -rf site/ 2>/dev/null || true
-	@ rm -rf dist/ 2>/dev/null || true
-	@ rm -rf .pytest_cache
-	@ rm -rf .ruff_cache
-	@ rm -rf .mypy_cache
-	@ rm -rf .ipynb_checkpoints
-	@ rm -rf .coverage
-	rm -rf htmlcov
+	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+	@find . -type f -name "*.pyc" -delete 2>/dev/null || true
+	@find . -type f -name "*.pyo" -delete 2>/dev/null || true
+	@find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
+	@rm -rf site/ dist/ .pytest_cache .ruff_cache .mypy_cache .coverage htmlcov 2>/dev/null || true
 	@echo "✅ Cache cleaned"
 
 _clean_logs:
@@ -113,12 +105,6 @@ _clean_venv:
 	@echo "🗑️  Removing virtual environment..."
 	@rm -rf $(VENV)
 	@echo "✅ Virtual environment removed"
-	@echo ""
-	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@echo "  To set up again:"
-	@echo "  → Run 'make init' to create venv"
-	@echo "  → Run 'make install' to install dependencies"
-	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 obliviate:
 	$(UV) run --with questionary scripts/menu.py obliviate
@@ -128,7 +114,7 @@ python-version:
 	@$(UV) python list 2>/dev/null || true
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Git Command
+# Git
 # ─────────────────────────────────────────────────────────────────────────────
 git:
 	$(UV) run --with questionary scripts/menu.py git
@@ -149,7 +135,6 @@ _changelog-since:
 	@read -p "Since tag (e.g. v0.1.0): " tag; \
 	echo "📝 Changelog since $$tag..."; \
 	$(UV) run git-cliff "$$tag"..HEAD --strip all
-
 
 _git-tag:
 	@VERSION=$$(grep '^version' pyproject.toml | head -1 | tr -d '"' | tr -d ' ' | cut -d'=' -f2); \
@@ -197,3 +182,25 @@ _docs-deploy:
 	@cp CHANGELOG.md docs/changelog.md
 	@$(UV) run mkdocs gh-deploy --force
 	@echo "✅ Deployed to https://chitrank2050.github.io/askchitrank"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Database
+# ─────────────────────────────────────────────────────────────────────────────
+db:
+	$(UV) run --with questionary scripts/menu.py db
+
+_db-migrate:
+	@echo "🗄️  Running database migrations..."
+	$(UV) run alembic upgrade head
+	@echo "✅ Migrations complete."
+
+_db-migration:
+	@read -p "Migration name: " name; \
+	echo "🗄️  Creating migration: $$name..."; \
+	$(UV) run alembic revision --autogenerate -m "$$name"; \
+	echo "✅ Migration created."
+
+_db-rollback:
+	@echo "🗄️  Rolling back last migration..."
+	@$(UV) run alembic downgrade -1
+	@echo "✅ Rolled back."
