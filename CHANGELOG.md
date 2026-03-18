@@ -2,6 +2,12 @@
 
 All notable changes to Ask Chitrank.
 
+## [Unreleased]
+
+### Documentation
+
+- Update project version to 0.6.1 and add live API link
+
 ## [0.6.0] - 2026-03-18
 
 ### Documentation
