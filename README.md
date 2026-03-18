@@ -91,7 +91,7 @@ Cache is invalidated automatically when Sanity CMS content changes via webhook.
 
 - [x] Phase 1 — Database layer (pgvector, Supabase, Alembic migrations)
 - [x] Phase 2 — Ingestion pipeline (resume PDF, Sanity CMS, LinkedIn)
-- [ ] Phase 3 — Retrieval layer (vector search + semantic cache)
+- [x] Phase 3 — Retrieval layer (vector search + semantic cache)
 - [ ] Phase 4 — Chat layer (prompt engineering + Groq LLM)
 - [ ] Phase 5 — FastAPI + streaming (chat endpoint)
 - [ ] Phase 6 — Frontend chat widget (Next.js)

@@ -17,6 +17,8 @@ Typical usage:
     chunks = await search_knowledge_base(query_embedding, db)
 """
 
+from collections.abc import Sequence
+
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -25,7 +27,7 @@ from src.core.logger import logger
 
 
 async def search_knowledge_base(
-    query_embedding: list[float],
+    query_embedding: Sequence[float],
     db: AsyncSession,
     top_k: int | None = None,
     source_filter: str | None = None,
@@ -70,10 +72,10 @@ async def search_knowledge_base(
             source_id,
             content,
             chunk_index,
-            1 - (embedding <=> :embedding::vector) AS similarity
+            1 - (embedding <=> CAST(:embedding AS vector)) AS similarity
         FROM knowledge_chunks
         {source_clause}
-        ORDER BY embedding <=> :embedding::vector
+        ORDER BY embedding <=> CAST(:embedding AS vector)
         LIMIT :top_k
     """
 

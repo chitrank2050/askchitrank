@@ -79,12 +79,12 @@ async def find_cached_response(
                 question,
                 response,
                 hit_count,
-                1 - (question_embedding <=> :embedding::vector) AS similarity
+                1 - (question_embedding <=> CAST(:embedding AS vector)) AS similarity
             FROM response_cache
             WHERE invalidated_at IS NULL
               AND created_at > :ttl_cutoff
-              AND 1 - (question_embedding <=> :embedding::vector) > :threshold
-            ORDER BY question_embedding <=> :embedding::vector
+              AND 1 - (question_embedding <=> CAST(:embedding AS vector)) > :threshold
+            ORDER BY question_embedding <=> CAST(:embedding AS vector)
             LIMIT 1
         """),
         {
