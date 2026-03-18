@@ -2,6 +2,12 @@
 
 All notable changes to Folio AI.
 
+## [0.4.5] - 2026-03-18
+
+### Bug Fixes
+
+- Corrected author's last name in mkdocs.yml.
+
 ## [0.4.4] - 2026-03-18
 
 ### Bug Fixes
