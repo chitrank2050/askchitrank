@@ -2,6 +2,12 @@
 
 All notable changes to Folio AI.
 
+## [0.4.1] - 2026-03-18
+
+### Refactoring
+
+- Use `Path.open` and remove unused website URL parsing logic in the LinkedIn loader.
+
 ## [0.4.0] - 2026-03-18
 
 ### Documentation
