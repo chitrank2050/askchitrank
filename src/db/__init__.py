@@ -10,8 +10,8 @@ Typical usage:
     from src.db.models import KnowledgeChunk, ResponseCache, Conversation
 """
 
-from src.db.connection import AsyncSessionLocal, Base, get_db, init_db
-from src.db.models import Conversation, KnowledgeChunk, ResponseCache
+from .connection import AsyncSessionLocal, Base, get_db, init_db
+from .models import Conversation, KnowledgeChunk, ResponseCache
 
 __all__ = [
     "AsyncSessionLocal",

@@ -18,7 +18,7 @@ Typical usage:
     await ingest_linkedin(db)
 """
 
-from src.ingestion.pipeline import ingest_linkedin, ingest_resume, ingest_sanity
+from .pipeline import ingest_linkedin, ingest_resume, ingest_sanity
 
 __all__ = [
     "ingest_linkedin",
