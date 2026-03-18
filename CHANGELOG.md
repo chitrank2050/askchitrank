@@ -2,7 +2,7 @@
 
 All notable changes to Ask Chitrank.
 
-## [Unreleased]
+## [0.6.1] - 2026-03-18
 
 ### Documentation
 
