@@ -56,6 +56,10 @@ class _Settings(BaseSettings):
     API_ALLOWED_ORIGINS: list[str] = [
         "http://localhost:3000",
         "http://localhost:5173",
+        "https://chitrankagnihotri.com",
+        "http://chitrankagnihotri.com",
+        "https://www.chitrankagnihotri.com",
+        "http://www.chitrankagnihotri.com",
     ]
     API_ALLOW_CREDENTIALS: bool = True
     API_ALLOWED_METHODS: list[str] = ["*"]
@@ -136,6 +140,11 @@ class _Settings(BaseSettings):
     LOG_FILE_FORMAT: str = (
         "{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function} - {message}"
     )
+
+    # ----------------------------------------------------------------
+    # ⚙️  Sanity Webhook
+    # ----------------------------------------------------------------
+    INGEST_WEBHOOK_SECRET: str = ""
 
     # ----------------------------------------------------------------
     # ✅  Validators

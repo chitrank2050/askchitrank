@@ -26,6 +26,9 @@ help:
 	@echo "  make install        - Install all dependencies"
 	@echo "  make install-prod   - Install production dependencies only"
 	@echo ""
+	@echo "API:"
+	@echo "  make api            - Start FastAPI server"
+	@echo ""
 	@echo "Interactive Menus:"
 	@echo "  make git            - Changelog & release menu"
 	@echo "  make obliviate      - Clean menu"
@@ -112,6 +115,14 @@ obliviate:
 python-version:
 	@echo "📌 Python version: $(PYTHON_VERSION)"
 	@$(UV) python list 2>/dev/null || true
+
+# ─────────────────────────────────────────────────────────────────────────────
+# API
+# ─────────────────────────────────────────────────────────────────────────────
+api:
+	@echo "🚀 Starting API server..."
+	@$(UV) run python -m src.main api
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Git

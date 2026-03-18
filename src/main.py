@@ -39,6 +39,9 @@ def main() -> None:
     )
     subparsers = parser.add_subparsers(dest="command")
 
+    # ── api ────────────────────────────────────────────────────────────────
+    subparsers.add_parser("api", help="Start FastAPI server")
+
     # ── ingest ─────────────────────────────────────────────────────────────
     ingest_parser = subparsers.add_parser(
         "ingest",
@@ -61,6 +64,11 @@ def main() -> None:
 
     if args.command == "ingest":
         asyncio.run(_run_ingest(args))
+
+    elif args.command == "api":
+        from api.app import main as run_api
+
+        run_api()
 
     else:
         parser.print_help()
