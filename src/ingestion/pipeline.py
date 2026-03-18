@@ -35,7 +35,7 @@ from src.db.models import KnowledgeChunk
 from src.ingestion.chunker import chunk_document
 from src.ingestion.embedder import embed_texts
 from src.ingestion.sanity_loader import load_sanity_documents
-from src.utils.paths import PROJECT_ROOT, get_data_path
+from src.utils.paths import get_data_path
 
 from .pdf_loader import load_pdf_from_data
 
@@ -135,7 +135,7 @@ async def ingest_linkedin(db: AsyncSession) -> int:
     """
     from src.ingestion.linkedin_loader import load_linkedin_documents
 
-    linkedin_dir = PROJECT_ROOT / "data" / "linkedin"
+    linkedin_dir = get_data_path("linkedin")
 
     if not linkedin_dir.exists():
         raise FileNotFoundError(
@@ -235,8 +235,9 @@ async def ingest_sanity(db: AsyncSession) -> int:
 async def ingest_resume(db: AsyncSession) -> int:
     """Ingest resume PDF into the knowledge base.
 
-    Reads from data/resume.pdf — place your resume PDF there manually
-    before running ingestion.
+    Uses section-aware chunking for resumes — splits on known
+    section headers rather than word count. This ensures each
+    chunk answers a distinct type of question.
 
     Clears all existing resume chunks before re-ingesting.
     Idempotent — safe to run multiple times without duplicates.
@@ -264,7 +265,9 @@ async def ingest_resume(db: AsyncSession) -> int:
     await _clear_source("resume", db)
 
     text = await load_pdf_from_data(local_path=local_path)
-    chunks = chunk_document(text, source="resume", source_id="resume.pdf")
+
+    # Use section-aware chunking for resumes — better retrieval precision
+    chunks = _chunk_resume_by_section(text)
 
     if not chunks:
         logger.warning("No chunks produced from resume PDF — check file content")
@@ -276,3 +279,83 @@ async def ingest_resume(db: AsyncSession) -> int:
     await _store_chunks(chunks, embeddings, db)
     logger.success(f"Resume ingestion complete — {len(chunks)} chunks stored")
     return len(chunks)
+
+
+def _chunk_resume_by_section(text: str) -> list[dict]:
+    """Split resume text into chunks by section header.
+
+    Produces one chunk per section so each chunk answers a
+    distinct type of question — experience vs skills vs education.
+    Falls back to word-count chunking if no sections are detected.
+
+    Section headers detected:
+        Summary, Professional Experience, Employment History,
+        Education, Technical Skills
+
+    Args:
+        text: Full extracted text from resume PDF.
+
+    Returns:
+        List of chunk dicts with content, source, source_id,
+        chunk_index keys.
+    """
+    # Known section headers in order of appearance
+    section_headers = [
+        "Summary",
+        "Professional Experience",
+        "Employment History",
+        "Education",
+        "Technical Skills",
+    ]
+
+    # Split text into sections by finding header positions
+    sections = []
+    remaining = text
+
+    for _, header in enumerate(section_headers):
+        if header in remaining:
+            # Split at this header
+            parts = remaining.split(header, 1)
+            pre = parts[0].strip()
+
+            # Pre-header text is the previous section's content
+            if pre and sections:
+                sections[-1]["content"] += f"\n{pre}"
+            elif pre:
+                # Content before first header — add as intro chunk
+                sections.append(
+                    {
+                        "content": pre,
+                        "header": "Introduction",
+                    }
+                )
+
+            sections.append(
+                {
+                    "content": header,
+                    "header": header,
+                }
+            )
+            remaining = parts[1] if len(parts) > 1 else ""
+
+    # Remaining text belongs to the last section
+    if remaining.strip() and sections:
+        sections[-1]["content"] += f"\n{remaining.strip()}"
+
+    if not sections:
+        # No sections detected — fall back to word-count chunking
+        logger.warning(
+            "No resume sections detected — falling back to word-count chunking"
+        )
+        return chunk_document(text, source="resume", source_id="resume.pdf")
+
+    return [
+        {
+            "content": section["content"].strip(),
+            "source": "resume",
+            "source_id": f"resume-{section['header'].lower().replace(' ', '-')}",
+            "chunk_index": i,
+        }
+        for i, section in enumerate(sections)
+        if section["content"].strip()
+    ]

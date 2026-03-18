@@ -1,5 +1,4 @@
-"""src/ingestion/linkedin_loader.py
-
+"""
 LinkedIn profile data loader.
 
 Reads CSV files exported from LinkedIn and converts them
@@ -26,7 +25,7 @@ Typical usage:
 import csv
 
 from src.core.logger import logger
-from utils.paths import get_data_path
+from src.utils.paths import get_data_path
 
 # Directory containing LinkedIn CSV exports
 LINKEDIN_DIR = get_data_path("linkedin")

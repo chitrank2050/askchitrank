@@ -1,5 +1,4 @@
-"""src/main.py
-
+"""
 Unified command-line entry point.
 
 All pipeline operations run through here — ingestion and API startup.
