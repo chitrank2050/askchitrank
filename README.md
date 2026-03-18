@@ -23,14 +23,14 @@
 
 ## What It Does
 
-Ask Chitrank answers questions about Chitrank Agnihotri — his experience, projects, skills, and background. Every answer is grounded in real data from his resume and portfolio, preventing hallucination.
+Ask Chitrank answers questions about Chitrank Agnihotri — his experience, projects, skills, and background. Every answer is grounded in real data from his resume, LinkedIn, and portfolio, preventing hallucination.
 
 **Example questions:**
 
 - "What projects has Chitrank built?"
 - "What is his tech stack?"
 - "How many years of experience does he have?"
-- "Has he worked with machine learning?"
+- "What do his colleagues say about him?"
 
 ---
 
@@ -64,6 +64,8 @@ Return cached response      Search knowledge_chunks
 - [Architecture Overview](https://chitrank2050.github.io/askchitrank/architecture/overview/)
 - [Tech Stack](https://chitrank2050.github.io/askchitrank/development/tech_stack/)
 - [Database Setup](https://chitrank2050.github.io/askchitrank/development/database/)
+- [Ingestion Pipeline](https://chitrank2050.github.io/askchitrank/ingestion/overview/)
+- [Retrieval Layer](https://chitrank2050.github.io/askchitrank/retrieval/overview/)
 
 ---
 
@@ -77,21 +79,23 @@ Cache is invalidated automatically when Sanity CMS content changes via webhook.
 
 ## Data Sources
 
-| Source | Content | Sync method |
-|---|---|---|
-| Resume PDF | Experience, skills, education | Manual re-ingest |
-| Sanity CMS | Projects, blog posts, portfolio | Webhook auto-sync |
+| Source     | Content                                | Chunks |
+|------------|----------------------------------------|--------|
+| Resume PDF | Experience, skills, education          | 6      |
+| Sanity CMS | Projects, testimonials                 | 12     |
+| LinkedIn   | Recommendations, positions, skills     | 4      |
 
 ---
 
 ## Roadmap
 
 - [x] Phase 1 — Database layer (pgvector, Supabase, Alembic migrations)
-- [ ] Phase 2 — Ingestion pipeline (resume PDF + Sanity CMS)
-- [ ] Phase 3 — RAG query pipeline (retrieval + Groq LLM)
-- [ ] Phase 4 — FastAPI + streaming (chat endpoint)
-- [ ] Phase 5 — Frontend chat widget (Next.js)
-- [ ] Phase 6 — Sanity webhook auto-sync
+- [x] Phase 2 — Ingestion pipeline (resume PDF, Sanity CMS, LinkedIn)
+- [ ] Phase 3 — Retrieval layer (vector search + semantic cache)
+- [ ] Phase 4 — Chat layer (prompt engineering + Groq LLM)
+- [ ] Phase 5 — FastAPI + streaming (chat endpoint)
+- [ ] Phase 6 — Frontend chat widget (Next.js)
+- [ ] Phase 7 — Sanity webhook auto-sync
 
 ---
 
@@ -112,3 +116,7 @@ This is a personal portfolio project. Issues and PRs welcome.
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+---
+
+Developed by [Chitrank Agnihotri](https://www.chitrankagnihotri.com)

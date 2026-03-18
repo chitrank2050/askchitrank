@@ -15,13 +15,14 @@
 
 ## What It Does
 
-Ask Chitrank is a conversational AI that answers questions about Chitrank Agnihotri — his experience, projects, skills, and background. It uses Retrieval-Augmented Generation (RAG) to ground every answer in real data from his resume and portfolio, preventing hallucination.
+Ask Chitrank is a conversational AI that answers questions about Chitrank Agnihotri — his experience, projects, skills, and background. It uses Retrieval-Augmented Generation (RAG) to ground every answer in real data from his resume, LinkedIn, and portfolio, preventing hallucination.
 
 **Example questions it answers:**
 
 - "What projects has Chitrank built?"
 - "What is his tech stack?"
 - "How many years of experience does he have?"
+- "What do his colleagues say about him?"
 - "Has he worked with machine learning?"
 
 ---
@@ -50,14 +51,26 @@ Return cached response      Search knowledge base
 
 ---
 
+## Knowledge Base
+
+| Source     | Content                                | Chunks |
+|------------|----------------------------------------|--------|
+| Resume PDF | Experience, skills, education          | 6      |
+| Sanity CMS | Projects, testimonials                 | 12     |
+| LinkedIn   | Recommendations, positions, skills     | 4      |
+| **Total**  |                                        | **22** |
+
+---
+
 ## Roadmap
 
 - [x] Phase 1 — Database layer (pgvector, Supabase, Alembic migrations)
-- [ ] Phase 2 — Ingestion pipeline (resume PDF + Sanity CMS)
-- [ ] Phase 3 — RAG query pipeline (retrieval + Groq LLM)
-- [ ] Phase 4 — FastAPI + streaming (chat endpoint)
-- [ ] Phase 5 — Frontend chat widget (Next.js)
-- [ ] Phase 6 — Sanity webhook auto-sync
+- [x] Phase 2 — Ingestion pipeline (resume PDF, Sanity CMS, LinkedIn)
+- [ ] Phase 3 — Retrieval layer (vector search + semantic cache)
+- [ ] Phase 4 — Chat layer (prompt engineering + Groq LLM)
+- [ ] Phase 5 — FastAPI + streaming (chat endpoint)
+- [ ] Phase 6 — Frontend chat widget (Next.js)
+- [ ] Phase 7 — Sanity webhook auto-sync
 
 ---
 
@@ -72,3 +85,7 @@ Return cached response      Search knowledge base
 ## Contributing
 
 This is a personal portfolio project. Issues and PRs welcome.
+
+---
+
+Developed by [Chitrank Agnihotri](https://www.chitrankagnihotri.com)

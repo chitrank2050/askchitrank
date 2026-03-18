@@ -6,11 +6,11 @@ This guide covers setting up Ask Chitrank for local development.
 
 ## Prerequisites
 
-| Tool | Version | Install |
-|---|---|---|
-| Python | 3.12+ | [python.org](https://www.python.org) |
-| uv | latest | `brew install uv` |
-| Git | latest | [git-scm.com](https://git-scm.com) |
+| Tool   | Version   | Install                                    |
+|--------|-----------|--------------------------------------------|
+| Python | 3.12+     | [python.org](https://www.python.org)       |
+| uv     | latest    | `brew install uv`                          |
+| Git    | latest    | [git-scm.com](https://git-scm.com)         |
 
 ---
 
@@ -27,9 +27,6 @@ cd askchitrank
 
 ```bash
 make init
-# If above fails, run below commands
-uv venv
-source .venv/bin/activate
 ```
 
 ---
@@ -38,8 +35,6 @@ source .venv/bin/activate
 
 ```bash
 make install
-# If above fails, run below commands
-uv sync --all-groups
 ```
 
 ---
@@ -76,31 +71,47 @@ SANITY_API_TOKEN=your-api-token
 
 See [Database Setup](database.md) for full instructions.
 
-Quick start:
-
 ```bash
 make db-migrate
 ```
 
 ---
 
-## 6. Ingest Data
+## 6. Prepare Data Sources
 
-```bash
-# Ingest resume
-make ingest-resume
+**Resume:**
 
-# Ingest Sanity CMS
-make ingest-sanity
-```
+Place your resume PDF at `data/resume.pdf`.
+
+**LinkedIn:**
+
+Export your LinkedIn data: LinkedIn → Settings & Privacy → Data Privacy → Get a copy of your data → Request archive.
+
+Extract the archive and place these CSVs in `data/linkedin/`:
+- `Recommendations.csv`
+- `Positions.csv`
+- `Skills.csv`
+
+**Sanity CMS:**
+
+No manual steps needed — fetched automatically via API during ingestion.
 
 ---
 
-## 7. Start the API
+## 7. Ingest Data
+
+```bash
+make ingest
+```
+
+Opens an interactive menu to select which sources to ingest. Select all three on first run.
+
+---
+
+## 8. Start the API
 
 ```bash
 make api
-# Open http://localhost:8000/docs
 ```
 
 ---
@@ -113,3 +124,7 @@ make api
 | Voyage AI | [voyageai.com](https://www.voyageai.com) | 200M tokens/month free |
 | Supabase | [supabase.com](https://supabase.com) | Free tier |
 | Anthropic (future) | [console.anthropic.com](https://console.anthropic.com) | $5 credit on signup |
+
+---
+
+Developed by [Chitrank Agnihotri](https://www.chitrankagnihotri.com)
