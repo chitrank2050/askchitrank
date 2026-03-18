@@ -44,7 +44,7 @@ The system is designed so the LLM and embedding providers can be swapped in one 
 ```bash
 # Current — free tier
 GROQ_API_KEY=...
-GROQ_MODEL=llama-3.1-70b-versatile
+GROQ_MODEL=llama-3.3-70b-versatile
 VOYAGE_API_KEY=...
 VOYAGE_MODEL=voyage-3-lite
 
