@@ -19,7 +19,7 @@ Does NOT: define loading, chunking, or embedding logic.
 Typical usage:
     from src.ingestion.pipeline import ingest_resume, ingest_sanity, ingest_linkedin
 
-    await ingest_resume("https://chitrankagnihotri.com/resume.pdf", db)
+    await ingest_resume(db)
     await ingest_sanity(db)
     await ingest_linkedin(db)
 """
@@ -34,9 +34,10 @@ from src.core.logger import logger
 from src.db.models import KnowledgeChunk
 from src.ingestion.chunker import chunk_document
 from src.ingestion.embedder import embed_texts
-from src.ingestion.pdf_loader import load_pdf
 from src.ingestion.sanity_loader import load_sanity_documents
-from utils import PROJECT_ROOT
+from src.utils.paths import PROJECT_ROOT
+
+from .pdf_loader import load_pdf_from_data
 
 
 async def _clear_source(source: str, db: AsyncSession) -> None:
@@ -83,6 +84,30 @@ async def _store_chunks(
         )
     await db.commit()
     logger.info(f"Stored {len(chunks)} chunks in knowledge_chunks")
+
+
+async def _download_pdf(url: str, dest: Path) -> None:
+    """Download a PDF from a URL to a local file.
+
+    Creates the parent directory if it does not exist.
+
+    Args:
+        url: HTTPS URL to download the PDF from.
+        dest: Local path to save the downloaded file.
+
+    Raises:
+        httpx.HTTPError: If the download fails or returns non-200.
+    """
+    import httpx
+
+    dest.parent.mkdir(parents=True, exist_ok=True)
+
+    async with httpx.AsyncClient(timeout=60) as client:
+        response = await client.get(url)
+        response.raise_for_status()
+        dest.write_bytes(response.content)
+
+    logger.info(f"Downloaded {len(response.content)} bytes to {dest}")
 
 
 async def ingest_linkedin(db: AsyncSession) -> int:
@@ -153,54 +178,6 @@ async def ingest_linkedin(db: AsyncSession) -> int:
     return len(all_chunks)
 
 
-async def ingest_resume(source: str | Path, db: AsyncSession) -> int:
-    """Ingest a resume PDF into the knowledge base.
-
-    Fetches the PDF from a remote URL or local path, extracts text,
-    chunks it into 500-word segments, embeds via Voyage AI, and
-    stores in knowledge_chunks.
-
-    Clears all existing resume chunks before re-ingesting.
-    Idempotent — safe to run multiple times without duplicates.
-
-    Args:
-        source: HTTPS URL or local path to the resume PDF.
-            Defaults to settings.RESUME_URL when called via main.py.
-        db: Active async database session.
-
-    Returns:
-        Number of chunks stored. 0 if PDF produced no content.
-
-    Raises:
-        FileNotFoundError: If local path does not exist.
-        httpx.HTTPError: If URL fetch fails or returns non-200.
-        pypdf.errors.PdfReadError: If file is not a valid PDF.
-
-    Example:
-        >>> count = await ingest_resume("https://example.com/resume.pdf", db)
-        >>> print(f"{count} chunks stored")
-    """
-    logger.info(f"Starting resume ingestion from: {source}")
-
-    await _clear_source("resume", db)
-
-    # Load and extract text from PDF
-    text = await load_pdf(source)
-    chunks = chunk_document(text, source="resume", source_id=str(source))
-
-    if not chunks:
-        logger.warning("No chunks produced from resume PDF — check file content")
-        return 0
-
-    # Embed all chunks via Voyage AI
-    texts = [c["content"] for c in chunks]
-    embeddings = await embed_texts(texts)
-
-    await _store_chunks(chunks, embeddings, db)
-    logger.success(f"Resume ingestion complete — {len(chunks)} chunks stored")
-    return len(chunks)
-
-
 async def ingest_sanity(db: AsyncSession) -> int:
     """Ingest all Sanity CMS documents into the knowledge base.
 
@@ -253,3 +230,50 @@ async def ingest_sanity(db: AsyncSession) -> int:
     await _store_chunks(all_chunks, embeddings, db)
     logger.success(f"Sanity ingestion complete — {len(all_chunks)} chunks stored")
     return len(all_chunks)
+
+
+async def ingest_resume(db: AsyncSession) -> int:
+    """Ingest resume PDF into the knowledge base.
+
+    Reads from data/resume.pdf — place your resume PDF there manually
+    before running ingestion.
+
+    Clears all existing resume chunks before re-ingesting.
+    Idempotent — safe to run multiple times without duplicates.
+
+    Args:
+        db: Active async database session.
+
+    Returns:
+        Number of chunks stored. 0 if PDF produced no content.
+
+    Raises:
+        FileNotFoundError: If data/resume.pdf does not exist.
+        pypdf.errors.PdfReadError: If file is not a valid PDF.
+    """
+    from src.utils.paths import PROJECT_ROOT
+
+    local_path = PROJECT_ROOT / "data" / "resume.pdf"
+
+    if not local_path.exists():
+        raise FileNotFoundError(
+            f"Resume PDF not found at {local_path}.\n"
+            "Place your resume PDF at data/resume.pdf before running ingestion."
+        )
+
+    logger.info(f"Starting resume ingestion from: {local_path}")
+    await _clear_source("resume", db)
+
+    text = await load_pdf_from_data(local_path=local_path)
+    chunks = chunk_document(text, source="resume", source_id="resume.pdf")
+
+    if not chunks:
+        logger.warning("No chunks produced from resume PDF — check file content")
+        return 0
+
+    texts = [c["content"] for c in chunks]
+    embeddings = await embed_texts(texts)
+
+    await _store_chunks(chunks, embeddings, db)
+    logger.success(f"Resume ingestion complete — {len(chunks)} chunks stored")
+    return len(chunks)

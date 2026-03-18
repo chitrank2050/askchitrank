@@ -24,6 +24,28 @@ from pypdf import PdfReader
 from src.core.logger import logger
 
 
+async def load_pdf_from_data(local_path: str | Path) -> str:
+    """Extract plain text from a local PDF file.
+
+    Args:
+        local_path: Path to the local PDF file.
+
+    Returns:
+        Extracted plain text from all pages.
+
+    Raises:
+        FileNotFoundError: If the file does not exist.
+        pypdf.errors.PdfReadError: If not a valid PDF.
+    """
+    path = Path(local_path)
+    if not path.exists():
+        raise FileNotFoundError(f"PDF not found: {path}")
+
+    logger.info(f"Loading PDF from: {path}")
+    reader = PdfReader(str(path))
+    return _extract_text(reader)
+
+
 async def load_pdf(source: str | Path) -> str:
     """Extract plain text from a PDF — local file or remote URL.
 

@@ -84,12 +84,8 @@ async def _run_ingest(args: argparse.Namespace) -> None:
             - source: list of source names to ingest
             - resume_url: optional URL override for resume PDF
     """
-    from src.core.config import settings
     from src.db.connection import AsyncSessionLocal
     from src.ingestion.pipeline import ingest_linkedin, ingest_resume, ingest_sanity
-
-    # Use CLI override if provided, otherwise fall back to config
-    resume_url = args.resume_url or settings.RESUME_URL
 
     # Fixed processing order — predictable regardless of CLI argument order
     source_order = ["resume", "sanity", "linkedin"]
@@ -100,8 +96,8 @@ async def _run_ingest(args: argparse.Namespace) -> None:
     async with AsyncSessionLocal() as db:
         for source in sources:
             if source == "resume":
-                logger.info(f"Ingesting resume from {resume_url}")
-                count = await ingest_resume(resume_url, db)
+                logger.info("Ingesting resume")
+                count = await ingest_resume(db)
                 logger.success(f"Resume — {count} chunks stored")
                 total_chunks += count
 
