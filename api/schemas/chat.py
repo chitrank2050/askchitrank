@@ -41,3 +41,7 @@ class ChatRequest(BaseModel):
         default=True,
         description="Whether to use semantic response cache",
     )
+    stream: bool = Field(
+        default=True,
+        description="Whether to stream response via SSE or return full response at once",
+    )

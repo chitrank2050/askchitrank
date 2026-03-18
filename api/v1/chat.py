@@ -13,8 +13,8 @@ SSE event format:
     data: {"type": "error", "message": "..."}  — pipeline error
 """
 
-from fastapi import APIRouter, Depends, Request
-from fastapi.responses import StreamingResponse
+from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import JSONResponse, StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.schemas.chat import ChatRequest
@@ -41,7 +41,7 @@ async def chat(
     request: Request,
     body: ChatRequest,
     db: AsyncSession = Depends(get_db),
-) -> StreamingResponse:
+) -> StreamingResponse | JSONResponse:
     """Stream a RAG response for the user question.
 
     Runs the full pipeline: embed → cache check → retrieve →
@@ -58,21 +58,44 @@ async def chat(
     """
     logger.info(
         f"Chat request — session: {body.session_id[:8]}... | "
-        f"question: {body.question[:60]}..."
+        f"stream: {body.stream} | question: {body.question[:60]}..."
     )
 
-    return StreamingResponse(
-        stream_chat_response(
+    if body.stream:
+        # SSE streaming — tokens arrive word by word
+        return StreamingResponse(
+            stream_chat_response(
+                question=body.question,
+                session_id=body.session_id,
+                db=db,
+                use_cache=body.use_cache,
+            ),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "X-Accel-Buffering": "no",
+            },
+        )
+    else:
+        # Full response — wait for complete answer then return JSON
+        full_response = ""
+        cached = False
+
+        async for event in stream_chat_response(
             question=body.question,
             session_id=body.session_id,
             db=db,
             use_cache=body.use_cache,
-        ),
-        media_type="text/event-stream",
-        headers={
-            # Required headers for SSE
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "X-Accel-Buffering": "no",  # disables Nginx buffering
-        },
-    )
+        ):
+            import json as _json
+
+            data = _json.loads(event.replace("data: ", "").strip())
+            if data["type"] == "token":
+                full_response += data["content"]
+            elif data["type"] == "done":
+                cached = data.get("cached", False)
+            elif data["type"] == "error":
+                raise HTTPException(status_code=500, detail=data["content"])
+
+        return JSONResponse(content={"response": full_response, "cached": cached})
