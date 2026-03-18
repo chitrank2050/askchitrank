@@ -23,6 +23,7 @@ Typical usage:
 """
 
 import csv
+from pathlib import Path
 
 from src.core.logger import logger
 from src.utils.paths import get_data_path
@@ -48,7 +49,7 @@ def _read_csv(filename: str) -> list[dict]:
         logger.warning(f"LinkedIn CSV not found: {path} — skipping")
         return []
 
-    with open(path, encoding="utf-8-sig") as f:
+    with Path.open(path, encoding="utf-8-sig") as f:
         reader = csv.DictReader(f)
         return list(reader)
 
@@ -92,11 +93,6 @@ def _format_profile(profile: dict) -> str:
     if websites_raw and websites_raw not in ("", "[]"):
         # Strip brackets and split by comma
         websites_clean = websites_raw.strip("[]")
-        urls = [
-            entry.split(":")[-1].strip()
-            for entry in websites_clean.split(",")
-            if ":" in entry
-        ]
         # Reconstruct full URLs — split on ":" removes "https"
         raw_entries = websites_clean.split(",")
         full_urls = []
