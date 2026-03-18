@@ -2,6 +2,12 @@
 
 All notable changes to Folio AI.
 
+## [0.4.4] - 2026-03-18
+
+### Bug Fixes
+
+- Dead retrieval docs
+
 ## [0.4.2] - 2026-03-18
 
 ### Documentation
