@@ -4,56 +4,69 @@
 
 ## Core Stack
 
-| Layer            | Tool                       | Why                                            |
-|------------------|----------------------------|------------------------------------------------|
-| LLM              | Groq (Llama 3.1 70B)       | Free tier, 10-20x faster than GPU inference    |
-| Embeddings       | Voyage AI voyage-3-lite    | 200M tokens/month free, Anthropic recommended  |
-| Vector store     | Supabase pgvector          | PostgreSQL extension — no extra service needed |
-| Semantic cache   | pgvector similarity search | Reduces LLM calls for repeated questions       |
-| API              | FastAPI                    | Async, Pydantic validation, streaming support  |
-| Database         | Supabase PostgreSQL        | Free tier, excellent dashboard                 |
-| Config           | pydantic-settings          | Type-safe, env var override                    |
-| Logging          | Loguru                     | Structured, stdlib interception                |
-| Package manager  | uv                         | Fast, PEP 517, lockfile reproducibility        |
-| Code quality     | Ruff                       | Linter + formatter, fast                       |
-| Changelog        | git-cliff                  | Conventional commit changelog                  |
+| Layer | Tool | Why |
+|------|------|-----|
+| LLM | Groq (`llama-3.3-70b-versatile`) | fast streaming and practical free tier |
+| Embeddings | Voyage AI `voyage-3-lite` | compact 512-dim vectors and good free tier |
+| Vector store | Supabase pgvector | PostgreSQL extension, no extra vector service |
+| Semantic cache | pgvector similarity search | reduces repeated LLM calls |
+| Retrieval reranking | local query-aware heuristics | improves relevance without more provider spend |
+| API | FastAPI | async, typed, streaming-friendly |
+| Database | Supabase PostgreSQL | free tier and strong dashboard |
+| Config | pydantic-settings | type-safe configuration |
+| Logging | Loguru | structured logging |
+| Package manager | uv | fast dependency management |
+| Code quality | Ruff | linting and formatting |
 
 ---
 
 ## Ingestion Stack
 
-| Layer            | Tool                       | Why                                            |
-|------------------|----------------------------|------------------------------------------------|
-| PDF parsing      | pypdf                      | Pure Python, no system dependencies            |
-| HTTP client      | httpx                      | Async, used for Sanity API + PDF fetch         |
-| Sanity CMS       | GROQ HTTP API              | Direct queries, no SDK needed                  |
-| LinkedIn         | CSV export                 | Official LinkedIn data export                  |
+| Layer | Tool | Why |
+|------|------|-----|
+| PDF parsing | pypdf | pure Python, no system deps |
+| HTTP client | httpx | async requests for Sanity and downloads |
+| Sanity CMS | GROQ HTTP API | direct and simple |
+| LinkedIn | CSV export | official export source |
+
+---
+
+## Development-Only Stack
+
+| Layer | Tool | Why |
+|------|------|-----|
+| Local embeddings | deterministic fake embedder | token-free local retrieval work |
+| Seed corpus | fictional seeded resume, projects, LinkedIn, testimonials | realistic local API behavior without real profile data |
+| Seed responder | local prompt-aware seeded response builder | avoids Groq calls in `DEV_MODE` |
 
 ---
 
 ## Why No LangChain or LlamaIndex
 
-Both frameworks are designed for complex multi-step agent pipelines. A personal portfolio RAG has a fixed, simple pipeline — parse, chunk, embed, retrieve, generate. Raw API calls give full control and the entire pipeline is readable in under 300 lines of code.
+The pipeline is still straightforward: parse, structure, embed, retrieve, rerank, generate. Raw application code is easier to audit and tune than a heavier orchestration framework for this project size.
 
 ---
 
 ## Provider Swap Strategy
 
-The system is designed so the LLM and embedding providers can be swapped in one config change:
+Provider-specific logic is intentionally isolated to small files:
 
-```bash
-# Current — free tier
-GROQ_API_KEY=...
-GROQ_MODEL=llama-3.3-70b-versatile
-VOYAGE_API_KEY=...
-VOYAGE_MODEL=voyage-3-lite
+- `src/ingestion/embedder.py`
+- `src/chat/groq_client.py`
 
-# Future — when Anthropic API key available
-ANTHROPIC_API_KEY=...
-# embedding model swap handled in embedder.py
-```
+That keeps the blast radius low, but swapping providers is not literally "config only" anymore. The interfaces are stable; the implementations are isolated.
 
-No code changes required — only config.
+---
+
+## Why The Recent ROI Work Focused Here
+
+The highest-value improvements came from:
+
+- better source representation
+- cheaper local reranking
+- a zero-cost local dev path
+
+Those changes improved quality and developer speed without undermining the project’s free-tier constraints.
 
 ---
 

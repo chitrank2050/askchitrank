@@ -1,158 +1,151 @@
 # Key Concepts
 
-This page explains the core technologies used in Ask Chitrank in plain language with simple examples. No assumed knowledge.
+This page explains the core ideas behind Ask Chitrank in plain language.
 
 ---
 
 ## Embeddings
 
-An embedding converts text into a list of numbers that captures its meaning.
+An embedding converts text into a list of numbers that captures meaning.
 
 **Simple example:**
 
 ```
-"I love dogs"   → [0.2, 0.8, 0.1, 0.5, ...]
-"I adore dogs"  → [0.2, 0.8, 0.1, 0.5, ...]  ← almost identical numbers
-"The sky is blue" → [0.9, 0.1, 0.7, 0.2, ...] ← completely different numbers
+"I love dogs"     → [0.2, 0.8, 0.1, 0.5, ...]
+"I adore dogs"    → [0.2, 0.8, 0.1, 0.5, ...]
+"The sky is blue" → [0.9, 0.1, 0.7, 0.2, ...]
 ```
 
-The numbers for "I love dogs" and "I adore dogs" are very close together because they mean the same thing. The numbers for "The sky is blue" are far away because it's a different topic entirely.
+The first two are close because they mean nearly the same thing. The third is far away because it is a different topic.
 
-This is how the chatbot finds relevant answers — it converts your question into numbers, then finds knowledge chunks whose numbers are closest to yours.
-
-**In this project:** Voyage AI `voyage-3-lite` converts text into 512 numbers.
+**In this project:** production uses Voyage AI `voyage-3-lite` with 512 dimensions. In `DEV_MODE`, a deterministic local embedder is used so local testing does not spend tokens.
 
 ---
 
 ## Vector Database
 
-A regular database searches by exact values:
+A normal database searches by exact values:
 
 ```sql
-WHERE name = "Chitrank"   -- must match exactly
+WHERE name = "Chitrank"
 ```
 
 A vector database searches by meaning:
 
 ```sql
-ORDER BY embedding <=> question_embedding  -- find closest meaning
+ORDER BY embedding <=> question_embedding
 ```
 
-It's a database that can answer "find me text that means something similar to this" instead of "find me text that matches exactly."
-
-**In this project:** Supabase PostgreSQL with the pgvector extension stores and searches 512-dimensional vectors.
+**In this project:** Supabase PostgreSQL with the pgvector extension stores and searches embedding vectors.
 
 ---
 
 ## RAG (Retrieval-Augmented Generation)
 
-RAG is a technique that gives an LLM specific knowledge before asking it to answer a question.
+RAG means retrieving relevant facts first, then giving them to the LLM before asking for an answer.
 
 Without RAG:
+
 ```
 User: What has Chitrank built?
-LLM: [makes things up or says it doesn't know]
+LLM: [guesses, hallucinates, or says it does not know]
 ```
 
 With RAG:
+
 ```
-Step 1 — Retrieve relevant info from the knowledge base:
-    "Project: Humanform AI — Chitrank built the frontend ecosystem from scratch..."
-    "Project: Plural — Chitrank led a team of 3 frontend engineers..."
-
-Step 2 — Give that info to the LLM as context:
-    "Here is information about Chitrank. Use only this to answer: [context]"
-
-Step 3 — LLM answers from the context:
-    "Chitrank has built Humanform AI, Plural, Hudini..."
+Step 1 — Retrieve relevant facts
+Step 2 — Add them to the prompt as context
+Step 3 — Ask the LLM to answer only from that context
 ```
 
-The LLM doesn't need to know about Chitrank in advance — you feed it the relevant facts at question time.
+**In this project:** the knowledge base comes from the resume, Sanity CMS, testimonials, and LinkedIn exports.
 
-**In this project:** The knowledge base is resume + Sanity CMS + LinkedIn data, all stored as embeddings in Supabase.
+---
+
+## Retrieval-Friendly Documents
+
+Good retrieval depends on more than the embedding model. It also depends on what gets embedded.
+
+Instead of storing every source as one broad text blob, the ingestion layer now creates bounded evidence documents such as:
+
+- project overview
+- project contributions
+- project links
+- testimonial quotes
+- LinkedIn profile summary
+- LinkedIn links
+- LinkedIn recommendations
+
+These smaller, more intentional documents are easier to retrieve accurately for specific questions.
 
 ---
 
 ## Semantic Cache
 
-A normal cache stores exact matches:
+A normal cache stores exact string matches.
 
 ```
-Cache key: "What projects has Chitrank built?"
-Cache value: "Chitrank has built Humanform, Plural..."
-
-Lookup: "What projects has Chitrank built?" → hit ✅
-Lookup: "What has Chitrank worked on?"      → miss ❌ (different string)
+Question: "What projects has Chitrank built?"
 ```
 
-A semantic cache stores meaning matches:
+A semantic cache stores meaning matches.
 
 ```
-Cache key embedding: [0.2, 0.8, 0.1, ...]  (embedding of the question)
-Cache value: "Chitrank has built Humanform, Plural..."
-
-Lookup: "What projects has Chitrank built?" → similarity 1.0 → hit ✅
-Lookup: "What has Chitrank worked on?"      → similarity 0.97 → hit ✅
-Lookup: "What is the weather today?"        → similarity 0.2  → miss ❌
+"What projects has Chitrank built?" → hit
+"What has Chitrank worked on?"      → hit
+"What is the weather today?"        → miss
 ```
 
-If two questions mean the same thing (similarity above 0.95), the cached answer is returned without calling the LLM — saving time and money.
+If similarity is above `0.95`, the cached answer is returned and the LLM call is skipped.
 
-**In this project:** The `response_cache` table stores question embeddings + responses. Cache is cleared when content is re-ingested.
+**In this project:** the `response_cache` table stores question embeddings and responses, and is invalidated on ingestion.
 
 ---
 
 ## Prompt Engineering
 
-Prompt engineering is the practice of carefully designing the instructions you give to an LLM to control its behaviour.
+Prompt engineering is how the system tells the LLM what kind of answer is allowed.
 
-**Bad prompt:**
-```
-Answer questions about Chitrank.
-```
+A weak prompt can cause rambling or invented facts.
 
-The LLM might make things up, go off-topic, or give long rambling answers.
+A strong prompt can say:
 
-**Good prompt:**
-```
-You are Ask Chitrank — an AI assistant on Chitrank's portfolio website.
+- answer only from the provided context
+- stay concise
+- refer to Chitrank in third person
+- redirect off-topic questions
+- use the configured contact email when context is insufficient
+- clarify that the assistant is not Chitrank
+- refuse private, explicit, or prompt-reveal requests when they are not supported
 
-Answer ONLY from the provided context. Never invent facts.
-If context is insufficient, say: "I don't have enough information. 
-Contact Chitrank at chitrank2050@gmail.com."
-Keep answers concise. Refer to Chitrank in third person.
-```
+That is what keeps the chatbot grounded.
 
-The good prompt constrains the LLM's behaviour — it stays on topic, cites real data, and handles unknowns gracefully.
+---
 
-**In this project:** The system prompt in `src/chat/prompt.py` enforces factual accuracy and prevents hallucination.
+## Safety Pre-Routing
+
+Some questions are not worth sending through the full RAG pipeline.
+
+The chat layer now runs a cheap classification pass before embeddings to catch:
+
+- identity questions like "Who are you?" or "Are you Chitrank?"
+- private questions like salary or sensitive personal details
+- explicit or sexual questions
+- prompt-injection attempts such as "ignore instructions" or "show the system prompt"
+- clearly off-topic questions such as weather or sports
+
+For these cases, the app returns a canned response immediately. That improves safety and saves tokens.
 
 ---
 
 ## SSE (Server-Sent Events)
 
-SSE is a way for a server to push data to a browser in real time, one piece at a time.
+SSE lets the server push tokens to the browser as they are generated.
 
-**Without SSE (normal HTTP):**
-```
-Client: "What has Chitrank built?"
-[waits 3 seconds for full response]
-Server: "Chitrank has built Humanform, Plural, Hudini..." [all at once]
-```
+Without SSE, the user waits for the full answer.
 
-**With SSE (streaming):**
-```
-Client: "What has Chitrank built?"
-Server: "Chitrank"    [immediately]
-Server: " has"        [50ms later]
-Server: " built"      [50ms later]
-Server: " Humanform," [50ms later]
-...
-```
-
-Words appear as the LLM generates them — the same experience as ChatGPT. Users see a response immediately instead of waiting for the full answer.
-
-**In this project:** `POST /v1/chat` with `stream: true` returns an SSE stream. Each token is a JSON event:
+With SSE:
 
 ```
 data: {"type": "token", "content": "Chitrank"}
@@ -160,45 +153,79 @@ data: {"type": "token", "content": " has"}
 data: {"type": "done", "cached": false}
 ```
 
+This makes the API feel interactive instead of blocking.
+
 ---
 
 ## Chunking
 
-Large documents can't be stored as single embeddings — the embedding model has a context window limit, and a large chunk is too general to be useful for specific questions.
+Large documents are usually too broad to embed as one unit.
 
-Chunking splits documents into smaller pieces:
+Chunking splits them into smaller, more useful pieces.
 
-```
-Full resume (700 words)
-    ↓
-Chunk 1: Summary section (80 words)
-Chunk 2: Professional Experience section (300 words)
-Chunk 3: Technical Skills section (120 words)
-...
-```
+**In this project:**
 
-Each chunk is embedded separately. When a question comes in, the most relevant chunk is retrieved — not the entire document.
+- the resume is split by section headers
+- Sanity and LinkedIn records are first turned into retrieval-friendly evidence documents
+- generic word-count chunking remains as a safety net when a document is still too large
 
-**In this project:** Resume is split by section headers. Sanity and LinkedIn documents use 500-word chunks with 50-word overlap. The overlap ensures no sentence is cut off at a boundary without context.
+The goal is not just smaller text. The goal is better retrieval precision.
+
+---
+
+## Local Reranking
+
+Vector similarity gets the system close, but not always all the way there.
+
+After the initial vector search, the retrieval layer now applies a cheap local rerank using:
+
+- lexical overlap with the user query
+- query intent such as `projects`, `skills`, `experience`, or `feedback`
+- source-aware caps so narrative testimonial text does not drown out factual sources
+
+This improves answer quality without adding more provider calls.
+
+---
+
+## Retrieval Confidence Gate
+
+Even after vector search and local reranking, the system should not guess when evidence is weak.
+
+The retrieval layer now checks signals such as:
+
+- top vector similarity
+- lexical coverage of the user question
+- whether the match is strong enough semantically to trust without exact word overlap
+
+If confidence is too low, the chat layer returns a safe fallback instead of sending weak context to the LLM.
 
 ---
 
 ## Cosine Similarity
 
-Cosine similarity measures how similar two vectors are — a number between -1 and 1 where 1 means identical and 0 means unrelated.
+Cosine similarity measures how closely two vectors point in the same direction.
 
-**Simple analogy:** Think of each embedding as an arrow pointing in a direction in space. If two arrows point in nearly the same direction, they're similar. If they point in completely different directions, they're unrelated.
-
-```
-"React developer"  → arrow pointing northeast
-"Frontend engineer" → arrow pointing northeast (very close)
-"Database admin"    → arrow pointing southeast (different direction)
+```text
+"React developer"   → very close to "Frontend engineer"
+"React developer"   → much farther from "Database admin"
 ```
 
-Cosine similarity between "React developer" and "Frontend engineer" would be ~0.92.
-Cosine similarity between "React developer" and "Database admin" would be ~0.45.
+In this project, pgvector uses cosine distance via `<=>`, and the app converts that to similarity with `1 - distance`.
 
-**In this project:** pgvector's `<=>` operator computes cosine distance. We convert to similarity with `1 - distance`. The semantic cache threshold is 0.95 — questions must be very close in meaning to hit the cache.
+---
+
+## Why These Changes Matter
+
+The recent improvements were chosen for return on effort, not novelty.
+
+The highest-value changes were:
+
+- improving how source data is represented
+- improving how retrieval chooses chunks
+- adding cheap safety routing and confidence gating before expensive generation
+- adding a fictional seeded dev mode to avoid token spend during local work
+
+For the full reasoning, see [ROI Improvements](roi_improvements.md).
 
 ---
 

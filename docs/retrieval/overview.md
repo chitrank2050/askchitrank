@@ -1,84 +1,135 @@
 # Retrieval Layer
 
-The retrieval layer finds relevant knowledge chunks for a user question
-and manages a semantic cache to avoid redundant LLM calls.
+The retrieval layer finds relevant knowledge chunks for a question, keeps repeated questions out of the LLM when possible, and now decides whether the evidence is strong enough to answer from.
 
 ---
 
 ## Overview
 
-```
+```text
 User question
       ↓
-embed_query() — Voyage AI voyage-3-lite, 'query' input type
+embed_query()
       ↓
-find_cached_response() — cosine similarity > 0.95?
+find_cached_response() — similarity > 0.95?
       ↓ hit                          ↓ miss
 Return cached response         search_knowledge_base()
 Increment hit_count                   ↓
-                               Top K chunks by similarity
+                         Wider vector candidate set
                                       ↓
-                               Feed to chat layer → LLM
+                         Query-aware local reranking
                                       ↓
-                               store_cached_response()
+                         Retrieval confidence assessment
+                                      ↓ pass         ↓ fail
+                         Feed selected chunks        Return safe fallback
+                         to chat layer
+                                      ↓
+                         store_cached_response()
 ```
 
 ---
 
-## Similarity Search
+## Vector Search
 
-`search_knowledge_base()` performs cosine similarity search using pgvector's
-`<=>` operator (cosine distance). Results are ordered by relevance with the
-highest similarity chunk first.
+`search_knowledge_base()` still uses pgvector cosine similarity, but the retrieval flow is now three-stage:
+
+1. pull a wider candidate set from the database
+2. rerank those candidates locally using cheap heuristics
+3. assess whether the final evidence set is confident enough to answer from
+
+The SQL layer still looks conceptually like this:
 
 ```sql
 SELECT id, source, content,
        1 - (embedding <=> query_vector) AS similarity
 FROM knowledge_chunks
 ORDER BY embedding <=> query_vector
-LIMIT 5
+LIMIT candidate_limit
 ```
 
-The `<=>` operator returns cosine distance (0 = identical, 2 = opposite).
-Converted to similarity score: `1 - distance` (1.0 = identical, 0.0 = opposite).
+The difference is that top vector hits are no longer used blindly.
 
-### Optional source filtering
+---
 
-Restrict search to a single source when needed:
+## Local Reranking
 
-```python
-chunks = await search_knowledge_base(
-    embedding, db, source_filter="resume"
-)
-```
+After vector search, the app reranks candidates using:
+
+- lexical overlap with the user question
+- query intent like `projects`, `skills`, `experience`, or `feedback`
+- source-aware caps so testimonial-heavy content does not dominate every query
+
+Examples:
+
+- project questions bias more strongly toward Sanity project evidence
+- skill questions boost resume, Sanity, and LinkedIn skill-heavy content
+- feedback questions boost testimonials and recommendations
+
+This is intentionally local and cheap. It improves relevance without adding another provider call.
+
+---
+
+## Retrieval Confidence
+
+The retrieval layer now exposes an explicit confidence assessment so the chat layer can avoid answering from weak evidence.
+
+The confidence gate checks:
+
+- `top_similarity`
+- `best_query_coverage`
+- whether the semantic match is strong enough to allow low literal overlap
+
+Current configuration comes from:
+
+- `RETRIEVAL_MIN_SIMILARITY`
+- `RETRIEVAL_STRONG_SIMILARITY`
+- `RETRIEVAL_MIN_QUERY_COVERAGE`
+
+If confidence is too low, the chat layer returns a safe fallback instead of prompting the LLM with weak context.
+
+This is especially useful for questions that are related to Chitrank but not actually supported by the portfolio corpus, such as favorite color or compensation.
+
+---
+
+## Why This Was High ROI
+
+This project has strict free-tier constraints. Adding a reranker model or extra LLM pass would improve relevance, but it would also increase latency, cost, and operational complexity.
+
+The current retrieval design gives most of the practical benefit for this corpus because:
+
+- the corpus is small
+- source types are known
+- question intent is easy to infer
+- broad narrative chunks were the main precision problem
+- unsupported questions are common enough that confidence gating pays for itself
 
 ---
 
 ## Semantic Cache
 
-The response cache stores question→response pairs. Before calling the LLM,
-the query embedding is compared against all cached question embeddings. If
-a similar question was previously answered (similarity > 0.95), the cached
-response is returned immediately.
+The response cache stores question → response pairs. Before calling the LLM, the current question embedding is compared against cached question embeddings.
 
-### Why 0.95 threshold
+If a cached question is similar enough:
 
-At 0.95 cosine similarity, questions must be nearly identical in meaning to
-hit the cache. This is intentionally strict — a slightly different question
-might need a meaningfully different answer. Start strict and tune based on usage.
+- the cached response is returned
+- `hit_count` is incremented
+- no LLM call is made
+
+### Why the threshold is `0.95`
+
+The threshold is intentionally strict. A slightly different portfolio question can deserve a meaningfully different answer, so the cache prefers false negatives over stale or over-broad hits.
 
 ### Cache invalidation
 
-| Trigger              | Action                                                      |
-|----------------------|-------------------------------------------------------------|
-| Sanity webhook fires | `invalidate_cache()` clears all entries                     |
-| Manual               | Call `DELETE /v1/cache` (planned)                           |
-| TTL                  | Entries older than `CACHE_TTL_DAYS` (default 7) are ignored |
+| Trigger | Action |
+|--------|--------|
+| Any ingestion run | `invalidate_cache()` marks active entries stale |
+| Sanity webhook | invalidates cache before re-ingesting Sanity content |
+| TTL | entries older than `CACHE_TTL_DAYS` are ignored |
 
 ### Cache effectiveness
 
-`hit_count` is incremented every time a cache entry is served. Query Supabase
-to see which questions are being cached and how often:
+You can inspect cache reuse with:
 
 ```sql
 SELECT question, hit_count, created_at
@@ -91,11 +142,11 @@ ORDER BY hit_count DESC;
 
 ## Files
 
-| File                        | Responsibility                                          |
-|-----------------------------|---------------------------------------------------------|
-| `src/retrieval/search.py`   | pgvector similarity search against knowledge_chunks     |
-| `src/retrieval/cache.py`    | Semantic response cache — lookup, store, invalidate     |
-| `src/ingestion/embedder.py` | Voyage AI embedding (shared by ingestion and retrieval) |
+| File | Responsibility |
+|------|----------------|
+| `src/retrieval/search.py` | pgvector candidate search, local reranking, and retrieval confidence assessment |
+| `src/retrieval/cache.py` | semantic cache lookup, store, and invalidation |
+| `src/ingestion/embedder.py` | shared embedding interface for ingestion and retrieval |
 
 ---
 

@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Ask Chitrank is a RAG (Retrieval-Augmented Generation) system. This document explains the architecture decisions and data flow.
+Ask Chitrank is a RAG system built for a small, cost-sensitive portfolio knowledge base. This document explains the main architecture decisions and the recent high-ROI improvements.
 
 ---
 
@@ -14,7 +14,7 @@ Ask Chitrank is a RAG (Retrieval-Augmented Generation) system. This document exp
                │             │                  │
 ┌──────────────▼─────────────▼──────────────────▼────────────┐
 │                  Ingestion Pipeline                          │
-│   Parse → Chunk → Embed (Voyage AI) → Store                 │
+│   Parse → Structure evidence docs → Embed → Store           │
 └─────────────────────────┬───────────────────────────────────┘
                           │
 ┌─────────────────────────▼───────────────────────────────────┐
@@ -24,17 +24,19 @@ Ask Chitrank is a RAG (Retrieval-Augmented Generation) system. This document exp
                           │
 ┌─────────────────────────▼───────────────────────────────────┐
 │                   Retrieval Layer                            │
-│   Embed question → Cache lookup → Vector search             │
+│   Embed question → Cache lookup → Vector search → Rerank    │
+│   → Confidence gate                                          │
 └─────────────────────────┬───────────────────────────────────┘
                           │
 ┌─────────────────────────▼───────────────────────────────────┐
 │                    Chat Layer                                │
-│   System prompt + context → Groq LLM → Stream response      │
+│   Pre-router → Prompt + context → Groq or DEV_MODE output   │
 └─────────────────────────┬───────────────────────────────────┘
                           │
 ┌─────────────────────────▼───────────────────────────────────┐
 │                    FastAPI Backend                           │
-│   POST /v1/chat    POST /v1/ingest    GET /v1/health        │
+│   POST /v1/chat    GET /v1/chat/safety-metrics              │
+│   POST /v1/ingest  GET /v1/health                           │
 └─────────────────────────┬───────────────────────────────────┘
                           │
 ┌─────────────────────────▼───────────────────────────────────┐
@@ -49,68 +51,122 @@ Ask Chitrank is a RAG (Retrieval-Augmented Generation) system. This document exp
 
 ### Why RAG over fine-tuning
 
-Fine-tuning a model on personal data is expensive, slow to update, and overkill for a personal portfolio chatbot. RAG retrieves relevant context at query time — when the resume or portfolio updates, re-ingest and the chatbot is immediately current. No retraining required.
+Fine-tuning a model on personal data is expensive, slow to update, and unnecessary for a portfolio chatbot. RAG retrieves context at request time, so content changes become available immediately after ingestion.
 
 ### Why pgvector over a dedicated vector database
 
-Pinecone, Weaviate, and Qdrant are purpose-built vector databases with excellent performance at scale. For a personal portfolio chatbot with low traffic and a small knowledge base (~22 chunks), a dedicated vector database adds operational overhead without benefit.
-
-pgvector is a PostgreSQL extension — it runs inside the existing Supabase database, meaning one less service to manage, one less bill to pay, and no context-switching between database clients.
+For a small knowledge base and low traffic, a dedicated vector database would add operational overhead without much benefit. pgvector keeps the system inside the existing Supabase PostgreSQL setup.
 
 ### Why Voyage AI for embeddings
 
-Anthropic recommends Voyage AI as their embedding partner. `voyage-3-lite` produces 512-dimensional embeddings — smaller than OpenAI's 1536 dimensions, which means faster similarity search and lower storage costs. Quality is competitive with OpenAI for English text retrieval tasks.
+`voyage-3-lite` keeps embedding cost and storage low:
 
-Free tier: 200M tokens/month — more than sufficient for a personal portfolio with low traffic.
+- 512 dimensions
+- good English retrieval quality
+- generous free tier for this project size
 
-### Why Groq for LLM inference
+### Why Groq for generation
 
-Groq's LPU (Language Processing Unit) hardware delivers inference speeds 10-20x faster than GPU-based providers. Llama 3.1 70B on Groq is free up to rate limits and produces high-quality conversational responses.
-
-When traffic grows or Claude API access is available, the LLM client is swapped in one config change — the rest of the system is provider-agnostic.
+Groq provides fast response streaming and a practical free tier for portfolio traffic. The app currently uses `llama-3.3-70b-versatile`.
 
 ### Why semantic caching
 
-Every LLM call costs money and latency. A personal portfolio receives many semantically identical questions — "What has Chitrank built?" and "What projects has he worked on?" mean the same thing.
+Many portfolio questions are repeated in slightly different wording. Semantic caching reduces repeated LLM calls and keeps latency low.
 
-Semantic caching embeds the question and checks if a similar question was already answered. Above a 0.95 cosine similarity threshold, the cached response is returned immediately — zero LLM cost, near-zero latency.
+### Why improve feature extraction before changing providers
 
-Cache entries are invalidated via Sanity webhook when portfolio content changes.
+The highest-ROI quality improvement was not switching embedding vendors. It was improving what the system stores and retrieves.
 
-### No LangChain or LlamaIndex
+The older approach relied more heavily on broad plain-text source documents. The newer approach creates smaller evidence documents, such as:
 
-Both frameworks are designed for complex multi-step agent pipelines with many data sources. A personal portfolio RAG has a fixed, simple pipeline — parse, chunk, embed, retrieve, generate. Framework abstractions add complexity without benefit here.
+- project overview
+- project contributions
+- project links
+- testimonial quotes
+- LinkedIn profile summary
+- LinkedIn links
+- LinkedIn recommendations
 
-Raw API calls give full control over prompt structure, streaming behaviour, and error handling.
+This improves retrieval precision without adding more API calls.
+
+### Why local reranking was worth adding
+
+Pure vector similarity is strong, but broad narrative chunks can rank well for many unrelated questions. A cheap local rerank improves precision by looking at:
+
+- lexical overlap with the question
+- query intent like `projects`, `skills`, `experience`, or `feedback`
+- source-aware caps so testimonials do not dominate factual questions
+
+This is intentionally lightweight because the project has cost constraints.
+
+### Why safety routing was worth adding
+
+Public portfolio bots get many unsupported questions that do not need a full RAG pass:
+
+- "Who are you?"
+- "Are you Chitrank?"
+- salary or private-detail questions
+- explicit prompts
+- prompt-injection attempts
+- clearly unrelated questions
+
+Adding a cheap pre-router and a retrieval confidence gate was worth it because it:
+
+- saves provider calls on low-value queries
+- keeps unsupported questions consistent
+- reduces the chance of weak-context hallucinations
+- helps the bot keep answering even when backing services are degraded
+
+### Why `DEV_MODE` exists
+
+Local iteration should not require Groq, Voyage, Sanity, and Supabase for every small change.
+
+`DEV_MODE` provides:
+
+- deterministic local embeddings
+- fictional seeded source content
+- seeded local chat responses
+- chat startup without a configured database
+
+This keeps day-to-day development cheap and fast.
+
+### Why no LangChain or LlamaIndex
+
+The system is still a fixed pipeline: parse, structure, embed, retrieve, generate. Raw application code remains easier to reason about than an abstraction layer here.
 
 ---
 
 ## Data Flow — Ingestion
 
 ```
-1. Resume PDF read from data/resume.pdf → text extracted via pypdf
-2. Resume split by section headers (Summary, Experience, Skills...)
-3. Sanity CMS queried via GROQ API → Projects + Testimonials
-4. LinkedIn CSVs read from data/linkedin/ → Recommendations, Positions, Skills
-5. Each document chunk embedded via Voyage AI voyage-3-lite → 512-dim vector
-6. Chunk + embedding stored in knowledge_chunks table
-7. Ingestion idempotent — re-running clears and re-ingests source
+1. Resume PDF is read from data/resume.pdf
+2. Resume is split by section headers
+3. Sanity project and testimonial records are transformed into retrieval-friendly evidence docs
+4. LinkedIn profile and recommendation records are transformed into compact evidence docs
+5. If any evidence doc is still too large, chunker.py acts as a safety net
+6. Evidence documents are embedded with Voyage AI
+7. Chunks are stored in knowledge_chunks
+8. Ingestion is idempotent and invalidates stale cache entries
 ```
+
+In `DEV_MODE`, fictional seed content can stand in for the real resume, Sanity, and LinkedIn sources.
 
 ## Data Flow — Query
 
 ```
 1. User sends question via POST /v1/chat
-2. Question embedded via Voyage AI (query input type)
-3. Check response_cache — cosine similarity > 0.95?
-   → Cache hit: return cached response, increment hit_count
-   → Cache miss: continue
-4. Search knowledge_chunks — top 5 by cosine similarity
-5. Build prompt: system prompt + retrieved chunks + question
-6. Call Groq API with Llama 3.1 70B — stream response
-7. Store question + response in response_cache
-8. Stream response to client via Server-Sent Events
+2. A cheap pre-router checks for identity, private, explicit, prompt-injection, and clearly off-topic questions
+3. If the question is not pre-routed, it is embedded
+4. response_cache is checked for a near-duplicate question
+5. knowledge_chunks is searched for a wider vector candidate set
+6. Candidates are reranked locally using query-aware heuristics
+7. Retrieval confidence is assessed before the LLM is called
+8. Prompt is built from the selected chunks
+9. Groq generates and streams the answer
+10. Cache and conversation history are updated
 ```
+
+In `DEV_MODE`, embeddings and generation are handled locally and the API can respond from fictional seeded data without provider calls.
 
 ---
 
@@ -119,9 +175,9 @@ Raw API calls give full control over prompt structure, streaming behaviour, and 
 ```
 knowledge_chunks
     id UUID PK
-    source          VARCHAR  — "resume" | "sanity" | "linkedin"
-    source_id       VARCHAR  — section name, Sanity doc ID, or CSV row identifier
-    content         TEXT     — raw chunk text shown to LLM
+    source          VARCHAR  — "resume" | "sanity" | "linkedin" | "testimonial"
+    source_id       VARCHAR  — source identifier, sometimes with fragment suffixes like #overview
+    content         TEXT     — retrieval-ready evidence text shown to the LLM
     embedding       VECTOR(512)
     chunk_index     INTEGER
     created_at      TIMESTAMPTZ

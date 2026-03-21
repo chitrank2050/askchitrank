@@ -1,23 +1,24 @@
 # Ingestion Pipeline
 
-The ingestion pipeline loads documents from three sources, chunks them,
-embeds via Voyage AI, and stores in Supabase pgvector.
+The ingestion pipeline loads source content, turns it into retrieval-friendly evidence documents, embeds those documents, and stores them in pgvector.
 
 ---
 
 ## Overview
 
 ```
-data/resume.pdf          → pdf_loader.py     → section-aware chunks (6)
-Sanity CMS API           → sanity_loader.py  → plain text documents (12)
-data/linkedin/ CSVs      → linkedin_loader.py → formatted plain text (4)
-                                    ↓
-                             chunker.py (500 words, 50 overlap)
-                                    ↓
-                          embedder.py (Voyage AI voyage-3-lite)
-                                    ↓
-                         knowledge_chunks table (22 total chunks)
+data/resume.pdf            → pdf_loader.py       → section-aware resume chunks
+Sanity CMS API             → sanity_loader.py    → project/testimonial evidence docs
+data/linkedin/ CSVs        → linkedin_loader.py  → profile/recommendation evidence docs
+                                       ↓
+                           chunker.py as a safety net for oversized text
+                                       ↓
+                            embedder.py (Voyage AI or DEV_MODE local embedder)
+                                       ↓
+                               knowledge_chunks table
 ```
+
+Chunk counts are no longer treated as fixed documentation numbers because they vary with source content and with how many evidence documents are emitted per record.
 
 ---
 
@@ -27,14 +28,14 @@ data/linkedin/ CSVs      → linkedin_loader.py → formatted plain text (4)
 make ingest
 ```
 
-Opens an interactive menu to select sources. Select one, two, or all three — they run sequentially in fixed order: resume → sanity → linkedin.
-
 Or run directly:
 
 ```bash
 uv run python -m src.main ingest --source resume
 uv run python -m src.main ingest --source resume sanity linkedin
 ```
+
+Sources still run sequentially in fixed order: `resume → sanity → linkedin`.
 
 ---
 
@@ -44,52 +45,65 @@ uv run python -m src.main ingest --source resume sanity linkedin
 
 **File:** `data/resume.pdf`
 
-Uses section-aware chunking — splits on known section headers rather than word count. Each chunk answers a distinct type of question:
+The resume uses section-aware chunking because resumes are short and semantically dense. Each section tends to answer a different class of question.
 
-| Chunk                          | source_id                        | Answers                              |
-|--------------------------------|----------------------------------|--------------------------------------|
-| Introduction                   | `resume-introduction`            | Contact info, name                   |
-| Summary                        | `resume-summary`                 | Background, years of experience      |
-| Professional Experience        | `resume-professional-experience` | Roles, companies, achievements       |
-| Employment History             | `resume-employment-history`      | Consultancy history                  |
-| Education                      | `resume-education`               | Degree, university                   |
-| Technical Skills               | `resume-technical-skills`        | Languages, frameworks, tools         |
+Typical sections:
+
+- introduction
+- summary
+- professional experience
+- employment history
+- education
+- technical skills
 
 ### Sanity CMS
 
 **Fetched from:** Sanity HTTP API via GROQ queries
 
-Fetches `Project` and `Testimonial` document types. Formatted as plain text — no JSON, no brackets — to minimise LLM token usage.
+Projects are no longer represented only as one broad text block. They are decomposed into retrieval-friendly evidence documents such as:
 
-Fields ingested per Project: title, role, company, overview, vision, technologies, contribution, liveUrl, githubUrl.
+- project overview
+- project contributions
+- project links
 
-Fields ingested per Testimonial: author, role, quote.
+Testimonials are also given their own evidence documents with explicit testimonial labelling.
 
-Images excluded — not useful for text retrieval.
+This change improves precision for questions about:
+
+- technologies
+- responsibilities
+- impact
+- portfolio links
+- colleague feedback
 
 ### LinkedIn
 
-**Files:** `data/linkedin/` directory
+**Files:** `data/linkedin/Profile.csv` and `data/linkedin/Recommendations_Received.csv`
 
-| File                  | Content                                 | Documents              |
-|-----------------------|-----------------------------------------|------------------------|
-| `Recommendations.csv` | Written recommendations from colleagues | One per recommendation |
-| `Positions.csv`       | Work history                            | One per role           |
-| `Skills.csv`          | Endorsed skills                         | One grouped document   |
+The LinkedIn loader currently uses:
 
-Missing CSVs are skipped with a warning — partial exports handled gracefully.
+- `Profile.csv`
+- `Recommendations_Received.csv`
+
+From those files it emits compact evidence documents such as:
+
+- profile summary
+- profile links
+- one recommendation document per visible recommendation
+
+Missing CSVs are still skipped with warnings so partial exports remain usable.
 
 ---
 
 ## Idempotency
 
-Every ingest function clears existing chunks for that source before re-ingesting:
+Each ingest function clears existing chunks for the relevant source before storing the new ones:
 
 ```sql
 DELETE FROM knowledge_chunks WHERE source = 'resume'
 ```
 
-Re-running never creates duplicates. Each source is independent — re-ingesting resume does not affect Sanity or LinkedIn chunks.
+Re-running ingestion never creates duplicates. Cache entries are invalidated before new content is stored so stale answers are not served.
 
 ---
 
@@ -97,24 +111,43 @@ Re-running never creates duplicates. Each source is independent — re-ingesting
 
 ### Section-aware chunking — Resume
 
-Resume text is split at known section headers. Resumes are short (~700 words) — word-count chunking would produce 1-2 large chunks always returned regardless of the question. Section chunking produces 6 focused chunks with high retrieval precision.
+The resume is split by known section headers because that gives much better retrieval precision than treating the whole document as one long chunk.
 
-### Word-count chunking — Sanity + LinkedIn
+### Structured evidence documents — Sanity + LinkedIn
 
-500 words per chunk with 50-word overlap. The overlap ensures context continuity at chunk boundaries.
+Sanity and LinkedIn sources now do most of their quality work before generic chunking. They first create smaller, purpose-built evidence documents.
+
+This is the main retrieval ROI improvement because it produces:
+
+- tighter semantic units
+- cleaner technology and role matching
+- less cross-topic noise in search results
+
+### Word-count chunking — Safety net
+
+`chunker.py` still exists and still supports overlapping word-count chunking. It is now mostly a fallback for any evidence document that grows too large.
 
 ---
 
 ## Embeddings
 
-All text embedded via Voyage AI `voyage-3-lite`:
+Production ingestion uses Voyage AI `voyage-3-lite`:
 
 - 512 dimensions
-- `document` input type for chunks stored in knowledge_chunks
-- `query` input type for user questions at retrieval time
-- Asymmetric embedding — different input types improve retrieval accuracy
-- Batched in groups of 128 — Voyage AI maximum batch size
-- Free tier: 200M tokens/month
+- `document` input type for stored chunks
+- batched up to 128 texts per request
+
+In `DEV_MODE`, the embedder switches to a deterministic local implementation so local development does not spend tokens.
+
+---
+
+## Why These Changes Were High ROI
+
+The ingestion layer is where retrieval quality starts. Better source representation improved RAG quality more cheaply than swapping providers because:
+
+- the embedding model now sees cleaner evidence
+- retrieval has more precise units to select from
+- the change adds no extra provider calls
 
 ---
 

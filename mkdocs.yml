@@ -63,6 +63,8 @@ nav:
   - Home: index.md
   - Concepts:
     - Overview: concepts/overview.md
+    - ROI Improvements: concepts/roi_improvements.md
+    - Safety Routing: concepts/safety_routing.md
   - Development:
     - Setup: development/setup.md
     - Database: development/database.md
@@ -77,6 +79,7 @@ nav:
     - Overview: chat/overview.md
   - API:
     - Reference: api/overview.md
+  - Changelog: changelog.md
 
 extra:
   social:

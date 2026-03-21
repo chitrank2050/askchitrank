@@ -1,16 +1,16 @@
 # Setup
 
-This guide covers setting up Ask Chitrank for local development.
+This guide covers both full production-like setup and low-cost local development.
 
 ---
 
 ## Prerequisites
 
-| Tool   | Version   | Install                                    |
-|--------|-----------|--------------------------------------------|
-| Python | 3.12+     | [python.org](https://www.python.org)       |
-| uv     | latest    | `brew install uv`                          |
-| Git    | latest    | [git-scm.com](https://git-scm.com)         |
+| Tool | Version | Install |
+|------|---------|---------|
+| Python | 3.12+ | [python.org](https://www.python.org) |
+| uv | latest | `brew install uv` |
+| Git | latest | [git-scm.com](https://git-scm.com) |
 
 ---
 
@@ -23,107 +23,124 @@ cd askchitrank
 
 ---
 
-## 2. Create Virtual Environment
+## 2. Create the Environment
 
 ```bash
 make init
-```
-
----
-
-## 3. Install Dependencies
-
-```bash
 make install
-```
-
----
-
-## 4. Set Up Environment
-
-```bash
 cp .env.example .env.dev
 ```
 
-Open `.env.dev` and fill in:
+---
+
+## 3. Choose a Local Mode
+
+### Option A — Token-free local development
+
+If you want to work on the API, prompt flow, streaming, or frontend integration without spending Groq or Voyage quota:
 
 ```bash
-# Required — get from console.groq.com (free, no credit card)
+API_TOKEN=dev-token
+DEV_MODE=true
+```
+
+Optional:
+
+```bash
+CONTACT_EMAIL=hello@example.dev
+```
+
+In this mode:
+
+- Groq calls are skipped
+- Voyage calls are skipped
+- chat can run without a database
+- fictional seeded data is used for local responses
+
+This is the recommended default for day-to-day local iteration.
+
+### Option B — Full provider-backed development
+
+If you want to exercise the full production-style pipeline, fill in:
+
+```bash
 GROQ_API_KEY=your-groq-api-key
-
-# Required — get from voyageai.com (free tier)
 VOYAGE_API_KEY=your-voyage-api-key
-
-# Required — get from Supabase dashboard → Settings → Database
 DATABASE_URL=postgresql+asyncpg://postgres:[PASSWORD]@db.[REF].supabase.co:5432/postgres
 DATABASE_URL_SYNC=postgresql+psycopg2://postgres:[PASSWORD]@db.[REF].supabase.co:5432/postgres
 SUPABASE_URL=https://[REF].supabase.co
 SUPABASE_KEY=your-supabase-anon-key
-
-# Required — get from sanity.io/manage
 SANITY_PROJECT_ID=your-project-id
 SANITY_API_TOKEN=your-api-token
+API_TOKEN=your-generated-token
+DEV_MODE=false
 ```
 
 ---
 
-## 5. Set Up Database
+## 4. Database Setup
 
-See [Database Setup](database.md) for full instructions.
+For the full pipeline, follow [Database Setup](database.md) and run:
 
 ```bash
 make db-migrate
 ```
 
+If you stay in token-free `DEV_MODE`, chat-only API work does not require the database.
+
 ---
 
-## 6. Prepare Data Sources
+## 5. Prepare Data Sources
 
-**Resume:**
+### Resume
 
 Place your resume PDF at `data/resume.pdf`.
 
-**LinkedIn:**
+### LinkedIn
 
-Export your LinkedIn data: LinkedIn → Settings & Privacy → Data Privacy → Get a copy of your data → Request archive.
+Export your LinkedIn data and place these CSVs in `data/linkedin/`:
 
-Extract the archive and place these CSVs in `data/linkedin/`:
-- `Recommendations.csv`
-- `Positions.csv`
-- `Skills.csv`
+- `Profile.csv`
+- `Recommendations_Received.csv`
 
-**Sanity CMS:**
+### Sanity CMS
 
-No manual steps needed — fetched automatically via API during ingestion.
+No manual content export is needed. Data is fetched via the Sanity API during ingestion.
 
 ---
 
-## 7. Ingest Data
+## 6. Ingest Data
 
 ```bash
 make ingest
 ```
 
-Opens an interactive menu to select which sources to ingest. Select all three on first run.
+Notes:
+
+- In full mode, this stores real embeddings in the database.
+- In `DEV_MODE`, ingestion uses fictional seeded source content.
+- In `DEV_MODE` without a configured database, ingestion is skipped because there is nowhere to persist chunks.
 
 ---
 
-## 8. Start the API
+## 7. Start the API
 
 ```bash
 make api
 ```
 
+If `DEV_MODE=true`, the API can start and serve fictional seeded chat responses even without database credentials.
+
 ---
 
-## API Keys
+## Service Setup
 
-| Service            | URL                                                    | Cost                   |
-|--------------------|--------------------------------------------------------|------------------------|
-| Groq               | [console.groq.com](https://console.groq.com)           | Free tier, no card     |
-| Voyage AI          | [voyageai.com](https://www.voyageai.com)               | 200M tokens/month free |
-| Supabase           | [supabase.com](https://supabase.com)                   | Free tier              |
-| Anthropic (future) | [console.anthropic.com](https://console.anthropic.com) | $5 credit on signup    |
+| Service | URL | Cost |
+|---------|-----|------|
+| Groq | [console.groq.com](https://console.groq.com) | free tier |
+| Voyage AI | [voyageai.com](https://www.voyageai.com) | generous free tier |
+| Supabase | [supabase.com](https://supabase.com) | free tier |
+| Sanity | [sanity.io/manage](https://sanity.io/manage) | depends on workspace plan |
 
 ---
 

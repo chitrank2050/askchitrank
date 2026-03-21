@@ -8,29 +8,20 @@ Ask Chitrank uses Supabase PostgreSQL with the pgvector extension for vector sim
 
 ### 1. Create a Supabase project
 
-Go to [supabase.com](https://supabase.com) → New Project.
+Go to [supabase.com](https://supabase.com) and create a new project.
 
-Recommended region: Asia Pacific (Singapore) — closest to India.
+### 2. Enable pgvector
 
-### 2. Enable pgvector extension
-
-Go to **SQL Editor** and run:
+Run:
 
 ```sql
 CREATE EXTENSION IF NOT EXISTS vector;
 ```
 
-This enables the `VECTOR` column type used for storing embeddings.
-
 ### 3. Get connection strings
 
-Go to **Settings** → **Database** → **Connection string**.
-
 ```bash
-# Async — FastAPI runtime
 DATABASE_URL=postgresql+asyncpg://postgres:[PASSWORD]@db.[REF].supabase.co:5432/postgres
-
-# Sync — Alembic migrations only
 DATABASE_URL_SYNC=postgresql+psycopg2://postgres:[PASSWORD]@db.[REF].supabase.co:5432/postgres
 ```
 
@@ -39,13 +30,8 @@ DATABASE_URL_SYNC=postgresql+psycopg2://postgres:[PASSWORD]@db.[REF].supabase.co
 ## Running Migrations
 
 ```bash
-# Apply all pending migrations
 make db-migrate
-
-# Create a new migration after model changes
 make db-migration
-
-# Roll back the last migration
 make db-rollback
 ```
 
@@ -55,61 +41,73 @@ make db-rollback
 
 ### `knowledge_chunks`
 
-Stores embedded text chunks from all ingestion sources.
+Stores retrieval-ready evidence chunks from all ingestion sources.
 
-| Column       | Type        | Description                                               |
-|--------------|-------------|-----------------------------------------------------------|
-| `id`         | UUID        | Primary key                                               |
-| `source`     | VARCHAR     | `resume`, `sanity`, or `linkedin`                         |
-| `source_id`  | VARCHAR     | Section name, Sanity doc ID, or CSV row identifier        |
-| `content`    | TEXT        | Raw chunk text shown to LLM as context                    |
-| `embedding`  | VECTOR(512) | Voyage AI voyage-3-lite embedding                         |
-| `chunk_index`| INTEGER     | Position in source document                               |
-| `created_at` | TIMESTAMPTZ | Ingestion timestamp                                       |
-| `updated_at` | TIMESTAMPTZ | Last update timestamp                                     |
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | UUID | primary key |
+| `source` | VARCHAR | `resume`, `sanity`, `linkedin`, or `testimonial` |
+| `source_id` | VARCHAR | source identifier, sometimes with fragment suffixes like `#overview` or `#links` |
+| `content` | TEXT | retrieval-ready evidence text shown to the LLM |
+| `embedding` | VECTOR(512) | embedding vector |
+| `chunk_index` | INTEGER | position within the source document |
+| `created_at` | TIMESTAMPTZ | ingestion timestamp |
+| `updated_at` | TIMESTAMPTZ | last update timestamp |
 
 ### `response_cache`
 
-Caches question→response pairs to reduce LLM API costs.
+Caches semantically similar question → response pairs.
 
-| Column               | Type        | Description                               |
-|----------------------|-------------|-------------------------------------------|
-| `id`                 | UUID        | Primary key                               |
-| `question`           | TEXT        | Original user question                    |
-| `question_embedding` | VECTOR(512) | For similarity lookup                     |
-| `response`           | TEXT        | Cached LLM response                       |
-| `source_chunk_ids`   | TEXT        | JSON array of chunk UUIDs used            |
-| `hit_count`          | INTEGER     | Times this cache entry was served         |
-| `created_at`         | TIMESTAMPTZ | Cache entry creation time                 |
-| `invalidated_at`     | TIMESTAMPTZ | Null = valid. Set on webhook invalidation |
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | UUID | primary key |
+| `question` | TEXT | original user question |
+| `question_embedding` | VECTOR(512) | embedding for similarity lookup |
+| `response` | TEXT | cached answer |
+| `source_chunk_ids` | TEXT | JSON array of chunk UUIDs used |
+| `hit_count` | INTEGER | number of cache hits |
+| `created_at` | TIMESTAMPTZ | cache creation time |
+| `invalidated_at` | TIMESTAMPTZ | `NULL` means active |
 
 ### `conversations`
 
-Stores conversation history per browser session.
+Stores multi-turn history per browser session.
 
-| Column           | Type            | Description                |
-|------------------|-----------------|----------------------------|
-| `id`             | UUID            | Primary key                |
-| `session_id`     | VARCHAR         | Browser session identifier |
-| `role`           | VARCHAR         | `user` or `assistant`      |
-| `content`        | TEXT            | Message text               |
-| `created_at`     | TIMESTAMPTZ     | Message timestamp          |
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | UUID | primary key |
+| `session_id` | VARCHAR | browser session identifier |
+| `role` | VARCHAR | `user` or `assistant` |
+| `content` | TEXT | message text |
+| `created_at` | TIMESTAMPTZ | timestamp |
 
 ---
 
-## Supabase Free Tier Behaviour
+## Free Tier Behaviour
 
-Supabase free tier pauses the database after 1 week of inactivity. The first request after a pause will be slow (~2-3 seconds) as the database wakes up.
+Supabase free tier can pause the database after inactivity. The first request after a pause may be slower while the database wakes up.
 
-This is handled by `pool_pre_ping=True` in `connection.py` — subsequent requests are fast once the database is awake.
+`pool_pre_ping=True` is used to help connection reuse behave cleanly after wake-up.
+
+---
+
+## DEV_MODE Note
+
+The database is optional only for chat-only local development in `DEV_MODE`.
+
+If you want:
+
+- persistent conversations
+- semantic cache
+- ingestion-backed retrieval
+
+you still need the database configured.
 
 ---
 
 ## Alembic Version Table
 
-The migration version table is named `alembic_version_askchitrank` — separate from any other project using the same Supabase database.
-
-Configured in `alembic.ini`:
+The migration version table is `alembic_version_askchitrank`.
 
 ```ini
 version_table = alembic_version_askchitrank

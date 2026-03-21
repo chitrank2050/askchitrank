@@ -1,25 +1,30 @@
 # Chat Layer
 
-The chat layer takes retrieved knowledge chunks, builds a prompt,
-calls the Groq LLM, and streams the response back to the client.
+The chat layer decides how each question should be answered, builds the prompt when RAG is appropriate, and streams the answer back to the client.
 
 ---
 
 ## Overview
 
-```
-Retrieved chunks (from retrieval layer)
-            ↓
-      build_messages()
-      System prompt + context + question
-            ↓
-      stream_response() or get_response()
-      Groq API — Llama 3.3 70B
-            ↓
-      Token stream → SSE events
-            ↓
-      store_cached_response()
-      store_conversation()
+```text
+User question
+      ↓
+Cheap safety pre-router
+      ↓ bypass                     ↓ continue
+Canned response              Embed + cache + retrieval
+                                   ↓
+                            Retrieval confidence gate
+                                   ↓ pass         ↓ fail
+                            build_messages()      Canned fallback
+                                   ↓
+                            stream_response()
+                            Groq API — Llama 3.3 70B
+                            or DEV_MODE seeded response
+                                   ↓
+                            Token stream → SSE events
+                                   ↓
+                            store_cached_response()
+                            store_conversation()
 ```
 
 ---
@@ -27,89 +32,123 @@ Retrieved chunks (from retrieval layer)
 ## Files
 
 | File | Responsibility |
-|---|---|
-| `src/chat/prompt.py` | System prompt definition + context builder |
-| `src/chat/groq_client.py` | Groq API calls — streaming and standard |
-| `src/chat/stream.py` | Full pipeline orchestration + SSE output |
+|------|----------------|
+| `src/chat/safety.py` | cheap pre-routing, canned responses, and in-process safety metrics |
+| `src/chat/prompt.py` | system prompt definition and context builder |
+| `src/chat/groq_client.py` | Groq generation plus seeded DEV_MODE response path |
+| `src/chat/stream.py` | full chat orchestration and SSE output |
 
 ---
 
 ## System Prompt
 
-The system prompt is the most critical piece. It defines the chatbot's
-persona, constraints, and behaviour — determining whether the bot stays
-on topic and gives accurate answers.
+The system prompt is responsible for keeping answers:
 
-**Key constraints enforced:**
+- factual
+- concise
+- on-topic
+- grounded in retrieved context
 
-- Answer ONLY from provided context — never invent facts
-- If context is insufficient, direct the user to contact Chitrank directly
-- Keep answers concise — this is a portfolio chat widget, not a report
-- Refer to Chitrank in third person
-- Politely redirect completely off-topic questions
+Key rules enforced:
 
-**Context injection:**
+- answer only from provided context
+- never invent facts
+- refer to Chitrank in third person
+- clarify that the assistant is not Chitrank
+- refuse private, explicit, or prompt-reveal requests when they are unsupported
+- redirect off-topic questions
+- use the configured contact email when context is insufficient
 
-Retrieved chunks are injected into the system message — not as a separate
-user message. This keeps conversation history clean and prevents the LLM
-from treating context as user input.
-
-```
-[System]
-You are Ask Chitrank — an AI assistant...
---- CONTEXT ---
-[1] Source: Resume
-Technical Skills: JavaScript, TypeScript, React...
-
-[2] Source: Sanity
-Project: Humanform AI | Generative AI Digital Identity Platform...
---- END CONTEXT ---
-
-[User]
-What frontend frameworks does Chitrank know?
-```
+Retrieved chunks are injected into the system message rather than appended as a separate user message. That keeps conversation history cleaner and reduces confusion about what is instruction versus evidence.
 
 ---
 
-## Groq LLM
+## Safety Routing
 
-Model: `llama-3.3-70b-versatile`
+Before embeddings or retrieval, the chat layer now runs a cheap pre-router for questions that do not need the full RAG pipeline.
+
+It handles:
+
+- identity questions like "Who are you?" or "Are you Chitrank?"
+- private questions like salary or sensitive personal details
+- explicit questions
+- prompt-injection attempts
+- clearly off-topic questions
+
+These return deterministic canned responses immediately, which improves safety and saves tokens.
+
+---
+
+## Confidence Gate
+
+After retrieval, the chat layer now checks whether the selected chunks are strong enough to answer from.
+
+The decision uses signals from the retrieval layer such as:
+
+- top similarity
+- lexical coverage of the question
+- whether the semantic match is strong enough to trust without literal overlap
+
+If confidence is too low, the chat layer returns a safe fallback instead of sending weak context to the LLM.
+
+---
+
+## Generation
+
+Production generation uses Groq with `llama-3.3-70b-versatile`.
 
 | Setting | Value | Reason |
-|---|---|---|
-| `temperature` | 0.1 | Low — factual answers, minimal creativity |
-| `max_tokens` | 1024 | Sufficient for portfolio answers |
-| `stream` | True (default) | Tokens appear as they arrive |
+|---------|-------|--------|
+| `temperature` | `0.1` | keeps answers factual and controlled |
+| `max_tokens` | `1024` | enough for portfolio answers |
+| `stream` | `true` by default | supports token streaming |
 
-**Provider swap:**
+The provider-specific blast radius is intentionally small. Generation logic is isolated in `src/chat/groq_client.py`.
 
-The Groq client is designed to be swapped. When an Anthropic API key
-is available, replace `groq_client.py` with an Anthropic client — the
-rest of the pipeline is unchanged.
+---
+
+## DEV_MODE
+
+When `DEV_MODE=true`, the chat layer avoids real Groq calls.
+
+Instead it:
+
+- builds the same prompt shape
+- reads the injected context
+- returns a deterministic seeded response from fictional local data
+
+If the database is also missing, the chat layer can still answer from a compact fictional seeded context block so API work is not blocked.
+
+---
+
+## Always-Answer Behavior
+
+The chat endpoint now prefers a safe answer over a dead-end provider error.
+
+That means:
+
+- unsupported questions return canned responses
+- weak retrieval returns a fallback response
+- generation failures return a fallback response
+- production chat can degrade safely even if the database is unavailable
+
+This is important for a public portfolio widget, where silence feels broken.
 
 ---
 
 ## Streaming
 
-Two modes controlled by the `stream` field in `ChatRequest`:
+Two modes are controlled by the `stream` field in `ChatRequest`.
 
-### SSE Streaming (default: `stream=true`)
+### SSE streaming (`stream=true`)
 
-Tokens arrive word by word via Server-Sent Events:
-
-```
+```text
 data: {"type": "token", "content": "Chitrank"}
 data: {"type": "token", "content": " has"}
-data: {"type": "token", "content": " built"}
 data: {"type": "done", "cached": false}
 ```
 
-Frontend connects to the endpoint and reads the event stream.
-Each token is appended to the UI as it arrives — typical LLM chat UX.
-
-### Full Response (`stream=false`)
-
-Waits for the complete response then returns JSON:
+### Full response (`stream=false`)
 
 ```json
 {
@@ -118,29 +157,40 @@ Waits for the complete response then returns JSON:
 }
 ```
 
-Useful for simple integrations or testing without SSE parsing.
+The chat layer now tries hard to avoid `error` events by returning a safe fallback answer instead.
 
 ---
 
 ## Conversation History
 
-Each question and response is stored in the `conversations` table.
-The last 6 messages (3 turns) are fetched and included in the prompt
-for multi-turn context.
+Each user question and assistant response is stored in `conversations`.
 
-This means the chatbot remembers earlier parts of the same session:
+The chat layer fetches the latest 6 messages and includes them in the prompt so follow-up questions keep context inside the same browser session.
 
-```
+That is how questions like this work naturally:
+
+```text
 User: What projects has Chitrank built?
-Bot: Chitrank has built Humanform, Plural, Hudini...
+Bot: ...
 
-User: Tell me more about Humanform
-Bot: [knows from history that user is asking about Chitrank's projects]
+User: Tell me more about the chatbot one
+Bot: ...
 ```
 
-Session ID is generated by the frontend (UUID) and persists in
-localStorage. The same session ID must be sent on every request
-within a conversation.
+---
+
+## Metrics
+
+Safety and refusal behavior is tracked in-process and exposed at:
+
+`GET /v1/chat/safety-metrics`
+
+The snapshot includes:
+
+- response-route counts such as `pre_router`, `cache_hit`, `llm`, and `error_fallback`
+- pre-router categories and reasons
+- retrieval confidence fallback reasons
+- last-resort fallback reasons
 
 ---
 

@@ -1,6 +1,6 @@
 # Ask Chitrank
 
-> RAG-powered AI assistant that answers questions about Chitrank using resume, portfolio, and Sanity CMS data.
+> RAG-powered AI assistant that answers questions about Chitrank using resume, portfolio, LinkedIn, and testimonial data.
 
 ---
 
@@ -15,7 +15,7 @@
 
 ## What It Does
 
-Ask Chitrank is a conversational AI that answers questions about Chitrank Agnihotri — his experience, projects, skills, and background. It uses Retrieval-Augmented Generation (RAG) to ground every answer in real data from his resume, LinkedIn, and portfolio, preventing hallucination.
+Ask Chitrank is a conversational AI that answers questions about Chitrank Agnihotri — his experience, projects, skills, and background. It uses RAG to ground every answer in real portfolio data and avoid hallucination.
 
 **Example questions it answers:**
 
@@ -23,7 +23,7 @@ Ask Chitrank is a conversational AI that answers questions about Chitrank Agniho
 - "What is his tech stack?"
 - "How many years of experience does he have?"
 - "What do his colleagues say about him?"
-- "Has he worked with AI companies?"
+- "Has he worked with AI products?"
 
 ---
 
@@ -32,34 +32,48 @@ Ask Chitrank is a conversational AI that answers questions about Chitrank Agniho
 ```
 User question
     ↓
-Embed question (Voyage AI)
-    ↓
-Check semantic cache (pgvector similarity search)
-    ↓ hit                        ↓ miss
-Return cached response      Search knowledge base
+Cheap safety pre-router
+    ↓ bypass                     ↓ continue
+Canned response             Embed question (Voyage AI voyage-3-lite)
                                 ↓
-                            Top 5 relevant chunks
-                                ↓
-                            Build prompt + context
-                                ↓
-                            Groq LLM (Llama 3.1 70B)
-                                ↓
-                            Store in cache
-                                ↓
-                            Stream response
+                        Check semantic cache (pgvector similarity search)
+                                ↓ hit                        ↓ miss
+                        Return cached response      Search knowledge base
+                                                        ↓
+                                                Query-aware local reranking
+                                                        ↓
+                                              Retrieval confidence gate
+                                                        ↓ pass         ↓ fail
+                                                Build prompt + context  Canned fallback
+                                                        ↓
+                                                Groq LLM (Llama 3.3 70B)
+                                                        ↓
+                                                Store in cache
+                                                        ↓
+                                                Stream response
 ```
 
 ---
 
-## Knowledge Base
+## Knowledge Base Shape
 
-| Source       | Content                                | Chunks |
-|--------------|----------------------------------------|--------|
-| Resume PDF   | Experience, skills, education          | 6      |
-| Sanity CMS   | Projects                               | 9      |
-| Testimonials | Colleague recommendations              | 3      |
-| LinkedIn     | Recommendations, positions, skills     | 4      |
-| **Total**    |                                        | **22** |
+| Source       | Content type                               | Retrieval shape |
+|--------------|---------------------------------------------|-----------------|
+| Resume PDF   | Experience, skills, education               | Section-aware chunks |
+| Sanity CMS   | Projects                                    | Overview, contribution, and link evidence documents |
+| Testimonials | Colleague recommendations                   | One evidence document per testimonial |
+| LinkedIn     | Profile summary, links, recommendations     | Compact profile and recommendation evidence documents |
+
+Exact chunk counts vary as source content changes and as structured evidence documents are emitted during ingestion.
+
+---
+
+## Recent ROI Improvements
+
+- Structured feature extraction now creates retrieval-friendly evidence documents instead of relying only on broad source blobs.
+- Retrieval now combines vector search with cheap local reranking, improving relevance without increasing provider spend.
+- Chat now uses a cheap pre-router plus a retrieval confidence gate, improving safety and saving tokens on unsupported questions.
+- `DEV_MODE` now supports fictional seeded data and local fake providers so local API work does not burn Groq or Voyage quota.
 
 ---
 
@@ -70,17 +84,18 @@ Return cached response      Search knowledge base
 - [x] Phase 3 — Retrieval layer (vector search + semantic cache)
 - [x] Phase 4 — Chat layer (prompt engineering + Groq LLM)
 - [x] Phase 5 — FastAPI + streaming (SSE chat endpoint)
-- [ ] Phase 6 — Sanity webhook auto-sync + Railway deployment
-- [ ] Phase 7 — Frontend chat widget (Next.js)
+- [x] Phase 7 — Sanity webhook auto-sync
+- [ ] Phase 6 — Frontend chat widget (Next.js)
 
 ---
 
 ## Known Limitations
 
-- Groq free tier: 6000 tokens/minute — sufficient for personal portfolio traffic
-- Supabase free tier pauses after 1 week inactivity — first request after pause is slow (~2-3 seconds)
-- Response cache threshold (0.95) may miss semantically similar but differently phrased questions
-- voyage-3-lite similarity scores are lower than OpenAI embeddings numerically — ranking is correct even when scores appear low
+- Groq free tier rate limits still apply in production mode
+- Supabase free tier can pause after inactivity, making the first request slower
+- The semantic cache threshold of `0.95` is intentionally strict and may miss some near-duplicates
+- Local reranking is heuristic-based, so it should still be tuned against real production queries over time
+- Safety pre-routing and retrieval confidence are heuristic-based and should also be tuned against real production traffic
 
 ---
 
