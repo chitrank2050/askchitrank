@@ -8,11 +8,14 @@ All endpoints require a valid Bearer token in the Authorization header.
 
 Endpoints:
     POST /v1/chat
+    GET /v1/chat/safety-metrics
 
 SSE event format:
-    data: {"type": "token", "content": "..."}  — response token
-    data: {"type": "done", "cached": bool}     — stream complete
-    data: {"type": "error", "message": "..."}  — pipeline error
+    data: {"type": "token", "content": "..."}                — response token
+    data: {"type": "done", "cached": bool, "latency_ms": N}  — stream complete
+
+The chat pipeline now prefers safe fallback answers over error events,
+so clients should normally expect only `token` and `done`.
 """
 
 import json as _json
@@ -22,14 +25,32 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.schemas.chat import ChatRequest
+from api.schemas.safety_metrics import SafetyMetricsResponse
 from api.utils.auth import verify_api_token
 from api.utils.errors import APIError
 from api.utils.rate_limit import limiter
+from src.chat.safety import get_safety_metrics_snapshot
 from src.chat.stream import stream_chat_response
 from src.core.logger import logger
-from src.db.connection import get_db
+from src.db.connection import get_optional_db
 
 router = APIRouter()
+
+
+@router.get(
+    "/chat/safety-metrics",
+    response_model=SafetyMetricsResponse,
+    summary="Inspect chat safety metrics",
+    description=(
+        "Returns in-process counters for pre-routing, retrieval confidence fallbacks, "
+        "and last-resort chat safety responses. Requires a valid Bearer token."
+    ),
+)
+async def safety_metrics(
+    _: None = Depends(verify_api_token),
+) -> SafetyMetricsResponse:
+    """Return current chat safety counters since process start."""
+    return SafetyMetricsResponse.model_validate(get_safety_metrics_snapshot())
 
 
 @router.post(
@@ -46,12 +67,13 @@ router = APIRouter()
 async def chat(
     request: Request,
     body: ChatRequest,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession | None = Depends(get_optional_db),
     _: None = Depends(verify_api_token),
 ) -> StreamingResponse | JSONResponse:
     """Stream a RAG response for the user question.
 
-    Runs the full pipeline: embed → cache check → retrieve →
+    Runs the chat pipeline: pre-route unsupported questions cheaply,
+    otherwise embed → cache check → retrieve → confidence gate →
     prompt → stream LLM → store cache → store conversation.
 
     Args:
@@ -94,6 +116,7 @@ async def chat(
     # Full response — collect all tokens then return JSON
     full_response = ""
     cached = False
+    latency_ms: float | None = None
 
     async for event in stream_chat_response(
         question=body.question,
@@ -107,7 +130,12 @@ async def chat(
             full_response += data["content"]
         elif data["type"] == "done":
             cached = data.get("cached", False)
+            latency_ms = data.get("latency_ms")
         elif data["type"] == "error":
             raise APIError.llm_failed()
 
-    return JSONResponse(content={"response": full_response, "cached": cached})
+    response_data: dict = {"response": full_response, "cached": cached}
+    if latency_ms is not None:
+        response_data["latency_ms"] = latency_ms
+
+    return JSONResponse(content=response_data)

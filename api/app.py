@@ -28,7 +28,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
 from api.utils.errors import APIError, api_error_handler
-from api.utils.middleware import add_request_id, add_security_headers
+from api.utils.middleware import add_request_id, add_response_time, add_security_headers
 from api.utils.rate_limit import limiter
 from api.v1 import router as v1_router
 from src.core import bootstrap
@@ -118,8 +118,9 @@ def create_app() -> FastAPI:
 
     # ── Middleware ─────────────────────────────────────────────────────────
     # Execution order is LIFO — last registered runs first on request.
-    # CORS → SlowAPI → Security headers → Request ID
+    # CORS → SlowAPI → Security headers → Request ID → Response time
 
+    app.middleware("http")(add_response_time)
     app.middleware("http")(add_request_id)
     app.middleware("http")(add_security_headers)
 
@@ -136,6 +137,7 @@ def create_app() -> FastAPI:
         allow_credentials=settings.API_ALLOW_CREDENTIALS,
         allow_methods=settings.API_ALLOWED_METHODS,
         allow_headers=settings.API_ALLOWED_HEADERS,
+        expose_headers=settings.API_EXPOSE_HEADERS,
     )
 
     # ── Routes ─────────────────────────────────────────────────────────────

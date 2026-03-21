@@ -25,7 +25,9 @@ Typical usage:
 import csv
 from pathlib import Path
 
+from src.core.config import settings
 from src.core.logger import logger
+from src.dev.seed_data import SEED_LINKEDIN_PROFILE, SEED_LINKEDIN_RECOMMENDATIONS
 from src.utils.paths import get_data_path
 
 # Directory containing LinkedIn CSV exports
@@ -107,6 +109,71 @@ def _format_profile(profile: dict) -> str:
     return "\n".join(parts)
 
 
+def _build_profile_documents(profile: dict) -> list[dict]:
+    """Create compact semantic documents for the LinkedIn profile."""
+    documents = []
+
+    summary_parts = ["Evidence Type: linkedin-profile"]
+    summary_parts.append(
+        "Useful for queries about: profile, experience, background, tech stack"
+    )
+
+    name = " ".join(
+        part
+        for part in [
+            profile.get("First Name", "").strip(),
+            profile.get("Last Name", "").strip(),
+        ]
+        if part
+    )
+    if name:
+        summary_parts.append(f"Name: {name}")
+
+    if profile.get("Headline"):
+        summary_parts.append(f"Headline: {profile['Headline'].strip()}")
+    if profile.get("Summary"):
+        summary_parts.append(f"Summary: {profile['Summary'].strip()}")
+    if profile.get("Industry"):
+        summary_parts.append(f"Industry: {profile['Industry'].strip()}")
+    if profile.get("Geo Location"):
+        summary_parts.append(f"Location: {profile['Geo Location'].strip()}")
+
+    documents.append(
+        {
+            "text": "\n".join(summary_parts),
+            "source": "linkedin",
+            "source_id": "linkedin-profile#summary",
+        }
+    )
+
+    websites_raw = profile.get("Websites", "").strip()
+    if websites_raw and websites_raw not in ("", "[]"):
+        websites_clean = websites_raw.strip("[]")
+        raw_entries = websites_clean.split(",")
+        full_urls = []
+        for entry in raw_entries:
+            parts_split = entry.strip().split(":", 1)
+            if len(parts_split) == 2:
+                full_urls.append(parts_split[1].strip())
+
+        if full_urls:
+            documents.append(
+                {
+                    "text": "\n".join(
+                        [
+                            "Evidence Type: linkedin-links",
+                            "Useful for queries about: links, profile, portfolio, github",
+                            f"Websites: {', '.join(full_urls)}",
+                        ]
+                    ),
+                    "source": "linkedin",
+                    "source_id": "linkedin-profile#links",
+                }
+            )
+
+    return documents
+
+
 def _format_recommendation(rec: dict) -> str:
     """Format a single recommendation row as plain text.
 
@@ -146,6 +213,32 @@ def _format_recommendation(rec: dict) -> str:
     return "\n".join(parts)
 
 
+def _build_recommendation_document(rec: dict, index: int) -> dict:
+    """Create a retrieval-friendly recommendation document."""
+    parts = ["Evidence Type: linkedin-recommendation"]
+    parts.append(
+        "Useful for queries about: recommendations, collaboration, delivery, feedback"
+    )
+
+    first = rec.get("First Name", "").strip()
+    last = rec.get("Last Name", "").strip()
+    if first or last:
+        parts.append(f"Recommendation from: {first} {last}".strip())
+
+    if rec.get("Job Title"):
+        parts.append(f"Their role: {rec['Job Title'].strip()}")
+    if rec.get("Company"):
+        parts.append(f"Company: {rec['Company'].strip()}")
+
+    parts.append(f'"{rec["Text"].strip()}"')
+
+    return {
+        "text": "\n".join(parts),
+        "source": "linkedin",
+        "source_id": f"linkedin-recommendation-{index}",
+    }
+
+
 async def load_linkedin_documents() -> list[dict]:
     """Load and format all LinkedIn CSV exports as plain text documents.
 
@@ -169,35 +262,26 @@ async def load_linkedin_documents() -> list[dict]:
     documents = []
 
     # Profile — single document from first row
-    profiles = _read_csv("Profile.csv")
+    profiles = (
+        [SEED_LINKEDIN_PROFILE] if settings.DEV_MODE else _read_csv("Profile.csv")
+    )
     if profiles:
-        # LinkedIn Profile.csv always has exactly one row
-        text = _format_profile(profiles[0])
-        if text.strip():
-            documents.append(
-                {
-                    "text": text,
-                    "source": "linkedin",
-                    "source_id": "linkedin-profile",
-                }
-            )
+        documents.extend(_build_profile_documents(profiles[0]))
         logger.info("Loaded LinkedIn profile")
     else:
         logger.warning("Profile.csv empty or missing")
 
     # Recommendations — one document per visible recommendation
-    recommendations = _read_csv("Recommendations_Received.csv")
+    recommendations = (
+        SEED_LINKEDIN_RECOMMENDATIONS
+        if settings.DEV_MODE
+        else _read_csv("Recommendations_Received.csv")
+    )
     visible_count = 0
     for i, rec in enumerate(recommendations):
         text = _format_recommendation(rec)
         if text.strip():
-            documents.append(
-                {
-                    "text": text,
-                    "source": "linkedin",
-                    "source_id": f"linkedin-recommendation-{i}",
-                }
-            )
+            documents.append(_build_recommendation_document(rec, i))
             visible_count += 1
 
     logger.info(

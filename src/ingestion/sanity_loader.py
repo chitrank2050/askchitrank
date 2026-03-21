@@ -22,6 +22,7 @@ import httpx
 
 from src.core.config import settings
 from src.core.logger import logger
+from src.dev.seed_data import SEED_SANITY_PROJECTS, SEED_SANITY_TESTIMONIALS
 
 # Sanity CDN base URL for GROQ queries
 _SANITY_API_BASE = (
@@ -97,6 +98,117 @@ def _format_project(project: dict) -> str:
     return "\n".join(parts)
 
 
+def _project_keywords(project: dict) -> list[str]:
+    """Extract compact retrieval hints from a project document."""
+    raw_values = [
+        project.get("title", ""),
+        project.get("company", ""),
+        project.get("role", ""),
+    ]
+    raw_values.extend(project.get("technologies") or [])
+
+    seen: set[str] = set()
+    keywords: list[str] = []
+
+    for value in raw_values:
+        cleaned = str(value).strip()
+        if not cleaned:
+            continue
+        key = cleaned.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        keywords.append(cleaned)
+
+    return keywords
+
+
+def _build_project_documents(project: dict) -> list[dict]:
+    """Create bounded semantic documents for project retrieval."""
+    documents: list[dict] = []
+    source_id = project["_id"]
+    keywords = _project_keywords(project)
+    keyword_line = f"Keywords: {', '.join(keywords)}" if keywords else ""
+    techs = ", ".join(project.get("technologies") or [])
+
+    overview_parts = []
+    if project.get("title"):
+        overview_parts.append(f"Project: {project['title']}")
+    overview_parts.append("Evidence Type: project")
+    overview_parts.append(
+        "Useful for queries about: projects, role, company, technologies, product work"
+    )
+    if project.get("company"):
+        overview_parts.append(f"Company: {project['company']}")
+    if project.get("role"):
+        overview_parts.append(f"Role: {project['role']}")
+    if techs:
+        overview_parts.append(f"Technologies: {techs}")
+    if keyword_line:
+        overview_parts.append(keyword_line)
+    if project.get("overview"):
+        overview_parts.append(f"Overview: {project['overview']}")
+    if project.get("vision"):
+        overview_parts.append(f"Vision: {project['vision']}")
+
+    documents.append(
+        {
+            "text": "\n".join(overview_parts),
+            "source": "sanity",
+            "source_id": f"{source_id}#overview",
+        }
+    )
+
+    contributions = project.get("contribution") or []
+    if contributions:
+        contribution_parts = []
+        if project.get("title"):
+            contribution_parts.append(f"Project: {project['title']}")
+        contribution_parts.append("Evidence Type: project-contribution")
+        contribution_parts.append(
+            "Useful for queries about: responsibilities, impact, delivery, execution"
+        )
+        if project.get("role"):
+            contribution_parts.append(f"Role: {project['role']}")
+        if techs:
+            contribution_parts.append(f"Technologies: {techs}")
+        if keyword_line:
+            contribution_parts.append(keyword_line)
+        contribution_text = "\n- ".join(contributions)
+        contribution_parts.append(f"Key Contributions:\n- {contribution_text}")
+
+        documents.append(
+            {
+                "text": "\n".join(contribution_parts),
+                "source": "sanity",
+                "source_id": f"{source_id}#contributions",
+            }
+        )
+
+    if project.get("liveUrl") or project.get("githubUrl"):
+        link_parts = []
+        if project.get("title"):
+            link_parts.append(f"Project: {project['title']}")
+        link_parts.append("Evidence Type: project-links")
+        link_parts.append("Useful for queries about: live demo, repository, links")
+        if project.get("liveUrl"):
+            link_parts.append(f"Live URL: {project['liveUrl']}")
+        if project.get("githubUrl"):
+            link_parts.append(f"GitHub: {project['githubUrl']}")
+        if keyword_line:
+            link_parts.append(keyword_line)
+
+        documents.append(
+            {
+                "text": "\n".join(link_parts),
+                "source": "sanity",
+                "source_id": f"{source_id}#links",
+            }
+        )
+
+    return documents
+
+
 def _format_testimonial(testimonial: dict) -> str:
     """Convert a Testimonial document to plain text for chunking.
 
@@ -117,6 +229,25 @@ def _format_testimonial(testimonial: dict) -> str:
         parts.append(f"Role: {testimonial['role']}")
 
     return "\n".join(parts)
+
+
+def _build_testimonial_document(testimonial: dict) -> dict:
+    """Create a retrieval-friendly testimonial document."""
+    parts = ["Evidence Type: testimonial"]
+    parts.append("Useful for queries about: feedback, collaboration, communication")
+
+    if testimonial.get("quote"):
+        parts.append(f'Testimonial: "{testimonial["quote"]}"')
+    if testimonial.get("author"):
+        parts.append(f"From: {testimonial['author']}")
+    if testimonial.get("role"):
+        parts.append(f"Role: {testimonial['role']}")
+
+    return {
+        "text": "\n".join(parts),
+        "source": "testimonial",
+        "source_id": testimonial["_id"],
+    }
 
 
 async def _fetch(query: str) -> list[dict]:
@@ -169,35 +300,26 @@ async def load_sanity_documents() -> list[dict]:
     """
     documents = []
 
-    # Fetch and format projects
-    projects = await _fetch(_PROJECTS_QUERY)
-    logger.info(f"Fetched {len(projects)} projects from Sanity")
+    if settings.DEV_MODE:
+        logger.info("DEV_MODE enabled — using seeded Sanity documents")
+        projects = SEED_SANITY_PROJECTS
+        testimonials = SEED_SANITY_TESTIMONIALS
+    else:
+        # Fetch and format projects
+        projects = await _fetch(_PROJECTS_QUERY)
+        logger.info(f"Fetched {len(projects)} projects from Sanity")
+
+        # Fetch and format testimonials
+        testimonials = await _fetch(_TESTIMONIALS_QUERY)
+        logger.info(f"Fetched {len(testimonials)} testimonials from Sanity")
 
     for project in projects:
-        text = _format_project(project)
-        if text.strip():
-            documents.append(
-                {
-                    "text": text,
-                    "source": "sanity",
-                    "source_id": project["_id"],
-                }
-            )
-
-    # Fetch and format testimonials
-    testimonials = await _fetch(_TESTIMONIALS_QUERY)
-    logger.info(f"Fetched {len(testimonials)} testimonials from Sanity")
+        documents.extend(_build_project_documents(project))
 
     for testimonial in testimonials:
         text = _format_testimonial(testimonial)
         if text.strip():
-            documents.append(
-                {
-                    "text": text,
-                    "source": "testimonial",
-                    "source_id": testimonial["_id"],
-                }
-            )
+            documents.append(_build_testimonial_document(testimonial))
 
     logger.info(f"Total Sanity documents loaded: {len(documents)}")
     return documents

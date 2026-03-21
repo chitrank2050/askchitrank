@@ -1,5 +1,6 @@
 """Custom middleware for the FastAPI application."""
 
+import time
 from uuid import uuid4
 
 from fastapi import Request
@@ -41,4 +42,21 @@ async def add_request_id(request: Request, call_next):
     request.state.request_id = request_id
     response = await call_next(request)
     response.headers["X-Request-ID"] = request_id
+    return response
+
+
+async def add_response_time(request: Request, call_next):
+    """Measure request processing time and add it as a response header.
+
+    Records a monotonic start time before the request is processed,
+    then computes the elapsed time and adds it as X-Response-Time.
+
+    For streaming responses this captures time-to-first-byte, not
+    total stream duration. Total chat latency is reported separately
+    via the ``done`` SSE event's ``latency_ms`` field.
+    """
+    start = time.perf_counter()
+    response = await call_next(request)
+    elapsed_ms = (time.perf_counter() - start) * 1000
+    response.headers["X-Response-Time"] = f"{elapsed_ms:.1f}ms"
     return response

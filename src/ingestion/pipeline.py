@@ -30,8 +30,10 @@ from pathlib import Path
 from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.core.config import settings
 from src.core.logger import logger
 from src.db.models import KnowledgeChunk
+from src.dev.seed_data import SEED_RESUME_TEXT
 from src.ingestion.chunker import chunk_document
 from src.ingestion.embedder import embed_texts
 from src.ingestion.sanity_loader import load_sanity_documents
@@ -259,18 +261,22 @@ async def ingest_resume(db: AsyncSession) -> int:
         pypdf.errors.PdfReadError: If file is not a valid PDF.
     """
 
-    local_path = get_data_path("resume.pdf")
-
-    if not local_path.exists():
-        raise FileNotFoundError(
-            f"Resume PDF not found at {local_path}.\n"
-            "Place your resume PDF at data/resume.pdf before running ingestion."
-        )
-
-    logger.info(f"Starting resume ingestion from: {local_path}")
     await _clear_source(["resume"], db)
 
-    text = await load_pdf_from_data(local_path=local_path)
+    if settings.DEV_MODE:
+        logger.info("DEV_MODE enabled — using seeded resume content")
+        text = SEED_RESUME_TEXT
+    else:
+        local_path = get_data_path("resume.pdf")
+
+        if not local_path.exists():
+            raise FileNotFoundError(
+                f"Resume PDF not found at {local_path}.\n"
+                "Place your resume PDF at data/resume.pdf before running ingestion."
+            )
+
+        logger.info(f"Starting resume ingestion from: {local_path}")
+        text = await load_pdf_from_data(local_path=local_path)
 
     # Use section-aware chunking for resumes — better retrieval precision
     chunks = _chunk_resume_by_section(text)

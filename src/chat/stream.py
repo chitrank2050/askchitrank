@@ -5,13 +5,15 @@ Orchestrates the full RAG query pipeline and streams the LLM response
 to the client via Server-Sent Events (SSE).
 
 Pipeline per request:
-    1. Embed the user question (Voyage AI)
-    2. Check semantic cache — return cached response if similar question exists
-    3. Search knowledge base — retrieve top K relevant chunks
-    4. Build prompt — system prompt + context + question
-    5. Stream LLM response token by token (Groq)
-    6. Collect full response and store in cache
-    7. Store conversation turn in conversations table
+    1. Cheap safety pre-router for obvious unsupported questions
+    2. Embed the user question (Voyage AI)
+    3. Check semantic cache — return cached response if similar question exists
+    4. Search knowledge base — retrieve top K relevant chunks
+    5. Assess retrieval confidence before calling the LLM
+    6. Build prompt — system prompt + context + question
+    7. Stream LLM response token by token (Groq)
+    8. Collect full response and store in cache
+    9. Store conversation turn in conversations table
 
 This module is the single entry point for the chat API endpoint.
 All other chat modules (prompt, groq_client) are called from here.
@@ -27,6 +29,8 @@ Typical usage:
 """
 
 import json
+import re
+import time
 from collections.abc import AsyncGenerator
 from datetime import UTC, datetime
 
@@ -34,17 +38,25 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.chat.groq_client import stream_response
 from src.chat.prompt import build_messages
+from src.chat.safety import (
+    build_low_confidence_response,
+    build_pipeline_fallback_response,
+    route_question,
+    safety_metrics,
+)
+from src.core.config import settings
 from src.core.logger import logger
 from src.db.models import Conversation
+from src.dev.seed_data import get_seeded_context_chunks
 from src.ingestion.embedder import embed_query
 from src.retrieval.cache import find_cached_response, store_cached_response
-from src.retrieval.search import search_knowledge_base
+from src.retrieval.search import assess_retrieval_confidence, search_knowledge_base
 
 
 async def stream_chat_response(
     question: str,
     session_id: str,
-    db: AsyncSession,
+    db: AsyncSession | None,
     use_cache: bool = True,
 ) -> AsyncGenerator[str, None]:
     """Orchestrate the RAG pipeline and stream the response as SSE events.
@@ -55,7 +67,9 @@ async def stream_chat_response(
     Yields Server-Sent Events in the format:
         data: {"type": "token", "content": "..."}
         data: {"type": "done", "cached": false}
-        data: {"type": "error", "message": "..."}
+
+    The pipeline prefers returning a safe fallback answer over emitting
+    an error event, so callers should normally expect only token/done.
 
     Args:
         question: User question text.
@@ -74,40 +88,132 @@ async def stream_chat_response(
         data: {"type": "token", "content": " has"}
         data: {"type": "done", "cached": false}
     """
+    safety_metrics.record_request()
+    pipeline_start = time.perf_counter()
+
     try:
+        pre_route = route_question(question)
+        if pre_route.should_bypass_rag and pre_route.response:
+            logger.info(
+                "Pre-router handled question — category: {} | reason: {}",
+                pre_route.category,
+                pre_route.reason,
+            )
+            safety_metrics.record_pre_router(pre_route.category, pre_route.reason)
+            safety_metrics.record_response_route("pre_router")
+            await _emit_answer(
+                question=question,
+                response=pre_route.response,
+                session_id=session_id,
+                db=db,
+            )
+            latency = (time.perf_counter() - pipeline_start) * 1000
+            async for event in _stream_text_response(
+                pre_route.response, cached=False, latency_ms=latency
+            ):
+                yield event
+            return
+
+        if db is None and not settings.DEV_MODE:
+            logger.warning(
+                "Database unavailable for chat — returning degraded fallback"
+            )
+            safety_metrics.record_fallback("database_unavailable")
+            safety_metrics.record_response_route("error_fallback")
+            fallback = build_pipeline_fallback_response()
+            latency = (time.perf_counter() - pipeline_start) * 1000
+            async for event in _stream_text_response(
+                fallback, cached=False, latency_ms=latency
+            ):
+                yield event
+            return
+
+        if settings.DEV_MODE and db is None:
+            logger.info("DEV_MODE without database — serving seeded chat response")
+            messages = build_messages(
+                question=question,
+                chunks=get_seeded_context_chunks(),
+                conversation_history=None,
+            )
+            full_response = ""
+            async for token in stream_response(messages):
+                full_response += token
+                yield _sse_event("token", token)
+            if not full_response.strip():
+                fallback = build_pipeline_fallback_response()
+                safety_metrics.record_fallback("empty_dev_seeded_response")
+                safety_metrics.record_response_route("error_fallback")
+                latency = (time.perf_counter() - pipeline_start) * 1000
+                async for event in _stream_text_response(
+                    fallback, cached=False, latency_ms=latency
+                ):
+                    yield event
+                return
+            safety_metrics.record_response_route("dev_seeded")
+            latency = (time.perf_counter() - pipeline_start) * 1000
+            yield _sse_event("done", "", cached=False, latency_ms=latency)
+            return
+
         # ── Step 1: Embed the question ─────────────────────────────────────
         logger.info(f"Processing question: {question[:60]}...")
         query_embedding = await embed_query(question)
 
         # ── Step 2: Check semantic cache ───────────────────────────────────
-        if use_cache:
+        if use_cache and db is not None:
             cached = await find_cached_response(query_embedding, db)
             if cached:
                 logger.info("Cache hit — returning cached response")
 
                 # Store conversation turn even for cached responses
-                await _store_conversation(question, cached["response"], session_id, db)
+                await _emit_answer(
+                    question=question,
+                    response=cached["response"],
+                    session_id=session_id,
+                    db=db,
+                )
+                safety_metrics.record_response_route("cache_hit")
 
                 # Stream cached response token by token for consistent UX
                 # Users shouldn't know or care whether response is cached
-                words = cached["response"].split(" ")
-                for word in words:
-                    yield _sse_event("token", word + " ")
-
-                yield _sse_event("done", "", cached=True)
+                latency = (time.perf_counter() - pipeline_start) * 1000
+                async for event in _stream_text_response(
+                    cached["response"], cached=True, latency_ms=latency
+                ):
+                    yield event
                 return
 
-        # ── Step 3: Search knowledge base ──────────────────────────────────
-        chunks = await search_knowledge_base(query_embedding, db)
+        assert db is not None
 
-        if not chunks:
-            logger.warning("No chunks found for question — returning fallback")
-            fallback = (
-                "I don't have enough information to answer that. "
-                "You can reach Chitrank directly at chitrank2050@gmail.com."
+        # ── Step 3: Search knowledge base ──────────────────────────────────
+        chunks = await search_knowledge_base(
+            query_embedding=query_embedding,
+            db=db,
+            query_text=question,
+        )
+
+        confidence = assess_retrieval_confidence(question, chunks)
+        if not confidence.is_confident:
+            logger.warning(
+                "Retrieval confidence too low — reason: {} | top similarity: {} | "
+                "best coverage: {}",
+                confidence.reason,
+                confidence.top_similarity,
+                confidence.best_query_coverage,
             )
-            yield _sse_event("token", fallback)
-            yield _sse_event("done", "", cached=False)
+            safety_metrics.record_retrieval_gate(confidence.reason)
+            safety_metrics.record_response_route("confidence_fallback")
+            fallback = build_low_confidence_response(confidence.reason)
+            await _emit_answer(
+                question=question,
+                response=fallback,
+                session_id=session_id,
+                db=db,
+            )
+            latency = (time.perf_counter() - pipeline_start) * 1000
+            async for event in _stream_text_response(
+                fallback, cached=False, latency_ms=latency
+            ):
+                yield event
             return
 
         logger.debug(
@@ -125,39 +231,87 @@ async def stream_chat_response(
 
         # ── Step 5: Stream LLM response ────────────────────────────────────
         full_response = ""
+        generation_failed = False
+        try:
+            async for token in stream_response(messages):
+                full_response += token
+                yield _sse_event("token", token)
+        except Exception as exc:
+            generation_failed = True
+            logger.error("LLM streaming failed: {}", exc)
 
-        async for token in stream_response(messages):
-            full_response += token
-            yield _sse_event("token", token)
-
-        logger.info(f"Streamed response — {len(full_response)} chars")
-
-        # ── Step 6: Store in cache ─────────────────────────────────────────
-        if use_cache and full_response:
-            chunk_ids = [c["id"] for c in chunks]
-            await store_cached_response(
+        if generation_failed or not full_response.strip():
+            safety_metrics.record_fallback("generation_failure")
+            safety_metrics.record_response_route("error_fallback")
+            fallback = build_pipeline_fallback_response(
+                has_partial_response=bool(full_response.strip())
+            )
+            streamed_fallback = (
+                fallback if not full_response.strip() else f" {fallback}"
+            )
+            full_response += streamed_fallback
+            for token in _iter_text_tokens(streamed_fallback):
+                yield _sse_event("token", token)
+            await _emit_answer(
                 question=question,
-                question_embedding=query_embedding,
-                response=full_response,
-                source_chunk_ids=chunk_ids,
+                response=full_response.strip(),
+                session_id=session_id,
                 db=db,
             )
+            latency = (time.perf_counter() - pipeline_start) * 1000
+            yield _sse_event("done", "", cached=False, latency_ms=latency)
+            return
+
+        logger.info(f"Streamed response — {len(full_response)} chars")
+        safety_metrics.record_response_route("llm")
+
+        # ── Step 6: Store in cache ─────────────────────────────────────────
+        if use_cache and full_response and db is not None:
+            chunk_ids = [c["id"] for c in chunks]
+            try:
+                await store_cached_response(
+                    question=question,
+                    question_embedding=query_embedding,
+                    response=full_response,
+                    source_chunk_ids=chunk_ids,
+                    db=db,
+                )
+            except Exception as exc:
+                logger.warning("Failed to store response cache entry: {}", exc)
 
         # ── Step 7: Store conversation turn ────────────────────────────────
-        if full_response:
-            await _store_conversation(question, full_response, session_id, db)
+        if full_response and db is not None:
+            try:
+                await _store_conversation(question, full_response, session_id, db)
+            except Exception as exc:
+                logger.warning("Failed to store conversation turn: {}", exc)
 
-        yield _sse_event("done", "", cached=False)
+        latency = (time.perf_counter() - pipeline_start) * 1000
+        yield _sse_event("done", "", cached=False, latency_ms=latency)
 
     except Exception as e:
-        logger.error(f"Chat pipeline failed: {e}")
-        yield _sse_event("error", str(e))
+        logger.error("Chat pipeline failed before completion: {}", e)
+        safety_metrics.record_fallback("pipeline_failure")
+        safety_metrics.record_response_route("error_fallback")
+        fallback = build_pipeline_fallback_response()
+        await _emit_answer(
+            question=question,
+            response=fallback,
+            session_id=session_id,
+            db=db,
+        )
+        latency = (time.perf_counter() - pipeline_start) * 1000
+        async for event in _stream_text_response(
+            fallback, cached=False, latency_ms=latency
+        ):
+            yield event
 
 
 def _sse_event(
     event_type: str,
     content: str,
     cached: bool = False,
+    latency_ms: float | None = None,
 ) -> str:
     """Format a Server-Sent Event string.
 
@@ -169,6 +323,8 @@ def _sse_event(
         content: Token text for 'token' events, error message for 'error'.
         cached: Whether this response came from the cache. Only relevant
             for 'done' events.
+        latency_ms: Total pipeline latency in milliseconds. Only included
+            in 'done' events when provided.
 
     Returns:
         SSE-formatted string with trailing newlines.
@@ -176,13 +332,50 @@ def _sse_event(
     Example:
         >>> _sse_event("token", "Hello")
         'data: {"type": "token", "content": "Hello"}\\n\\n'
+        >>> _sse_event("done", "", cached=False, latency_ms=142.5)
+        'data: {"type": "done", "content": "", "cached": false, "latency_ms": 142.5}\\n\\n'
     """
     payload: dict = {"type": event_type, "content": content}
 
     if event_type == "done":
         payload["cached"] = cached
+        if latency_ms is not None:
+            payload["latency_ms"] = round(latency_ms, 1)
 
     return f"data: {json.dumps(payload)}\n\n"
+
+
+def _iter_text_tokens(text: str) -> list[str]:
+    """Split text into stream-friendly chunks while preserving spaces."""
+    return re.findall(r"\s*\S+\s*", text)
+
+
+async def _stream_text_response(
+    text: str,
+    cached: bool,
+    latency_ms: float | None = None,
+) -> AsyncGenerator[str, None]:
+    """Yield a complete text response as SSE token events plus done."""
+    for token in _iter_text_tokens(text):
+        yield _sse_event("token", token)
+
+    yield _sse_event("done", "", cached=cached, latency_ms=latency_ms)
+
+
+async def _emit_answer(
+    question: str,
+    response: str,
+    session_id: str,
+    db: AsyncSession | None,
+) -> None:
+    """Persist assistant answers when a database session is available."""
+    if not response or db is None:
+        return
+
+    try:
+        await _store_conversation(question, response, session_id, db)
+    except Exception as exc:
+        logger.warning("Failed to store conversation turn: {}", exc)
 
 
 async def _store_conversation(

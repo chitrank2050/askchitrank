@@ -21,7 +21,7 @@ from api.utils.errors import APIError
 from api.utils.rate_limit import limiter
 from src.core.config import settings
 from src.core.logger import logger
-from src.db.connection import get_db
+from src.db.connection import get_optional_db
 from src.ingestion.pipeline import ingest_sanity
 from src.retrieval.cache import invalidate_cache
 
@@ -41,7 +41,7 @@ router = APIRouter()
 async def ingest_webhook(
     request: Request,
     token: str | None = Query(default=None, description="API token for authentication"),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession | None = Depends(get_optional_db),
 ) -> dict:
     """Handle Sanity CMS webhook — re-ingest and invalidate cache.
 
@@ -76,6 +76,16 @@ async def ingest_webhook(
         raise APIError.invalid_token()
 
     logger.info("Sanity webhook received — re-ingesting content")
+
+    if db is None:
+        if settings.DEV_MODE:
+            logger.info("DEV_MODE without database — skipping seeded ingestion")
+            return {
+                "status": "ok",
+                "chunks_ingested": 0,
+                "mode": "dev",
+            }
+        raise APIError.service_unavailable("database")
 
     try:
         # Invalidate cache first — old answers are stale immediately

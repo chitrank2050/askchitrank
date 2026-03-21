@@ -8,6 +8,7 @@ importing its router here and including it — nothing else changes.
 Routers:
     health  — GET /v1/health
     chat    — POST /v1/chat (SSE streaming)
+    chat    — GET /v1/chat/safety-metrics
     ingest  — POST /v1/ingest (Sanity webhook)
 """
 

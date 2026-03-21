@@ -21,9 +21,15 @@ import voyageai
 
 from src.core.config import settings
 from src.core.logger import logger
+from src.dev.local_embeddings import (
+    embed_text as embed_text_local,
+    embed_texts as embed_texts_local,
+)
 
 # Voyage AI async client — initialised once, reused across calls
-_client = voyageai.AsyncClient(api_key=settings.VOYAGE_API_KEY)
+_client = (
+    None if settings.DEV_MODE else voyageai.AsyncClient(api_key=settings.VOYAGE_API_KEY)
+)
 
 # Voyage AI maximum texts per batch request
 _BATCH_SIZE = 128
@@ -53,7 +59,13 @@ async def embed_texts(texts: list[str]) -> Sequence[Sequence[float]]:
     if not texts:
         return []
 
+    if settings.DEV_MODE:
+        logger.info(f"Embedded {len(texts)} chunks via local dev embedder")
+        return embed_texts_local(texts, settings.EMBEDDING_DIMENSIONS)
+
     all_embeddings = []
+
+    assert _client is not None
 
     for i in range(0, len(texts), _BATCH_SIZE):
         batch = texts[i : i + _BATCH_SIZE]
@@ -90,6 +102,12 @@ async def embed_query(query: str) -> Sequence[float]:
         >>> len(embedding)
         512
     """
+    if settings.DEV_MODE:
+        logger.debug("Embedded query via local dev embedder")
+        return embed_text_local(query, settings.EMBEDDING_DIMENSIONS)
+
+    assert _client is not None
+
     result = await _client.embed(
         texts=[query],
         model=settings.VOYAGE_MODEL,

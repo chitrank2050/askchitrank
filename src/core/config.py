@@ -64,7 +64,9 @@ class _Settings(BaseSettings):
     API_ALLOW_CREDENTIALS: bool = True
     API_ALLOWED_METHODS: list[str] = ["*"]
     API_ALLOWED_HEADERS: list[str] = ["*"]
+    API_EXPOSE_HEADERS: list[str] = ["X-Response-Time", "X-Request-ID"]
     API_TOKEN: str = ""
+    CONTACT_EMAIL: str = "chitrank2050@gmail.com"
 
     # ----------------------------------------------------------------
     # 🤖  LLM
@@ -103,12 +105,20 @@ class _Settings(BaseSettings):
     CHUNK_SIZE: int = 500
     CHUNK_OVERLAP: int = 50
     TOP_K_RESULTS: int = 8
+    RETRIEVAL_MIN_SIMILARITY: float = 0.58
+    RETRIEVAL_STRONG_SIMILARITY: float = 0.72
+    RETRIEVAL_MIN_QUERY_COVERAGE: float = 0.18
 
     # ----------------------------------------------------------------
     # 💾  Cache
     # ----------------------------------------------------------------
     CACHE_SIMILARITY_THRESHOLD: float = 0.95
     CACHE_TTL_DAYS: int = 7
+
+    # ----------------------------------------------------------------
+    # 🧪  Development Mode
+    # ----------------------------------------------------------------
+    DEV_MODE: bool = False
 
     # ----------------------------------------------------------------
     # ⚙️  Environment
@@ -159,6 +169,18 @@ class _Settings(BaseSettings):
         """Validate LLM temperature is within 0-1 range."""
         if not (0.0 <= v <= 1.0):
             raise ValueError(f"LLM_TEMPERATURE must be between 0 and 1, got {v}")
+        return v
+
+    @field_validator(
+        "RETRIEVAL_MIN_SIMILARITY",
+        "RETRIEVAL_STRONG_SIMILARITY",
+        "RETRIEVAL_MIN_QUERY_COVERAGE",
+    )
+    @classmethod
+    def retrieval_thresholds_must_be_valid(cls, v: float) -> float:
+        """Validate retrieval thresholds are within 0-1 range."""
+        if not (0.0 <= v <= 1.0):
+            raise ValueError(f"Retrieval threshold must be between 0 and 1, got {v}")
         return v
 
 

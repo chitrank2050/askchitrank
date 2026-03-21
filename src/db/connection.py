@@ -39,23 +39,27 @@ class Base(DeclarativeBase):
     pass
 
 
-# Async engine — used by FastAPI at runtime
-# pool_pre_ping=True verifies connections before use,
-# handling Supabase free tier pause behaviour gracefully
-engine = create_async_engine(
-    settings.DATABASE_URL,
-    echo=False,  # set True to log raw SQL during debugging
-    pool_size=5,  # connections kept alive in the pool
-    max_overflow=10,  # extra connections allowed above pool_size
-    pool_pre_ping=True,
-)
+engine = None
+AsyncSessionLocal = None
 
-# Session factory — produces AsyncSession instances per request
-AsyncSessionLocal = async_sessionmaker(
-    engine,
-    class_=AsyncSession,
-    expire_on_commit=False,  # keep objects accessible after commit
-)
+if settings.DATABASE_URL:
+    # Async engine — used by FastAPI at runtime
+    # pool_pre_ping=True verifies connections before use,
+    # handling Supabase free tier pause behaviour gracefully
+    engine = create_async_engine(
+        settings.DATABASE_URL,
+        echo=False,  # set True to log raw SQL during debugging
+        pool_size=5,  # connections kept alive in the pool
+        max_overflow=10,  # extra connections allowed above pool_size
+        pool_pre_ping=True,
+    )
+
+    # Session factory — produces AsyncSession instances per request
+    AsyncSessionLocal = async_sessionmaker(
+        engine,
+        class_=AsyncSession,
+        expire_on_commit=False,  # keep objects accessible after commit
+    )
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
@@ -77,6 +81,24 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
         >>> async def chat(db: AsyncSession = Depends(get_db)):
         ...     result = await db.execute(select(KnowledgeChunk))
     """
+    if AsyncSessionLocal is None:
+        raise RuntimeError("DATABASE_URL is not configured.")
+
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+
+
+async def get_optional_db() -> AsyncGenerator[AsyncSession | None, None]:
+    """Provide a database session when configured, else yield None."""
+    if AsyncSessionLocal is None:
+        yield None
+        return
+
     async with AsyncSessionLocal() as session:
         try:
             yield session
@@ -97,6 +119,10 @@ async def init_db() -> None:
         Does NOT run Alembic migrations — use 'make db-migrate'
         for schema changes. This only creates missing tables.
     """
+    if engine is None:
+        logger.warning("DATABASE_URL not configured — skipping database initialisation")
+        return
+
     async with engine.begin() as conn:
         # Dispose cached connections before schema operations
         # prevents stale connection state after migrations

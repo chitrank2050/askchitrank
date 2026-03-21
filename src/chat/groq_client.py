@@ -31,9 +31,10 @@ from groq import AsyncGroq
 
 from src.core.config import settings
 from src.core.logger import logger
+from src.dev.responder import build_seeded_response
 
 # Groq async client — initialised once, reused across calls
-_client = AsyncGroq(api_key=settings.GROQ_API_KEY)
+_client = None if settings.DEV_MODE else AsyncGroq(api_key=settings.GROQ_API_KEY)
 
 
 async def get_response(messages: list[dict[str, Any]]) -> str:
@@ -58,7 +59,13 @@ async def get_response(messages: list[dict[str, Any]]) -> str:
         >>> print(response[:100])
         Chitrank has built several projects including...
     """
+    if settings.DEV_MODE:
+        logger.debug("Returning seeded dev response")
+        return build_seeded_response(cast(Any, messages))
+
     logger.debug(f"Calling Groq API — model: {settings.GROQ_MODEL}")
+
+    assert _client is not None
 
     completion = await _client.chat.completions.create(
         model=settings.GROQ_MODEL,
@@ -101,7 +108,17 @@ async def stream_response(
         ...     print(token, end="", flush=True)
         Chitrank has built...
     """
+    if settings.DEV_MODE:
+        logger.debug("Streaming seeded dev response")
+        seeded_response = build_seeded_response(cast(Any, messages))
+        for token in seeded_response.split(" "):
+            if token:
+                yield token + " "
+        return
+
     logger.debug(f"Streaming Groq response — model: {settings.GROQ_MODEL}")
+
+    assert _client is not None
 
     stream = await _client.chat.completions.create(
         model=settings.GROQ_MODEL,

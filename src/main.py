@@ -17,7 +17,7 @@ Usage:
 import argparse
 import asyncio
 
-from src.core import bootstrap, logger
+from src.core import bootstrap, logger, settings
 
 
 def main() -> None:
@@ -87,6 +87,14 @@ async def _run_ingest(args: argparse.Namespace) -> None:
     """
     from src.db.connection import AsyncSessionLocal
     from src.ingestion.pipeline import ingest_linkedin, ingest_resume, ingest_sanity
+
+    if AsyncSessionLocal is None:
+        if settings.DEV_MODE:
+            logger.warning(
+                "DEV_MODE is enabled but DATABASE_URL is not configured — skipping ingestion."
+            )
+            return
+        raise RuntimeError("DATABASE_URL is not configured.")
 
     # Fixed processing order — predictable regardless of CLI argument order
     source_order = ["resume", "sanity", "linkedin"]

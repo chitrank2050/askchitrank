@@ -4,7 +4,7 @@
 
 ![Python](https://img.shields.io/badge/Python-3.12-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green)
-![Groq](https://img.shields.io/badge/Groq-Llama_3.1_70B-orange)
+![Groq](https://img.shields.io/badge/Groq-Llama_3.3_70B-orange)
 ![Voyage AI](https://img.shields.io/badge/Voyage_AI-voyage--3--lite-purple)
 ![Supabase](https://img.shields.io/badge/Supabase-pgvector-green)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
@@ -40,21 +40,25 @@ Ask Chitrank answers questions about Chitrank Agnihotri — his experience, proj
 ```
 User question
     ↓
-Embed question (Voyage AI voyage-3-lite)
-    ↓
-Check semantic cache (pgvector cosine similarity > 0.95)
-    ↓ hit                        ↓ miss
-Return cached response      Search knowledge_chunks
+Cheap safety pre-router
+    ↓ bypass                     ↓ continue
+Canned response             Embed question (Voyage AI voyage-3-lite)
                                 ↓
-                            Top 5 relevant chunks
-                                ↓
-                            Build prompt + context
-                                ↓
-                            Groq LLM (Llama 3.1 70B)
-                                ↓
-                            Store in cache
-                                ↓
-                            Stream response
+                            Check semantic cache (pgvector cosine similarity > 0.95)
+                                ↓ hit                        ↓ miss
+                            Return cached response      Search knowledge_chunks
+                                                            ↓
+                                                    Query-aware reranked chunks
+                                                            ↓
+                                                  Retrieval confidence gate
+                                                            ↓ pass         ↓ fail
+                                                    Build prompt + context  Canned fallback
+                                                            ↓
+                                                    Groq LLM (Llama 3.3 70B)
+                                                            ↓
+                                                    Store in cache
+                                                            ↓
+                                                    Stream response
 ```
 
 ---
@@ -75,6 +79,10 @@ Return cached response      Search knowledge_chunks
 Every LLM response is cached by question embedding. When a new question has cosine similarity > 0.95 with a cached question, the cached response is returned immediately — zero LLM cost, near-zero latency.
 
 Cache is invalidated automatically when Sanity CMS content changes via webhook.
+
+Retrieval is also reranked locally using cheap lexical and source-intent signals, so relevance can improve without adding more model calls.
+
+The chat layer now adds a cheap safety pre-router before embeddings and a retrieval confidence gate after search, so unsupported or weakly grounded questions can be answered safely without always paying for a provider call.
 
 ---
 
@@ -106,6 +114,33 @@ Cache is invalidated automatically when Sanity CMS content changes via webhook.
 - Groq free tier has rate limits (6000 tokens/minute) — sufficient for personal portfolio traffic
 - Supabase free tier pauses after 1 week inactivity — first request after pause is slow (~2-3 seconds)
 - Response cache threshold (0.95) may miss semantically similar but differently phrased questions — tune based on usage
+- Pre-routing and retrieval confidence are heuristic-based, so they should still be tuned against real traffic over time
+
+---
+
+## Safety and Cost Controls
+
+To keep the app safe and stay inside free-tier constraints, the chat flow now includes:
+
+- a cheap pre-router for identity, private, explicit, prompt-injection, and clearly off-topic questions
+- a retrieval confidence gate that refuses to guess when evidence is too weak
+- stronger prompt rules for identity confusion, private data, explicit content, and prompt-reveal attempts
+- in-process safety metrics exposed at `GET /v1/chat/safety-metrics`
+
+The chat endpoint now prefers a safe fallback answer over returning a provider error, so the bot keeps responding even when retrieval or generation cannot produce a trustworthy answer.
+
+---
+
+## Dev Mode
+
+Set `DEV_MODE=true` to avoid real provider calls during local development.
+
+In dev mode:
+
+- embeddings are generated locally with a deterministic fake embedder
+- chat responses are produced from fictional seeded data instead of calling Groq
+- Sanity, LinkedIn, and resume ingestion can fall back to fictional seeded content
+- the API can still run without a configured database, returning fictional seeded chat output
 
 ---
 
