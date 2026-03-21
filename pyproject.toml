@@ -23,7 +23,7 @@ dependencies = [
   "pydantic>=2.0.0",
   "pydantic-settings>=2.13.0",
   # Document processing
-  "pypdf>=4.0.0",
+  "pypdf>=6.9.1",
   "python-multipart>=0.0.9",
   # Database
   "slowapi>=0.1.9",
@@ -89,7 +89,7 @@ line-ending = "auto"
 skip-magic-trailing-comma = false
 docstring-code-format = true
 
-[tool.pytest.ini_options]
+[tool.pytest]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
