@@ -63,7 +63,11 @@ async def test_pre_router_answers_without_embedding(
     text = "".join(event["content"] for event in events if event["type"] == "token")
 
     assert "Ask Chitrank" in text
-    assert events[-1] == {"type": "done", "content": "", "cached": False}
+    last_event = events[-1]
+    assert last_event["type"] == "done"
+    assert last_event["content"] == ""
+    assert last_event["cached"] is False
+    assert last_event["latency_ms"] >= 0
 
     after = get_safety_metrics_snapshot()
     assert after["pre_router_categories"].get("identity", 0) == before_identity + 1
@@ -109,7 +113,11 @@ async def test_low_confidence_retrieval_returns_fallback(
     text = "".join(event["content"] for event in events if event["type"] == "token")
 
     assert "don't have enough verified portfolio information" in text
-    assert events[-1] == {"type": "done", "content": "", "cached": False}
+    last_event = events[-1]
+    assert last_event["type"] == "done"
+    assert last_event["content"] == ""
+    assert last_event["cached"] is False
+    assert last_event["latency_ms"] >= 0
 
 
 @pytest.mark.asyncio
@@ -158,4 +166,8 @@ async def test_generation_failure_still_returns_answer(
     text = "".join(event["content"] for event in events if event["type"] == "token")
 
     assert "don't want to guess" in text
-    assert events[-1] == {"type": "done", "content": "", "cached": False}
+    last_event = events[-1]
+    assert last_event["type"] == "done"
+    assert last_event["content"] == ""
+    assert last_event["cached"] is False
+    assert last_event["latency_ms"] >= 0

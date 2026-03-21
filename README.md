@@ -14,11 +14,12 @@
 
 ## Links
 
-| **Type**         | **URL**                                                             |
-|------------------|---------------------------------------------------------------------|
-| 🌐 API           | [Live API](https://askchitrank-production.up.railway.app)           |
-| 📚 Documentation | [Project Documentation](https://chitrank2050.github.io/askchitrank) |
-| 👤 Portfolio     | [About me](https://chitrankagnihotri.com)                           |
+| **Type**            | **URL**                                                             |
+|---------------------|---------------------------------------------------------------------|
+| 🌐 API              | [Live API](https://askchitrank-production.up.railway.app)           |
+| 📚 Documentation    | [Project Documentation](https://chitrank2050.github.io/askchitrank) |
+| 👤 Portfolio        | [About me](https://chitrankagnihotri.com)                           |
+| ⚡ Vite Chat Widget  | [NPM](https://www.npmjs.com/package/@chitrank2050/ask-widget)       |
 
 ---
 
@@ -105,7 +106,7 @@ The chat layer now adds a cheap safety pre-router before embeddings and a retrie
 - [x] Phase 4 — Chat layer (prompt engineering + Groq LLM)
 - [x] Phase 5 — FastAPI + streaming (chat endpoint)
 - [x] Phase 7 — Sanity webhook auto-sync
-- [ ] Phase 6 — Frontend chat widget (Next.js)
+- [x] Phase 6 — Frontend chat widget (Vite.js)
 
 ---
 
