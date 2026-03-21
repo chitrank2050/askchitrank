@@ -384,6 +384,25 @@
   
 
       
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../changelog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
     </ul>
   </div>
 </nav>
@@ -525,6 +544,62 @@
     
   
     Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/roi_improvements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROI Improvements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/safety_routing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety Routing
   
 
     
@@ -1009,10 +1084,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#word-count-chunking-sanity-linkedin" class="md-nav__link">
+  <a href="#structured-evidence-documents-sanity-linkedin" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Word-count chunking — Sanity + LinkedIn
+        Structured evidence documents — Sanity + LinkedIn
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#word-count-chunking-safety-net" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Word-count chunking — Safety net
       
     </span>
   </a>
@@ -1029,6 +1115,17 @@
     <span class="md-ellipsis">
       
         Embeddings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-these-changes-were-high-roi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why These Changes Were High ROI
       
     </span>
   </a>
@@ -1318,6 +1415,33 @@
   
 
     
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -1451,10 +1575,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#word-count-chunking-sanity-linkedin" class="md-nav__link">
+  <a href="#structured-evidence-documents-sanity-linkedin" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Word-count chunking — Sanity + LinkedIn
+        Structured evidence documents — Sanity + LinkedIn
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#word-count-chunking-safety-net" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Word-count chunking — Safety net
       
     </span>
   </a>
@@ -1471,6 +1606,17 @@
     <span class="md-ellipsis">
       
         Embeddings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-these-changes-were-high-roi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why These Changes Were High ROI
       
     </span>
   </a>
@@ -1498,132 +1644,110 @@
 
 
 <h1 id="ingestion-pipeline">Ingestion Pipeline<a class="headerlink" href="#ingestion-pipeline" title="Permanent link">&para;</a></h1>
-<p>The ingestion pipeline loads documents from three sources, chunks them,
-embeds via Voyage AI, and stores in Supabase pgvector.</p>
+<p>The ingestion pipeline loads source content, turns it into retrieval-friendly evidence documents, embeds those documents, and stores them in pgvector.</p>
 <hr />
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>data/resume.pdf          → pdf_loader.py     → section-aware chunks (6)
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>Sanity CMS API           → sanity_loader.py  → plain text documents (12)
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>data/linkedin/ CSVs      → linkedin_loader.py → formatted plain text (4)
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>                                    ↓
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>                             chunker.py (500 words, 50 overlap)
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>                                    ↓
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                          embedder.py (Voyage AI voyage-3-lite)
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                                    ↓
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                         knowledge_chunks table (22 total chunks)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>data/resume.pdf            → pdf_loader.py       → section-aware resume chunks
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>Sanity CMS API             → sanity_loader.py    → project/testimonial evidence docs
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>data/linkedin/ CSVs        → linkedin_loader.py  → profile/recommendation evidence docs
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>                                       ↓
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>                           chunker.py as a safety net for oversized text
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>                                       ↓
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                            embedder.py (Voyage AI or DEV_MODE local embedder)
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                                       ↓
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                               knowledge_chunks table
 </code></pre></div>
+<p>Chunk counts are no longer treated as fixed documentation numbers because they vary with source content and with how many evidence documents are emitted per record.</p>
 <hr />
 <h2 id="running-ingestion">Running Ingestion<a class="headerlink" href="#running-ingestion" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>make<span class="w"> </span>ingest
 </code></pre></div>
-<p>Opens an interactive menu to select sources. Select one, two, or all three — they run sequentially in fixed order: resume → sanity → linkedin.</p>
 <p>Or run directly:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>src.main<span class="w"> </span>ingest<span class="w"> </span>--source<span class="w"> </span>resume
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>src.main<span class="w"> </span>ingest<span class="w"> </span>--source<span class="w"> </span>resume<span class="w"> </span>sanity<span class="w"> </span>linkedin
 </code></pre></div>
+<p>Sources still run sequentially in fixed order: <code>resume → sanity → linkedin</code>.</p>
 <hr />
 <h2 id="sources">Sources<a class="headerlink" href="#sources" title="Permanent link">&para;</a></h2>
 <h3 id="resume-pdf">Resume PDF<a class="headerlink" href="#resume-pdf" title="Permanent link">&para;</a></h3>
 <p><strong>File:</strong> <code>data/resume.pdf</code></p>
-<p>Uses section-aware chunking — splits on known section headers rather than word count. Each chunk answers a distinct type of question:</p>
-<table>
-<thead>
-<tr>
-<th>Chunk</th>
-<th>source_id</th>
-<th>Answers</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Introduction</td>
-<td><code>resume-introduction</code></td>
-<td>Contact info, name</td>
-</tr>
-<tr>
-<td>Summary</td>
-<td><code>resume-summary</code></td>
-<td>Background, years of experience</td>
-</tr>
-<tr>
-<td>Professional Experience</td>
-<td><code>resume-professional-experience</code></td>
-<td>Roles, companies, achievements</td>
-</tr>
-<tr>
-<td>Employment History</td>
-<td><code>resume-employment-history</code></td>
-<td>Consultancy history</td>
-</tr>
-<tr>
-<td>Education</td>
-<td><code>resume-education</code></td>
-<td>Degree, university</td>
-</tr>
-<tr>
-<td>Technical Skills</td>
-<td><code>resume-technical-skills</code></td>
-<td>Languages, frameworks, tools</td>
-</tr>
-</tbody>
-</table>
+<p>The resume uses section-aware chunking because resumes are short and semantically dense. Each section tends to answer a different class of question.</p>
+<p>Typical sections:</p>
+<ul>
+<li>introduction</li>
+<li>summary</li>
+<li>professional experience</li>
+<li>employment history</li>
+<li>education</li>
+<li>technical skills</li>
+</ul>
 <h3 id="sanity-cms">Sanity CMS<a class="headerlink" href="#sanity-cms" title="Permanent link">&para;</a></h3>
 <p><strong>Fetched from:</strong> Sanity HTTP API via GROQ queries</p>
-<p>Fetches <code>Project</code> and <code>Testimonial</code> document types. Formatted as plain text — no JSON, no brackets — to minimise LLM token usage.</p>
-<p>Fields ingested per Project: title, role, company, overview, vision, technologies, contribution, liveUrl, githubUrl.</p>
-<p>Fields ingested per Testimonial: author, role, quote.</p>
-<p>Images excluded — not useful for text retrieval.</p>
+<p>Projects are no longer represented only as one broad text block. They are decomposed into retrieval-friendly evidence documents such as:</p>
+<ul>
+<li>project overview</li>
+<li>project contributions</li>
+<li>project links</li>
+</ul>
+<p>Testimonials are also given their own evidence documents with explicit testimonial labelling.</p>
+<p>This change improves precision for questions about:</p>
+<ul>
+<li>technologies</li>
+<li>responsibilities</li>
+<li>impact</li>
+<li>portfolio links</li>
+<li>colleague feedback</li>
+</ul>
 <h3 id="linkedin">LinkedIn<a class="headerlink" href="#linkedin" title="Permanent link">&para;</a></h3>
-<p><strong>Files:</strong> <code>data/linkedin/</code> directory</p>
-<table>
-<thead>
-<tr>
-<th>File</th>
-<th>Content</th>
-<th>Documents</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>Recommendations.csv</code></td>
-<td>Written recommendations from colleagues</td>
-<td>One per recommendation</td>
-</tr>
-<tr>
-<td><code>Positions.csv</code></td>
-<td>Work history</td>
-<td>One per role</td>
-</tr>
-<tr>
-<td><code>Skills.csv</code></td>
-<td>Endorsed skills</td>
-<td>One grouped document</td>
-</tr>
-</tbody>
-</table>
-<p>Missing CSVs are skipped with a warning — partial exports handled gracefully.</p>
+<p><strong>Files:</strong> <code>data/linkedin/Profile.csv</code> and <code>data/linkedin/Recommendations_Received.csv</code></p>
+<p>The LinkedIn loader currently uses:</p>
+<ul>
+<li><code>Profile.csv</code></li>
+<li><code>Recommendations_Received.csv</code></li>
+</ul>
+<p>From those files it emits compact evidence documents such as:</p>
+<ul>
+<li>profile summary</li>
+<li>profile links</li>
+<li>one recommendation document per visible recommendation</li>
+</ul>
+<p>Missing CSVs are still skipped with warnings so partial exports remain usable.</p>
 <hr />
 <h2 id="idempotency">Idempotency<a class="headerlink" href="#idempotency" title="Permanent link">&para;</a></h2>
-<p>Every ingest function clears existing chunks for that source before re-ingesting:</p>
+<p>Each ingest function clears existing chunks for the relevant source before storing the new ones:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">DELETE</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">knowledge_chunks</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="k">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;resume&#39;</span>
 </code></pre></div>
-<p>Re-running never creates duplicates. Each source is independent — re-ingesting resume does not affect Sanity or LinkedIn chunks.</p>
+<p>Re-running ingestion never creates duplicates. Cache entries are invalidated before new content is stored so stale answers are not served.</p>
 <hr />
 <h2 id="chunking-strategy">Chunking Strategy<a class="headerlink" href="#chunking-strategy" title="Permanent link">&para;</a></h2>
 <h3 id="section-aware-chunking-resume">Section-aware chunking — Resume<a class="headerlink" href="#section-aware-chunking-resume" title="Permanent link">&para;</a></h3>
-<p>Resume text is split at known section headers. Resumes are short (~700 words) — word-count chunking would produce 1-2 large chunks always returned regardless of the question. Section chunking produces 6 focused chunks with high retrieval precision.</p>
-<h3 id="word-count-chunking-sanity-linkedin">Word-count chunking — Sanity + LinkedIn<a class="headerlink" href="#word-count-chunking-sanity-linkedin" title="Permanent link">&para;</a></h3>
-<p>500 words per chunk with 50-word overlap. The overlap ensures context continuity at chunk boundaries.</p>
+<p>The resume is split by known section headers because that gives much better retrieval precision than treating the whole document as one long chunk.</p>
+<h3 id="structured-evidence-documents-sanity-linkedin">Structured evidence documents — Sanity + LinkedIn<a class="headerlink" href="#structured-evidence-documents-sanity-linkedin" title="Permanent link">&para;</a></h3>
+<p>Sanity and LinkedIn sources now do most of their quality work before generic chunking. They first create smaller, purpose-built evidence documents.</p>
+<p>This is the main retrieval ROI improvement because it produces:</p>
+<ul>
+<li>tighter semantic units</li>
+<li>cleaner technology and role matching</li>
+<li>less cross-topic noise in search results</li>
+</ul>
+<h3 id="word-count-chunking-safety-net">Word-count chunking — Safety net<a class="headerlink" href="#word-count-chunking-safety-net" title="Permanent link">&para;</a></h3>
+<p><code>chunker.py</code> still exists and still supports overlapping word-count chunking. It is now mostly a fallback for any evidence document that grows too large.</p>
 <hr />
 <h2 id="embeddings">Embeddings<a class="headerlink" href="#embeddings" title="Permanent link">&para;</a></h2>
-<p>All text embedded via Voyage AI <code>voyage-3-lite</code>:</p>
+<p>Production ingestion uses Voyage AI <code>voyage-3-lite</code>:</p>
 <ul>
 <li>512 dimensions</li>
-<li><code>document</code> input type for chunks stored in knowledge_chunks</li>
-<li><code>query</code> input type for user questions at retrieval time</li>
-<li>Asymmetric embedding — different input types improve retrieval accuracy</li>
-<li>Batched in groups of 128 — Voyage AI maximum batch size</li>
-<li>Free tier: 200M tokens/month</li>
+<li><code>document</code> input type for stored chunks</li>
+<li>batched up to 128 texts per request</li>
+</ul>
+<p>In <code>DEV_MODE</code>, the embedder switches to a deterministic local implementation so local development does not spend tokens.</p>
+<hr />
+<h2 id="why-these-changes-were-high-roi">Why These Changes Were High ROI<a class="headerlink" href="#why-these-changes-were-high-roi" title="Permanent link">&para;</a></h2>
+<p>The ingestion layer is where retrieval quality starts. Better source representation improved RAG quality more cheaply than swapping providers because:</p>
+<ul>
+<li>the embedding model now sees cleaner evidence</li>
+<li>retrieval has more precise units to select from</li>
+<li>the change adds no extra provider calls</li>
 </ul>
 <hr />
 <p>Developed by <a href="https://www.chitrankagnihotri.com">Chitrank Agnihotri</a></p>

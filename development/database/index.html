@@ -384,6 +384,25 @@
   
 
       
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../changelog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
     </ul>
   </div>
 </nav>
@@ -525,6 +544,62 @@
     
   
     Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/roi_improvements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROI Improvements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/safety_routing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety Routing
   
 
     
@@ -720,10 +795,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-enable-pgvector-extension" class="md-nav__link">
+  <a href="#2-enable-pgvector" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Enable pgvector extension
+        2. Enable pgvector
       
     </span>
   </a>
@@ -808,10 +883,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#supabase-free-tier-behaviour" class="md-nav__link">
+  <a href="#free-tier-behaviour" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Supabase Free Tier Behaviour
+        Free Tier Behaviour
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dev_mode-note" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DEV_MODE Note
       
     </span>
   </a>
@@ -1318,6 +1404,33 @@
   
 
     
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -1368,10 +1481,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-enable-pgvector-extension" class="md-nav__link">
+  <a href="#2-enable-pgvector" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Enable pgvector extension
+        2. Enable pgvector
       
     </span>
   </a>
@@ -1456,10 +1569,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#supabase-free-tier-behaviour" class="md-nav__link">
+  <a href="#free-tier-behaviour" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Supabase Free Tier Behaviour
+        Free Tier Behaviour
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dev_mode-note" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DEV_MODE Note
       
     </span>
   </a>
@@ -1502,36 +1626,25 @@
 <hr />
 <h2 id="supabase-setup">Supabase Setup<a class="headerlink" href="#supabase-setup" title="Permanent link">&para;</a></h2>
 <h3 id="1-create-a-supabase-project">1. Create a Supabase project<a class="headerlink" href="#1-create-a-supabase-project" title="Permanent link">&para;</a></h3>
-<p>Go to <a href="https://supabase.com">supabase.com</a> → New Project.</p>
-<p>Recommended region: Asia Pacific (Singapore) — closest to India.</p>
-<h3 id="2-enable-pgvector-extension">2. Enable pgvector extension<a class="headerlink" href="#2-enable-pgvector-extension" title="Permanent link">&para;</a></h3>
-<p>Go to <strong>SQL Editor</strong> and run:</p>
+<p>Go to <a href="https://supabase.com">supabase.com</a> and create a new project.</p>
+<h3 id="2-enable-pgvector">2. Enable pgvector<a class="headerlink" href="#2-enable-pgvector" title="Permanent link">&para;</a></h3>
+<p>Run:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="n">EXTENSION</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">vector</span><span class="p">;</span>
 </code></pre></div>
-<p>This enables the <code>VECTOR</code> column type used for storing embeddings.</p>
 <h3 id="3-get-connection-strings">3. Get connection strings<a class="headerlink" href="#3-get-connection-strings" title="Permanent link">&para;</a></h3>
-<p>Go to <strong>Settings</strong> → <strong>Database</strong> → <strong>Connection string</strong>.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Async — FastAPI runtime</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql+asyncpg://postgres:<span class="o">[</span>PASSWORD<span class="o">]</span>@db.<span class="o">[</span>REF<span class="o">]</span>.supabase.co:5432/postgres
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Sync — Alembic migrations only</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nv">DATABASE_URL_SYNC</span><span class="o">=</span>postgresql+psycopg2://postgres:<span class="o">[</span>PASSWORD<span class="o">]</span>@db.<span class="o">[</span>REF<span class="o">]</span>.supabase.co:5432/postgres
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql+asyncpg://postgres:<span class="o">[</span>PASSWORD<span class="o">]</span>@db.<span class="o">[</span>REF<span class="o">]</span>.supabase.co:5432/postgres
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nv">DATABASE_URL_SYNC</span><span class="o">=</span>postgresql+psycopg2://postgres:<span class="o">[</span>PASSWORD<span class="o">]</span>@db.<span class="o">[</span>REF<span class="o">]</span>.supabase.co:5432/postgres
 </code></pre></div>
 <hr />
 <h2 id="running-migrations">Running Migrations<a class="headerlink" href="#running-migrations" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Apply all pending migrations</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>make<span class="w"> </span>db-migrate
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># Create a new migration after model changes</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>make<span class="w"> </span>db-migration
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="c1"># Roll back the last migration</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>make<span class="w"> </span>db-rollback
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>make<span class="w"> </span>db-migrate
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>make<span class="w"> </span>db-migration
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>make<span class="w"> </span>db-rollback
 </code></pre></div>
 <hr />
 <h2 id="tables">Tables<a class="headerlink" href="#tables" title="Permanent link">&para;</a></h2>
 <h3 id="knowledge_chunks"><code>knowledge_chunks</code><a class="headerlink" href="#knowledge_chunks" title="Permanent link">&para;</a></h3>
-<p>Stores embedded text chunks from all ingestion sources.</p>
+<p>Stores retrieval-ready evidence chunks from all ingestion sources.</p>
 <table>
 <thead>
 <tr>
@@ -1544,47 +1657,47 @@
 <tr>
 <td><code>id</code></td>
 <td>UUID</td>
-<td>Primary key</td>
+<td>primary key</td>
 </tr>
 <tr>
 <td><code>source</code></td>
 <td>VARCHAR</td>
-<td><code>resume</code>, <code>sanity</code>, or <code>linkedin</code></td>
+<td><code>resume</code>, <code>sanity</code>, <code>linkedin</code>, or <code>testimonial</code></td>
 </tr>
 <tr>
 <td><code>source_id</code></td>
 <td>VARCHAR</td>
-<td>Section name, Sanity doc ID, or CSV row identifier</td>
+<td>source identifier, sometimes with fragment suffixes like <code>#overview</code> or <code>#links</code></td>
 </tr>
 <tr>
 <td><code>content</code></td>
 <td>TEXT</td>
-<td>Raw chunk text shown to LLM as context</td>
+<td>retrieval-ready evidence text shown to the LLM</td>
 </tr>
 <tr>
 <td><code>embedding</code></td>
 <td>VECTOR(512)</td>
-<td>Voyage AI voyage-3-lite embedding</td>
+<td>embedding vector</td>
 </tr>
 <tr>
 <td><code>chunk_index</code></td>
 <td>INTEGER</td>
-<td>Position in source document</td>
+<td>position within the source document</td>
 </tr>
 <tr>
 <td><code>created_at</code></td>
 <td>TIMESTAMPTZ</td>
-<td>Ingestion timestamp</td>
+<td>ingestion timestamp</td>
 </tr>
 <tr>
 <td><code>updated_at</code></td>
 <td>TIMESTAMPTZ</td>
-<td>Last update timestamp</td>
+<td>last update timestamp</td>
 </tr>
 </tbody>
 </table>
 <h3 id="response_cache"><code>response_cache</code><a class="headerlink" href="#response_cache" title="Permanent link">&para;</a></h3>
-<p>Caches question→response pairs to reduce LLM API costs.</p>
+<p>Caches semantically similar question → response pairs.</p>
 <table>
 <thead>
 <tr>
@@ -1597,22 +1710,22 @@
 <tr>
 <td><code>id</code></td>
 <td>UUID</td>
-<td>Primary key</td>
+<td>primary key</td>
 </tr>
 <tr>
 <td><code>question</code></td>
 <td>TEXT</td>
-<td>Original user question</td>
+<td>original user question</td>
 </tr>
 <tr>
 <td><code>question_embedding</code></td>
 <td>VECTOR(512)</td>
-<td>For similarity lookup</td>
+<td>embedding for similarity lookup</td>
 </tr>
 <tr>
 <td><code>response</code></td>
 <td>TEXT</td>
-<td>Cached LLM response</td>
+<td>cached answer</td>
 </tr>
 <tr>
 <td><code>source_chunk_ids</code></td>
@@ -1622,22 +1735,22 @@
 <tr>
 <td><code>hit_count</code></td>
 <td>INTEGER</td>
-<td>Times this cache entry was served</td>
+<td>number of cache hits</td>
 </tr>
 <tr>
 <td><code>created_at</code></td>
 <td>TIMESTAMPTZ</td>
-<td>Cache entry creation time</td>
+<td>cache creation time</td>
 </tr>
 <tr>
 <td><code>invalidated_at</code></td>
 <td>TIMESTAMPTZ</td>
-<td>Null = valid. Set on webhook invalidation</td>
+<td><code>NULL</code> means active</td>
 </tr>
 </tbody>
 </table>
 <h3 id="conversations"><code>conversations</code><a class="headerlink" href="#conversations" title="Permanent link">&para;</a></h3>
-<p>Stores conversation history per browser session.</p>
+<p>Stores multi-turn history per browser session.</p>
 <table>
 <thead>
 <tr>
@@ -1650,12 +1763,12 @@
 <tr>
 <td><code>id</code></td>
 <td>UUID</td>
-<td>Primary key</td>
+<td>primary key</td>
 </tr>
 <tr>
 <td><code>session_id</code></td>
 <td>VARCHAR</td>
-<td>Browser session identifier</td>
+<td>browser session identifier</td>
 </tr>
 <tr>
 <td><code>role</code></td>
@@ -1665,23 +1778,32 @@
 <tr>
 <td><code>content</code></td>
 <td>TEXT</td>
-<td>Message text</td>
+<td>message text</td>
 </tr>
 <tr>
 <td><code>created_at</code></td>
 <td>TIMESTAMPTZ</td>
-<td>Message timestamp</td>
+<td>timestamp</td>
 </tr>
 </tbody>
 </table>
 <hr />
-<h2 id="supabase-free-tier-behaviour">Supabase Free Tier Behaviour<a class="headerlink" href="#supabase-free-tier-behaviour" title="Permanent link">&para;</a></h2>
-<p>Supabase free tier pauses the database after 1 week of inactivity. The first request after a pause will be slow (~2-3 seconds) as the database wakes up.</p>
-<p>This is handled by <code>pool_pre_ping=True</code> in <code>connection.py</code> — subsequent requests are fast once the database is awake.</p>
+<h2 id="free-tier-behaviour">Free Tier Behaviour<a class="headerlink" href="#free-tier-behaviour" title="Permanent link">&para;</a></h2>
+<p>Supabase free tier can pause the database after inactivity. The first request after a pause may be slower while the database wakes up.</p>
+<p><code>pool_pre_ping=True</code> is used to help connection reuse behave cleanly after wake-up.</p>
+<hr />
+<h2 id="dev_mode-note">DEV_MODE Note<a class="headerlink" href="#dev_mode-note" title="Permanent link">&para;</a></h2>
+<p>The database is optional only for chat-only local development in <code>DEV_MODE</code>.</p>
+<p>If you want:</p>
+<ul>
+<li>persistent conversations</li>
+<li>semantic cache</li>
+<li>ingestion-backed retrieval</li>
+</ul>
+<p>you still need the database configured.</p>
 <hr />
 <h2 id="alembic-version-table">Alembic Version Table<a class="headerlink" href="#alembic-version-table" title="Permanent link">&para;</a></h2>
-<p>The migration version table is named <code>alembic_version_askchitrank</code> — separate from any other project using the same Supabase database.</p>
-<p>Configured in <code>alembic.ini</code>:</p>
+<p>The migration version table is <code>alembic_version_askchitrank</code>.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="na">version_table</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">alembic_version_askchitrank</span>
 </code></pre></div>
 <hr />

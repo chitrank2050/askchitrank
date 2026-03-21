@@ -384,6 +384,25 @@
   
 
       
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../changelog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
     </ul>
   </div>
 </nav>
@@ -525,6 +544,62 @@
     
   
     Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/roi_improvements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROI Improvements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/safety_routing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety Routing
   
 
     
@@ -870,10 +945,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#why-groq-for-llm-inference" class="md-nav__link">
+  <a href="#why-groq-for-generation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why Groq for LLM inference
+        Why Groq for generation
       
     </span>
   </a>
@@ -892,10 +967,54 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#no-langchain-or-llamaindex" class="md-nav__link">
+  <a href="#why-improve-feature-extraction-before-changing-providers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        No LangChain or LlamaIndex
+        Why improve feature extraction before changing providers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-local-reranking-was-worth-adding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why local reranking was worth adding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-safety-routing-was-worth-adding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why safety routing was worth adding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-dev_mode-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why DEV_MODE exists
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-no-langchain-or-llamaindex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why no LangChain or LlamaIndex
       
     </span>
   </a>
@@ -1312,6 +1431,33 @@
   
 
     
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -1395,10 +1541,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#why-groq-for-llm-inference" class="md-nav__link">
+  <a href="#why-groq-for-generation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why Groq for LLM inference
+        Why Groq for generation
       
     </span>
   </a>
@@ -1417,10 +1563,54 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#no-langchain-or-llamaindex" class="md-nav__link">
+  <a href="#why-improve-feature-extraction-before-changing-providers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        No LangChain or LlamaIndex
+        Why improve feature extraction before changing providers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-local-reranking-was-worth-adding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why local reranking was worth adding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-safety-routing-was-worth-adding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why safety routing was worth adding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-dev_mode-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why DEV_MODE exists
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-no-langchain-or-llamaindex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why no LangChain or LlamaIndex
       
     </span>
   </a>
@@ -1486,7 +1676,7 @@
 
 
 <h1 id="architecture-overview">Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h1>
-<p>Ask Chitrank is a RAG (Retrieval-Augmented Generation) system. This document explains the architecture decisions and data flow.</p>
+<p>Ask Chitrank is a RAG system built for a small, cost-sensitive portfolio knowledge base. This document explains the main architecture decisions and the recent high-ROI improvements.</p>
 <hr />
 <h2 id="system-overview">System Overview<a class="headerlink" href="#system-overview" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>┌─────────────────────────────────────────────────────────────┐
@@ -1496,7 +1686,7 @@
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>               │             │                  │
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>┌──────────────▼─────────────▼──────────────────▼────────────┐
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│                  Ingestion Pipeline                          │
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│   Parse → Chunk → Embed (Voyage AI) → Store                 │
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│   Parse → Structure evidence docs → Embed → Store           │
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>└─────────────────────────┬───────────────────────────────────┘
 <a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                          │
 <a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>┌─────────────────────────▼───────────────────────────────────┐
@@ -1506,73 +1696,125 @@
 <a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                          │
 <a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>┌─────────────────────────▼───────────────────────────────────┐
 <a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>│                   Retrieval Layer                            │
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>│   Embed question → Cache lookup → Vector search             │
-<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>└─────────────────────────┬───────────────────────────────────┘
-<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>                          │
-<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>┌─────────────────────────▼───────────────────────────────────┐
-<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>│                    Chat Layer                                │
-<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>│   System prompt + context → Groq LLM → Stream response      │
-<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>└─────────────────────────┬───────────────────────────────────┘
-<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>                          │
-<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>┌─────────────────────────▼───────────────────────────────────┐
-<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>│                    FastAPI Backend                           │
-<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>│   POST /v1/chat    POST /v1/ingest    GET /v1/health        │
-<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>└─────────────────────────┬───────────────────────────────────┘
-<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>                          │
-<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>┌─────────────────────────▼───────────────────────────────────┐
-<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>│                  Next.js Frontend                            │
-<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>│   Chat widget on portfolio — streaming responses            │
-<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>└─────────────────────────────────────────────────────────────┘
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>│   Embed question → Cache lookup → Vector search → Rerank    │
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>│   → Confidence gate                                          │
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>└─────────────────────────┬───────────────────────────────────┘
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>                          │
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>┌─────────────────────────▼───────────────────────────────────┐
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>│                    Chat Layer                                │
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>│   Pre-router → Prompt + context → Groq or DEV_MODE output   │
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>└─────────────────────────┬───────────────────────────────────┘
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>                          │
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>┌─────────────────────────▼───────────────────────────────────┐
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>│                    FastAPI Backend                           │
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>│   POST /v1/chat    GET /v1/chat/safety-metrics              │
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>│   POST /v1/ingest  GET /v1/health                           │
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>└─────────────────────────┬───────────────────────────────────┘
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>                          │
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>┌─────────────────────────▼───────────────────────────────────┐
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>│                  Next.js Frontend                            │
+<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>│   Chat widget on portfolio — streaming responses            │
+<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>└─────────────────────────────────────────────────────────────┘
 </code></pre></div>
 <hr />
 <h2 id="key-design-decisions">Key Design Decisions<a class="headerlink" href="#key-design-decisions" title="Permanent link">&para;</a></h2>
 <h3 id="why-rag-over-fine-tuning">Why RAG over fine-tuning<a class="headerlink" href="#why-rag-over-fine-tuning" title="Permanent link">&para;</a></h3>
-<p>Fine-tuning a model on personal data is expensive, slow to update, and overkill for a personal portfolio chatbot. RAG retrieves relevant context at query time — when the resume or portfolio updates, re-ingest and the chatbot is immediately current. No retraining required.</p>
+<p>Fine-tuning a model on personal data is expensive, slow to update, and unnecessary for a portfolio chatbot. RAG retrieves context at request time, so content changes become available immediately after ingestion.</p>
 <h3 id="why-pgvector-over-a-dedicated-vector-database">Why pgvector over a dedicated vector database<a class="headerlink" href="#why-pgvector-over-a-dedicated-vector-database" title="Permanent link">&para;</a></h3>
-<p>Pinecone, Weaviate, and Qdrant are purpose-built vector databases with excellent performance at scale. For a personal portfolio chatbot with low traffic and a small knowledge base (~22 chunks), a dedicated vector database adds operational overhead without benefit.</p>
-<p>pgvector is a PostgreSQL extension — it runs inside the existing Supabase database, meaning one less service to manage, one less bill to pay, and no context-switching between database clients.</p>
+<p>For a small knowledge base and low traffic, a dedicated vector database would add operational overhead without much benefit. pgvector keeps the system inside the existing Supabase PostgreSQL setup.</p>
 <h3 id="why-voyage-ai-for-embeddings">Why Voyage AI for embeddings<a class="headerlink" href="#why-voyage-ai-for-embeddings" title="Permanent link">&para;</a></h3>
-<p>Anthropic recommends Voyage AI as their embedding partner. <code>voyage-3-lite</code> produces 512-dimensional embeddings — smaller than OpenAI's 1536 dimensions, which means faster similarity search and lower storage costs. Quality is competitive with OpenAI for English text retrieval tasks.</p>
-<p>Free tier: 200M tokens/month — more than sufficient for a personal portfolio with low traffic.</p>
-<h3 id="why-groq-for-llm-inference">Why Groq for LLM inference<a class="headerlink" href="#why-groq-for-llm-inference" title="Permanent link">&para;</a></h3>
-<p>Groq's LPU (Language Processing Unit) hardware delivers inference speeds 10-20x faster than GPU-based providers. Llama 3.1 70B on Groq is free up to rate limits and produces high-quality conversational responses.</p>
-<p>When traffic grows or Claude API access is available, the LLM client is swapped in one config change — the rest of the system is provider-agnostic.</p>
+<p><code>voyage-3-lite</code> keeps embedding cost and storage low:</p>
+<ul>
+<li>512 dimensions</li>
+<li>good English retrieval quality</li>
+<li>generous free tier for this project size</li>
+</ul>
+<h3 id="why-groq-for-generation">Why Groq for generation<a class="headerlink" href="#why-groq-for-generation" title="Permanent link">&para;</a></h3>
+<p>Groq provides fast response streaming and a practical free tier for portfolio traffic. The app currently uses <code>llama-3.3-70b-versatile</code>.</p>
 <h3 id="why-semantic-caching">Why semantic caching<a class="headerlink" href="#why-semantic-caching" title="Permanent link">&para;</a></h3>
-<p>Every LLM call costs money and latency. A personal portfolio receives many semantically identical questions — "What has Chitrank built?" and "What projects has he worked on?" mean the same thing.</p>
-<p>Semantic caching embeds the question and checks if a similar question was already answered. Above a 0.95 cosine similarity threshold, the cached response is returned immediately — zero LLM cost, near-zero latency.</p>
-<p>Cache entries are invalidated via Sanity webhook when portfolio content changes.</p>
-<h3 id="no-langchain-or-llamaindex">No LangChain or LlamaIndex<a class="headerlink" href="#no-langchain-or-llamaindex" title="Permanent link">&para;</a></h3>
-<p>Both frameworks are designed for complex multi-step agent pipelines with many data sources. A personal portfolio RAG has a fixed, simple pipeline — parse, chunk, embed, retrieve, generate. Framework abstractions add complexity without benefit here.</p>
-<p>Raw API calls give full control over prompt structure, streaming behaviour, and error handling.</p>
+<p>Many portfolio questions are repeated in slightly different wording. Semantic caching reduces repeated LLM calls and keeps latency low.</p>
+<h3 id="why-improve-feature-extraction-before-changing-providers">Why improve feature extraction before changing providers<a class="headerlink" href="#why-improve-feature-extraction-before-changing-providers" title="Permanent link">&para;</a></h3>
+<p>The highest-ROI quality improvement was not switching embedding vendors. It was improving what the system stores and retrieves.</p>
+<p>The older approach relied more heavily on broad plain-text source documents. The newer approach creates smaller evidence documents, such as:</p>
+<ul>
+<li>project overview</li>
+<li>project contributions</li>
+<li>project links</li>
+<li>testimonial quotes</li>
+<li>LinkedIn profile summary</li>
+<li>LinkedIn links</li>
+<li>LinkedIn recommendations</li>
+</ul>
+<p>This improves retrieval precision without adding more API calls.</p>
+<h3 id="why-local-reranking-was-worth-adding">Why local reranking was worth adding<a class="headerlink" href="#why-local-reranking-was-worth-adding" title="Permanent link">&para;</a></h3>
+<p>Pure vector similarity is strong, but broad narrative chunks can rank well for many unrelated questions. A cheap local rerank improves precision by looking at:</p>
+<ul>
+<li>lexical overlap with the question</li>
+<li>query intent like <code>projects</code>, <code>skills</code>, <code>experience</code>, or <code>feedback</code></li>
+<li>source-aware caps so testimonials do not dominate factual questions</li>
+</ul>
+<p>This is intentionally lightweight because the project has cost constraints.</p>
+<h3 id="why-safety-routing-was-worth-adding">Why safety routing was worth adding<a class="headerlink" href="#why-safety-routing-was-worth-adding" title="Permanent link">&para;</a></h3>
+<p>Public portfolio bots get many unsupported questions that do not need a full RAG pass:</p>
+<ul>
+<li>"Who are you?"</li>
+<li>"Are you Chitrank?"</li>
+<li>salary or private-detail questions</li>
+<li>explicit prompts</li>
+<li>prompt-injection attempts</li>
+<li>clearly unrelated questions</li>
+</ul>
+<p>Adding a cheap pre-router and a retrieval confidence gate was worth it because it:</p>
+<ul>
+<li>saves provider calls on low-value queries</li>
+<li>keeps unsupported questions consistent</li>
+<li>reduces the chance of weak-context hallucinations</li>
+<li>helps the bot keep answering even when backing services are degraded</li>
+</ul>
+<h3 id="why-dev_mode-exists">Why <code>DEV_MODE</code> exists<a class="headerlink" href="#why-dev_mode-exists" title="Permanent link">&para;</a></h3>
+<p>Local iteration should not require Groq, Voyage, Sanity, and Supabase for every small change.</p>
+<p><code>DEV_MODE</code> provides:</p>
+<ul>
+<li>deterministic local embeddings</li>
+<li>fictional seeded source content</li>
+<li>seeded local chat responses</li>
+<li>chat startup without a configured database</li>
+</ul>
+<p>This keeps day-to-day development cheap and fast.</p>
+<h3 id="why-no-langchain-or-llamaindex">Why no LangChain or LlamaIndex<a class="headerlink" href="#why-no-langchain-or-llamaindex" title="Permanent link">&para;</a></h3>
+<p>The system is still a fixed pipeline: parse, structure, embed, retrieve, generate. Raw application code remains easier to reason about than an abstraction layer here.</p>
 <hr />
 <h2 id="data-flow-ingestion">Data Flow — Ingestion<a class="headerlink" href="#data-flow-ingestion" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>1. Resume PDF read from data/resume.pdf → text extracted via pypdf
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>2. Resume split by section headers (Summary, Experience, Skills...)
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>3. Sanity CMS queried via GROQ API → Projects + Testimonials
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>4. LinkedIn CSVs read from data/linkedin/ → Recommendations, Positions, Skills
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>5. Each document chunk embedded via Voyage AI voyage-3-lite → 512-dim vector
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>6. Chunk + embedding stored in knowledge_chunks table
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>7. Ingestion idempotent — re-running clears and re-ingests source
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>1. Resume PDF is read from data/resume.pdf
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>2. Resume is split by section headers
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>3. Sanity project and testimonial records are transformed into retrieval-friendly evidence docs
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>4. LinkedIn profile and recommendation records are transformed into compact evidence docs
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>5. If any evidence doc is still too large, chunker.py acts as a safety net
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>6. Evidence documents are embedded with Voyage AI
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>7. Chunks are stored in knowledge_chunks
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>8. Ingestion is idempotent and invalidates stale cache entries
 </code></pre></div>
+<p>In <code>DEV_MODE</code>, fictional seed content can stand in for the real resume, Sanity, and LinkedIn sources.</p>
 <h2 id="data-flow-query">Data Flow — Query<a class="headerlink" href="#data-flow-query" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>1. User sends question via POST /v1/chat
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>2. Question embedded via Voyage AI (query input type)
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>3. Check response_cache — cosine similarity &gt; 0.95?
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>   → Cache hit: return cached response, increment hit_count
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>   → Cache miss: continue
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>4. Search knowledge_chunks — top 5 by cosine similarity
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>5. Build prompt: system prompt + retrieved chunks + question
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>6. Call Groq API with Llama 3.1 70B — stream response
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>7. Store question + response in response_cache
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>8. Stream response to client via Server-Sent Events
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>2. A cheap pre-router checks for identity, private, explicit, prompt-injection, and clearly off-topic questions
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>3. If the question is not pre-routed, it is embedded
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>4. response_cache is checked for a near-duplicate question
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>5. knowledge_chunks is searched for a wider vector candidate set
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>6. Candidates are reranked locally using query-aware heuristics
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>7. Retrieval confidence is assessed before the LLM is called
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>8. Prompt is built from the selected chunks
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>9. Groq generates and streams the answer
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>10. Cache and conversation history are updated
 </code></pre></div>
+<p>In <code>DEV_MODE</code>, embeddings and generation are handled locally and the API can respond from fictional seeded data without provider calls.</p>
 <hr />
 <h2 id="database-schema">Database Schema<a class="headerlink" href="#database-schema" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>knowledge_chunks
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    id UUID PK
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    source          VARCHAR  — &quot;resume&quot; | &quot;sanity&quot; | &quot;linkedin&quot;
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    source_id       VARCHAR  — section name, Sanity doc ID, or CSV row identifier
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    content         TEXT     — raw chunk text shown to LLM
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    source          VARCHAR  — &quot;resume&quot; | &quot;sanity&quot; | &quot;linkedin&quot; | &quot;testimonial&quot;
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    source_id       VARCHAR  — source identifier, sometimes with fragment suffixes like #overview
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    content         TEXT     — retrieval-ready evidence text shown to the LLM
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    embedding       VECTOR(512)
 <a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    chunk_index     INTEGER
 <a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    created_at      TIMESTAMPTZ

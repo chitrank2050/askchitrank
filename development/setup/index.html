@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://chitrank2050.github.io/askchitrank/development/setup/">
       
       
-        <link rel="prev" href="../../concepts/overview/">
+        <link rel="prev" href="../../concepts/safety_routing/">
       
       
         <link rel="next" href="../database/">
@@ -384,6 +384,25 @@
   
 
       
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../changelog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
     </ul>
   </div>
 </nav>
@@ -525,6 +544,62 @@
     
   
     Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/roi_improvements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROI Improvements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/safety_routing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety Routing
   
 
     
@@ -691,10 +766,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-create-virtual-environment" class="md-nav__link">
+  <a href="#2-create-the-environment" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Create Virtual Environment
+        2. Create the Environment
       
     </span>
   </a>
@@ -702,10 +777,49 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-install-dependencies" class="md-nav__link">
+  <a href="#3-choose-a-local-mode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Install Dependencies
+        3. Choose a Local Mode
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Choose a Local Mode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-a-token-free-local-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option A — Token-free local development
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-b-full-provider-backed-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option B — Full provider-backed development
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-database-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Database Setup
       
     </span>
   </a>
@@ -713,10 +827,60 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-set-up-environment" class="md-nav__link">
+  <a href="#5-prepare-data-sources" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Set Up Environment
+        5. Prepare Data Sources
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Prepare Data Sources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#resume" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resume
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linkedin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LinkedIn
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sanity-cms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sanity CMS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-ingest-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Ingest Data
       
     </span>
   </a>
@@ -724,10 +888,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-set-up-database" class="md-nav__link">
+  <a href="#7-start-the-api" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Set Up Database
+        7. Start the API
       
     </span>
   </a>
@@ -735,43 +899,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-prepare-data-sources" class="md-nav__link">
+  <a href="#service-setup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Prepare Data Sources
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#7-ingest-data" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. Ingest Data
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#8-start-the-api" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        8. Start the API
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#api-keys" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        API Keys
+        Service Setup
       
     </span>
   </a>
@@ -1295,6 +1426,33 @@
   
 
     
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -1344,10 +1502,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-create-virtual-environment" class="md-nav__link">
+  <a href="#2-create-the-environment" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Create Virtual Environment
+        2. Create the Environment
       
     </span>
   </a>
@@ -1355,10 +1513,49 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-install-dependencies" class="md-nav__link">
+  <a href="#3-choose-a-local-mode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Install Dependencies
+        3. Choose a Local Mode
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Choose a Local Mode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-a-token-free-local-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option A — Token-free local development
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-b-full-provider-backed-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option B — Full provider-backed development
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-database-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Database Setup
       
     </span>
   </a>
@@ -1366,10 +1563,60 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-set-up-environment" class="md-nav__link">
+  <a href="#5-prepare-data-sources" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Set Up Environment
+        5. Prepare Data Sources
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Prepare Data Sources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#resume" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resume
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linkedin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LinkedIn
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sanity-cms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sanity CMS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-ingest-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Ingest Data
       
     </span>
   </a>
@@ -1377,10 +1624,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-set-up-database" class="md-nav__link">
+  <a href="#7-start-the-api" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Set Up Database
+        7. Start the API
       
     </span>
   </a>
@@ -1388,43 +1635,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-prepare-data-sources" class="md-nav__link">
+  <a href="#service-setup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Prepare Data Sources
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#7-ingest-data" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. Ingest Data
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#8-start-the-api" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        8. Start the API
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#api-keys" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        API Keys
+        Service Setup
       
     </span>
   </a>
@@ -1452,7 +1666,7 @@
 
 
 <h1 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h1>
-<p>This guide covers setting up Ask Chitrank for local development.</p>
+<p>This guide covers both full production-like setup and low-cost local development.</p>
 <hr />
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <table>
@@ -1487,62 +1701,77 @@
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>askchitrank
 </code></pre></div>
 <hr />
-<h2 id="2-create-virtual-environment">2. Create Virtual Environment<a class="headerlink" href="#2-create-virtual-environment" title="Permanent link">&para;</a></h2>
+<h2 id="2-create-the-environment">2. Create the Environment<a class="headerlink" href="#2-create-the-environment" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>make<span class="w"> </span>init
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>make<span class="w"> </span>install
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>cp<span class="w"> </span>.env.example<span class="w"> </span>.env.dev
 </code></pre></div>
 <hr />
-<h2 id="3-install-dependencies">3. Install Dependencies<a class="headerlink" href="#3-install-dependencies" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>make<span class="w"> </span>install
+<h2 id="3-choose-a-local-mode">3. Choose a Local Mode<a class="headerlink" href="#3-choose-a-local-mode" title="Permanent link">&para;</a></h2>
+<h3 id="option-a-token-free-local-development">Option A — Token-free local development<a class="headerlink" href="#option-a-token-free-local-development" title="Permanent link">&para;</a></h3>
+<p>If you want to work on the API, prompt flow, streaming, or frontend integration without spending Groq or Voyage quota:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nv">API_TOKEN</span><span class="o">=</span>dev-token
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nv">DEV_MODE</span><span class="o">=</span><span class="nb">true</span>
+</code></pre></div>
+<p>Optional:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nv">CONTACT_EMAIL</span><span class="o">=</span>hello@example.dev
+</code></pre></div>
+<p>In this mode:</p>
+<ul>
+<li>Groq calls are skipped</li>
+<li>Voyage calls are skipped</li>
+<li>chat can run without a database</li>
+<li>fictional seeded data is used for local responses</li>
+</ul>
+<p>This is the recommended default for day-to-day local iteration.</p>
+<h3 id="option-b-full-provider-backed-development">Option B — Full provider-backed development<a class="headerlink" href="#option-b-full-provider-backed-development" title="Permanent link">&para;</a></h3>
+<p>If you want to exercise the full production-style pipeline, fill in:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nv">GROQ_API_KEY</span><span class="o">=</span>your-groq-api-key
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nv">VOYAGE_API_KEY</span><span class="o">=</span>your-voyage-api-key
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql+asyncpg://postgres:<span class="o">[</span>PASSWORD<span class="o">]</span>@db.<span class="o">[</span>REF<span class="o">]</span>.supabase.co:5432/postgres
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nv">DATABASE_URL_SYNC</span><span class="o">=</span>postgresql+psycopg2://postgres:<span class="o">[</span>PASSWORD<span class="o">]</span>@db.<span class="o">[</span>REF<span class="o">]</span>.supabase.co:5432/postgres
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nv">SUPABASE_URL</span><span class="o">=</span>https://<span class="o">[</span>REF<span class="o">]</span>.supabase.co
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="nv">SUPABASE_KEY</span><span class="o">=</span>your-supabase-anon-key
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="nv">SANITY_PROJECT_ID</span><span class="o">=</span>your-project-id
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="nv">SANITY_API_TOKEN</span><span class="o">=</span>your-api-token
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="nv">API_TOKEN</span><span class="o">=</span>your-generated-token
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="nv">DEV_MODE</span><span class="o">=</span><span class="nb">false</span>
 </code></pre></div>
 <hr />
-<h2 id="4-set-up-environment">4. Set Up Environment<a class="headerlink" href="#4-set-up-environment" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>cp<span class="w"> </span>.env.example<span class="w"> </span>.env.dev
-</code></pre></div>
-<p>Open <code>.env.dev</code> and fill in:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Required — get from console.groq.com (free, no credit card)</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nv">GROQ_API_KEY</span><span class="o">=</span>your-groq-api-key
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Required — get from voyageai.com (free tier)</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nv">VOYAGE_API_KEY</span><span class="o">=</span>your-voyage-api-key
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1"># Required — get from Supabase dashboard → Settings → Database</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql+asyncpg://postgres:<span class="o">[</span>PASSWORD<span class="o">]</span>@db.<span class="o">[</span>REF<span class="o">]</span>.supabase.co:5432/postgres
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="nv">DATABASE_URL_SYNC</span><span class="o">=</span>postgresql+psycopg2://postgres:<span class="o">[</span>PASSWORD<span class="o">]</span>@db.<span class="o">[</span>REF<span class="o">]</span>.supabase.co:5432/postgres
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="nv">SUPABASE_URL</span><span class="o">=</span>https://<span class="o">[</span>REF<span class="o">]</span>.supabase.co
-<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="nv">SUPABASE_KEY</span><span class="o">=</span>your-supabase-anon-key
-<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>
-<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="c1"># Required — get from sanity.io/manage</span>
-<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="nv">SANITY_PROJECT_ID</span><span class="o">=</span>your-project-id
-<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="nv">SANITY_API_TOKEN</span><span class="o">=</span>your-api-token
-</code></pre></div>
-<hr />
-<h2 id="5-set-up-database">5. Set Up Database<a class="headerlink" href="#5-set-up-database" title="Permanent link">&para;</a></h2>
-<p>See <a href="../database/">Database Setup</a> for full instructions.</p>
+<h2 id="4-database-setup">4. Database Setup<a class="headerlink" href="#4-database-setup" title="Permanent link">&para;</a></h2>
+<p>For the full pipeline, follow <a href="../database/">Database Setup</a> and run:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>make<span class="w"> </span>db-migrate
 </code></pre></div>
+<p>If you stay in token-free <code>DEV_MODE</code>, chat-only API work does not require the database.</p>
 <hr />
-<h2 id="6-prepare-data-sources">6. Prepare Data Sources<a class="headerlink" href="#6-prepare-data-sources" title="Permanent link">&para;</a></h2>
-<p><strong>Resume:</strong></p>
+<h2 id="5-prepare-data-sources">5. Prepare Data Sources<a class="headerlink" href="#5-prepare-data-sources" title="Permanent link">&para;</a></h2>
+<h3 id="resume">Resume<a class="headerlink" href="#resume" title="Permanent link">&para;</a></h3>
 <p>Place your resume PDF at <code>data/resume.pdf</code>.</p>
-<p><strong>LinkedIn:</strong></p>
-<p>Export your LinkedIn data: LinkedIn → Settings &amp; Privacy → Data Privacy → Get a copy of your data → Request archive.</p>
-<p>Extract the archive and place these CSVs in <code>data/linkedin/</code>:
-- <code>Recommendations.csv</code>
-- <code>Positions.csv</code>
-- <code>Skills.csv</code></p>
-<p><strong>Sanity CMS:</strong></p>
-<p>No manual steps needed — fetched automatically via API during ingestion.</p>
+<h3 id="linkedin">LinkedIn<a class="headerlink" href="#linkedin" title="Permanent link">&para;</a></h3>
+<p>Export your LinkedIn data and place these CSVs in <code>data/linkedin/</code>:</p>
+<ul>
+<li><code>Profile.csv</code></li>
+<li><code>Recommendations_Received.csv</code></li>
+</ul>
+<h3 id="sanity-cms">Sanity CMS<a class="headerlink" href="#sanity-cms" title="Permanent link">&para;</a></h3>
+<p>No manual content export is needed. Data is fetched via the Sanity API during ingestion.</p>
 <hr />
-<h2 id="7-ingest-data">7. Ingest Data<a class="headerlink" href="#7-ingest-data" title="Permanent link">&para;</a></h2>
+<h2 id="6-ingest-data">6. Ingest Data<a class="headerlink" href="#6-ingest-data" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>make<span class="w"> </span>ingest
 </code></pre></div>
-<p>Opens an interactive menu to select which sources to ingest. Select all three on first run.</p>
+<p>Notes:</p>
+<ul>
+<li>In full mode, this stores real embeddings in the database.</li>
+<li>In <code>DEV_MODE</code>, ingestion uses fictional seeded source content.</li>
+<li>In <code>DEV_MODE</code> without a configured database, ingestion is skipped because there is nowhere to persist chunks.</li>
+</ul>
 <hr />
-<h2 id="8-start-the-api">8. Start the API<a class="headerlink" href="#8-start-the-api" title="Permanent link">&para;</a></h2>
+<h2 id="7-start-the-api">7. Start the API<a class="headerlink" href="#7-start-the-api" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>make<span class="w"> </span>api
 </code></pre></div>
+<p>If <code>DEV_MODE=true</code>, the API can start and serve fictional seeded chat responses even without database credentials.</p>
 <hr />
-<h2 id="api-keys">API Keys<a class="headerlink" href="#api-keys" title="Permanent link">&para;</a></h2>
+<h2 id="service-setup">Service Setup<a class="headerlink" href="#service-setup" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -1555,22 +1784,22 @@
 <tr>
 <td>Groq</td>
 <td><a href="https://console.groq.com">console.groq.com</a></td>
-<td>Free tier, no card</td>
+<td>free tier</td>
 </tr>
 <tr>
 <td>Voyage AI</td>
 <td><a href="https://www.voyageai.com">voyageai.com</a></td>
-<td>200M tokens/month free</td>
+<td>generous free tier</td>
 </tr>
 <tr>
 <td>Supabase</td>
 <td><a href="https://supabase.com">supabase.com</a></td>
-<td>Free tier</td>
+<td>free tier</td>
 </tr>
 <tr>
-<td>Anthropic (future)</td>
-<td><a href="https://console.anthropic.com">console.anthropic.com</a></td>
-<td>$5 credit on signup</td>
+<td>Sanity</td>
+<td><a href="https://sanity.io/manage">sanity.io/manage</a></td>
+<td>depends on workspace plan</td>
 </tr>
 </tbody>
 </table>

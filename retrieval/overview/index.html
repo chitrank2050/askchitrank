@@ -384,6 +384,25 @@
   
 
       
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../changelog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
     </ul>
   </div>
 </nav>
@@ -525,6 +544,62 @@
     
   
     Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/roi_improvements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROI Improvements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/safety_routing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety Routing
   
 
     
@@ -1003,30 +1078,46 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#similarity-search" class="md-nav__link">
+  <a href="#vector-search" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Similarity Search
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Similarity Search">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#optional-source-filtering" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Optional source filtering
+        Vector Search
       
     </span>
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#local-reranking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local Reranking
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#retrieval-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Retrieval Confidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-this-was-high-roi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why This Was High ROI
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1043,10 +1134,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#why-095-threshold" class="md-nav__link">
+  <a href="#why-the-threshold-is-095" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why 0.95 threshold
+        Why the threshold is 0.95
       
     </span>
   </a>
@@ -1285,6 +1376,33 @@
   
 
     
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -1323,30 +1441,46 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#similarity-search" class="md-nav__link">
+  <a href="#vector-search" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Similarity Search
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Similarity Search">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#optional-source-filtering" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Optional source filtering
+        Vector Search
       
     </span>
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#local-reranking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local Reranking
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#retrieval-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Retrieval Confidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-this-was-high-roi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why This Was High ROI
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1363,10 +1497,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#why-095-threshold" class="md-nav__link">
+  <a href="#why-the-threshold-is-095" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why 0.95 threshold
+        Why the threshold is 0.95
       
     </span>
   </a>
@@ -1432,53 +1566,98 @@
 
 
 <h1 id="retrieval-layer">Retrieval Layer<a class="headerlink" href="#retrieval-layer" title="Permanent link">&para;</a></h1>
-<p>The retrieval layer finds relevant knowledge chunks for a user question
-and manages a semantic cache to avoid redundant LLM calls.</p>
+<p>The retrieval layer finds relevant knowledge chunks for a question, keeps repeated questions out of the LLM when possible, and now decides whether the evidence is strong enough to answer from.</p>
 <hr />
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>User question
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>      ↓
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>embed_query() — Voyage AI voyage-3-lite, &#39;query&#39; input type
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>embed_query()
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>      ↓
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>find_cached_response() — cosine similarity &gt; 0.95?
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>find_cached_response() — similarity &gt; 0.95?
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>      ↓ hit                          ↓ miss
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>Return cached response         search_knowledge_base()
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>Increment hit_count                   ↓
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                               Top K chunks by similarity
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                         Wider vector candidate set
 <a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                                      ↓
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                               Feed to chat layer → LLM
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                         Query-aware local reranking
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                                      ↓
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                               store_cached_response()
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                         Retrieval confidence assessment
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>                                      ↓ pass         ↓ fail
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                         Feed selected chunks        Return safe fallback
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>                         to chat layer
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>                                      ↓
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>                         store_cached_response()
 </code></pre></div>
 <hr />
-<h2 id="similarity-search">Similarity Search<a class="headerlink" href="#similarity-search" title="Permanent link">&para;</a></h2>
-<p><code>search_knowledge_base()</code> performs cosine similarity search using pgvector's
-<code>&lt;=&gt;</code> operator (cosine distance). Results are ordered by relevance with the
-highest similarity chunk first.</p>
+<h2 id="vector-search">Vector Search<a class="headerlink" href="#vector-search" title="Permanent link">&para;</a></h2>
+<p><code>search_knowledge_base()</code> still uses pgvector cosine similarity, but the retrieval flow is now three-stage:</p>
+<ol>
+<li>pull a wider candidate set from the database</li>
+<li>rerank those candidates locally using cheap heuristics</li>
+<li>assess whether the final evidence set is confident enough to answer from</li>
+</ol>
+<p>The SQL layer still looks conceptually like this:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">source</span><span class="p">,</span><span class="w"> </span><span class="n">content</span><span class="p">,</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">       </span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">(</span><span class="n">embedding</span><span class="w"> </span><span class="o">&lt;=&gt;</span><span class="w"> </span><span class="n">query_vector</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">similarity</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="k">FROM</span><span class="w"> </span><span class="n">knowledge_chunks</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">embedding</span><span class="w"> </span><span class="o">&lt;=&gt;</span><span class="w"> </span><span class="n">query_vector</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="k">LIMIT</span><span class="w"> </span><span class="mi">5</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="k">LIMIT</span><span class="w"> </span><span class="n">candidate_limit</span>
 </code></pre></div>
-<p>The <code>&lt;=&gt;</code> operator returns cosine distance (0 = identical, 2 = opposite).
-Converted to similarity score: <code>1 - distance</code> (1.0 = identical, 0.0 = opposite).</p>
-<h3 id="optional-source-filtering">Optional source filtering<a class="headerlink" href="#optional-source-filtering" title="Permanent link">&para;</a></h3>
-<p>Restrict search to a single source when needed:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">chunks</span> <span class="o">=</span> <span class="k">await</span> <span class="n">search_knowledge_base</span><span class="p">(</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">embedding</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">source_filter</span><span class="o">=</span><span class="s2">&quot;resume&quot;</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="p">)</span>
-</code></pre></div>
+<p>The difference is that top vector hits are no longer used blindly.</p>
+<hr />
+<h2 id="local-reranking">Local Reranking<a class="headerlink" href="#local-reranking" title="Permanent link">&para;</a></h2>
+<p>After vector search, the app reranks candidates using:</p>
+<ul>
+<li>lexical overlap with the user question</li>
+<li>query intent like <code>projects</code>, <code>skills</code>, <code>experience</code>, or <code>feedback</code></li>
+<li>source-aware caps so testimonial-heavy content does not dominate every query</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li>project questions bias more strongly toward Sanity project evidence</li>
+<li>skill questions boost resume, Sanity, and LinkedIn skill-heavy content</li>
+<li>feedback questions boost testimonials and recommendations</li>
+</ul>
+<p>This is intentionally local and cheap. It improves relevance without adding another provider call.</p>
+<hr />
+<h2 id="retrieval-confidence">Retrieval Confidence<a class="headerlink" href="#retrieval-confidence" title="Permanent link">&para;</a></h2>
+<p>The retrieval layer now exposes an explicit confidence assessment so the chat layer can avoid answering from weak evidence.</p>
+<p>The confidence gate checks:</p>
+<ul>
+<li><code>top_similarity</code></li>
+<li><code>best_query_coverage</code></li>
+<li>whether the semantic match is strong enough to allow low literal overlap</li>
+</ul>
+<p>Current configuration comes from:</p>
+<ul>
+<li><code>RETRIEVAL_MIN_SIMILARITY</code></li>
+<li><code>RETRIEVAL_STRONG_SIMILARITY</code></li>
+<li><code>RETRIEVAL_MIN_QUERY_COVERAGE</code></li>
+</ul>
+<p>If confidence is too low, the chat layer returns a safe fallback instead of prompting the LLM with weak context.</p>
+<p>This is especially useful for questions that are related to Chitrank but not actually supported by the portfolio corpus, such as favorite color or compensation.</p>
+<hr />
+<h2 id="why-this-was-high-roi">Why This Was High ROI<a class="headerlink" href="#why-this-was-high-roi" title="Permanent link">&para;</a></h2>
+<p>This project has strict free-tier constraints. Adding a reranker model or extra LLM pass would improve relevance, but it would also increase latency, cost, and operational complexity.</p>
+<p>The current retrieval design gives most of the practical benefit for this corpus because:</p>
+<ul>
+<li>the corpus is small</li>
+<li>source types are known</li>
+<li>question intent is easy to infer</li>
+<li>broad narrative chunks were the main precision problem</li>
+<li>unsupported questions are common enough that confidence gating pays for itself</li>
+</ul>
 <hr />
 <h2 id="semantic-cache">Semantic Cache<a class="headerlink" href="#semantic-cache" title="Permanent link">&para;</a></h2>
-<p>The response cache stores question→response pairs. Before calling the LLM,
-the query embedding is compared against all cached question embeddings. If
-a similar question was previously answered (similarity &gt; 0.95), the cached
-response is returned immediately.</p>
-<h3 id="why-095-threshold">Why 0.95 threshold<a class="headerlink" href="#why-095-threshold" title="Permanent link">&para;</a></h3>
-<p>At 0.95 cosine similarity, questions must be nearly identical in meaning to
-hit the cache. This is intentionally strict — a slightly different question
-might need a meaningfully different answer. Start strict and tune based on usage.</p>
+<p>The response cache stores question → response pairs. Before calling the LLM, the current question embedding is compared against cached question embeddings.</p>
+<p>If a cached question is similar enough:</p>
+<ul>
+<li>the cached response is returned</li>
+<li><code>hit_count</code> is incremented</li>
+<li>no LLM call is made</li>
+</ul>
+<h3 id="why-the-threshold-is-095">Why the threshold is <code>0.95</code><a class="headerlink" href="#why-the-threshold-is-095" title="Permanent link">&para;</a></h3>
+<p>The threshold is intentionally strict. A slightly different portfolio question can deserve a meaningfully different answer, so the cache prefers false negatives over stale or over-broad hits.</p>
 <h3 id="cache-invalidation">Cache invalidation<a class="headerlink" href="#cache-invalidation" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -1489,26 +1668,25 @@ might need a meaningfully different answer. Start strict and tune based on usage
 </thead>
 <tbody>
 <tr>
-<td>Sanity webhook fires</td>
-<td><code>invalidate_cache()</code> clears all entries</td>
+<td>Any ingestion run</td>
+<td><code>invalidate_cache()</code> marks active entries stale</td>
 </tr>
 <tr>
-<td>Manual</td>
-<td>Call <code>DELETE /v1/cache</code> (planned)</td>
+<td>Sanity webhook</td>
+<td>invalidates cache before re-ingesting Sanity content</td>
 </tr>
 <tr>
 <td>TTL</td>
-<td>Entries older than <code>CACHE_TTL_DAYS</code> (default 7) are ignored</td>
+<td>entries older than <code>CACHE_TTL_DAYS</code> are ignored</td>
 </tr>
 </tbody>
 </table>
 <h3 id="cache-effectiveness">Cache effectiveness<a class="headerlink" href="#cache-effectiveness" title="Permanent link">&para;</a></h3>
-<p><code>hit_count</code> is incremented every time a cache entry is served. Query Supabase
-to see which questions are being cached and how often:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">question</span><span class="p">,</span><span class="w"> </span><span class="n">hit_count</span><span class="p">,</span><span class="w"> </span><span class="n">created_at</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">FROM</span><span class="w"> </span><span class="n">response_cache</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">invalidated_at</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">hit_count</span><span class="w"> </span><span class="k">DESC</span><span class="p">;</span>
+<p>You can inspect cache reuse with:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">question</span><span class="p">,</span><span class="w"> </span><span class="n">hit_count</span><span class="p">,</span><span class="w"> </span><span class="n">created_at</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">FROM</span><span class="w"> </span><span class="n">response_cache</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">invalidated_at</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">hit_count</span><span class="w"> </span><span class="k">DESC</span><span class="p">;</span>
 </code></pre></div>
 <hr />
 <h2 id="files">Files<a class="headerlink" href="#files" title="Permanent link">&para;</a></h2>
@@ -1522,15 +1700,15 @@ to see which questions are being cached and how often:</p>
 <tbody>
 <tr>
 <td><code>src/retrieval/search.py</code></td>
-<td>pgvector similarity search against knowledge_chunks</td>
+<td>pgvector candidate search, local reranking, and retrieval confidence assessment</td>
 </tr>
 <tr>
 <td><code>src/retrieval/cache.py</code></td>
-<td>Semantic response cache — lookup, store, invalidate</td>
+<td>semantic cache lookup, store, and invalidation</td>
 </tr>
 <tr>
 <td><code>src/ingestion/embedder.py</code></td>
-<td>Voyage AI embedding (shared by ingestion and retrieval)</td>
+<td>shared embedding interface for ingestion and retrieval</td>
 </tr>
 </tbody>
 </table>

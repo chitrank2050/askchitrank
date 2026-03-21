@@ -384,6 +384,25 @@
   
 
       
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../changelog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
     </ul>
   </div>
 </nav>
@@ -525,6 +544,62 @@
     
   
     Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/roi_improvements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROI Improvements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/safety_routing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety Routing
   
 
     
@@ -747,6 +822,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#development-only-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Development-Only Stack
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#why-no-langchain-or-llamaindex" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -762,6 +848,17 @@
     <span class="md-ellipsis">
       
         Provider Swap Strategy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-the-recent-roi-work-focused-here" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why The Recent ROI Work Focused Here
       
     </span>
   </a>
@@ -1229,6 +1326,33 @@
   
 
     
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -1278,6 +1402,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#development-only-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Development-Only Stack
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#why-no-langchain-or-llamaindex" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1293,6 +1428,17 @@
     <span class="md-ellipsis">
       
         Provider Swap Strategy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-the-recent-roi-work-focused-here" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why The Recent ROI Work Focused Here
       
     </span>
   </a>
@@ -1333,58 +1479,58 @@
 <tbody>
 <tr>
 <td>LLM</td>
-<td>Groq (Llama 3.1 70B)</td>
-<td>Free tier, 10-20x faster than GPU inference</td>
+<td>Groq (<code>llama-3.3-70b-versatile</code>)</td>
+<td>fast streaming and practical free tier</td>
 </tr>
 <tr>
 <td>Embeddings</td>
-<td>Voyage AI voyage-3-lite</td>
-<td>200M tokens/month free, Anthropic recommended</td>
+<td>Voyage AI <code>voyage-3-lite</code></td>
+<td>compact 512-dim vectors and good free tier</td>
 </tr>
 <tr>
 <td>Vector store</td>
 <td>Supabase pgvector</td>
-<td>PostgreSQL extension — no extra service needed</td>
+<td>PostgreSQL extension, no extra vector service</td>
 </tr>
 <tr>
 <td>Semantic cache</td>
 <td>pgvector similarity search</td>
-<td>Reduces LLM calls for repeated questions</td>
+<td>reduces repeated LLM calls</td>
+</tr>
+<tr>
+<td>Retrieval reranking</td>
+<td>local query-aware heuristics</td>
+<td>improves relevance without more provider spend</td>
 </tr>
 <tr>
 <td>API</td>
 <td>FastAPI</td>
-<td>Async, Pydantic validation, streaming support</td>
+<td>async, typed, streaming-friendly</td>
 </tr>
 <tr>
 <td>Database</td>
 <td>Supabase PostgreSQL</td>
-<td>Free tier, excellent dashboard</td>
+<td>free tier and strong dashboard</td>
 </tr>
 <tr>
 <td>Config</td>
 <td>pydantic-settings</td>
-<td>Type-safe, env var override</td>
+<td>type-safe configuration</td>
 </tr>
 <tr>
 <td>Logging</td>
 <td>Loguru</td>
-<td>Structured, stdlib interception</td>
+<td>structured logging</td>
 </tr>
 <tr>
 <td>Package manager</td>
 <td>uv</td>
-<td>Fast, PEP 517, lockfile reproducibility</td>
+<td>fast dependency management</td>
 </tr>
 <tr>
 <td>Code quality</td>
 <td>Ruff</td>
-<td>Linter + formatter, fast</td>
-</tr>
-<tr>
-<td>Changelog</td>
-<td>git-cliff</td>
-<td>Conventional commit changelog</td>
+<td>linting and formatting</td>
 </tr>
 </tbody>
 </table>
@@ -1402,42 +1548,73 @@
 <tr>
 <td>PDF parsing</td>
 <td>pypdf</td>
-<td>Pure Python, no system dependencies</td>
+<td>pure Python, no system deps</td>
 </tr>
 <tr>
 <td>HTTP client</td>
 <td>httpx</td>
-<td>Async, used for Sanity API + PDF fetch</td>
+<td>async requests for Sanity and downloads</td>
 </tr>
 <tr>
 <td>Sanity CMS</td>
 <td>GROQ HTTP API</td>
-<td>Direct queries, no SDK needed</td>
+<td>direct and simple</td>
 </tr>
 <tr>
 <td>LinkedIn</td>
 <td>CSV export</td>
-<td>Official LinkedIn data export</td>
+<td>official export source</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="development-only-stack">Development-Only Stack<a class="headerlink" href="#development-only-stack" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Tool</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local embeddings</td>
+<td>deterministic fake embedder</td>
+<td>token-free local retrieval work</td>
+</tr>
+<tr>
+<td>Seed corpus</td>
+<td>fictional seeded resume, projects, LinkedIn, testimonials</td>
+<td>realistic local API behavior without real profile data</td>
+</tr>
+<tr>
+<td>Seed responder</td>
+<td>local prompt-aware seeded response builder</td>
+<td>avoids Groq calls in <code>DEV_MODE</code></td>
 </tr>
 </tbody>
 </table>
 <hr />
 <h2 id="why-no-langchain-or-llamaindex">Why No LangChain or LlamaIndex<a class="headerlink" href="#why-no-langchain-or-llamaindex" title="Permanent link">&para;</a></h2>
-<p>Both frameworks are designed for complex multi-step agent pipelines. A personal portfolio RAG has a fixed, simple pipeline — parse, chunk, embed, retrieve, generate. Raw API calls give full control and the entire pipeline is readable in under 300 lines of code.</p>
+<p>The pipeline is still straightforward: parse, structure, embed, retrieve, rerank, generate. Raw application code is easier to audit and tune than a heavier orchestration framework for this project size.</p>
 <hr />
 <h2 id="provider-swap-strategy">Provider Swap Strategy<a class="headerlink" href="#provider-swap-strategy" title="Permanent link">&para;</a></h2>
-<p>The system is designed so the LLM and embedding providers can be swapped in one config change:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Current — free tier</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">GROQ_API_KEY</span><span class="o">=</span>...
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nv">GROQ_MODEL</span><span class="o">=</span>llama-3.3-70b-versatile
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nv">VOYAGE_API_KEY</span><span class="o">=</span>...
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nv">VOYAGE_MODEL</span><span class="o">=</span>voyage-3-lite
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Future — when Anthropic API key available</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="nv">ANTHROPIC_API_KEY</span><span class="o">=</span>...
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1"># embedding model swap handled in embedder.py</span>
-</code></pre></div>
-<p>No code changes required — only config.</p>
+<p>Provider-specific logic is intentionally isolated to small files:</p>
+<ul>
+<li><code>src/ingestion/embedder.py</code></li>
+<li><code>src/chat/groq_client.py</code></li>
+</ul>
+<p>That keeps the blast radius low, but swapping providers is not literally "config only" anymore. The interfaces are stable; the implementations are isolated.</p>
+<hr />
+<h2 id="why-the-recent-roi-work-focused-here">Why The Recent ROI Work Focused Here<a class="headerlink" href="#why-the-recent-roi-work-focused-here" title="Permanent link">&para;</a></h2>
+<p>The highest-value improvements came from:</p>
+<ul>
+<li>better source representation</li>
+<li>cheaper local reranking</li>
+<li>a zero-cost local dev path</li>
+</ul>
+<p>Those changes improved quality and developer speed without undermining the project’s free-tier constraints.</p>
 <hr />
 <p>Developed by <a href="https://www.chitrankagnihotri.com">Chitrank Agnihotri</a></p>
 

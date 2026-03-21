@@ -382,6 +382,25 @@
   
 
       
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="changelog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
     </ul>
   </div>
 </nav>
@@ -527,10 +546,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#knowledge-base" class="md-nav__link">
+  <a href="#knowledge-base-shape" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Knowledge Base
+        Knowledge Base Shape
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recent-roi-improvements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recent ROI Improvements
       
     </span>
   </a>
@@ -647,6 +677,62 @@
     
   
     Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="concepts/roi_improvements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROI Improvements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="concepts/safety_routing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety Routing
   
 
     
@@ -1257,6 +1343,33 @@
   
 
     
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -1317,10 +1430,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#knowledge-base" class="md-nav__link">
+  <a href="#knowledge-base-shape" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Knowledge Base
+        Knowledge Base Shape
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recent-roi-improvements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recent ROI Improvements
       
     </span>
   </a>
@@ -1382,7 +1506,7 @@
 
 <h1 id="ask-chitrank">Ask Chitrank<a class="headerlink" href="#ask-chitrank" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p>RAG-powered AI assistant that answers questions about Chitrank using resume, portfolio, and Sanity CMS data.</p>
+<p>RAG-powered AI assistant that answers questions about Chitrank using resume, portfolio, LinkedIn, and testimonial data.</p>
 </blockquote>
 <hr />
 <h2 id="links">Links<a class="headerlink" href="#links" title="Permanent link">&para;</a></h2>
@@ -1406,73 +1530,81 @@
 </table>
 <hr />
 <h2 id="what-it-does">What It Does<a class="headerlink" href="#what-it-does" title="Permanent link">&para;</a></h2>
-<p>Ask Chitrank is a conversational AI that answers questions about Chitrank Agnihotri — his experience, projects, skills, and background. It uses Retrieval-Augmented Generation (RAG) to ground every answer in real data from his resume, LinkedIn, and portfolio, preventing hallucination.</p>
+<p>Ask Chitrank is a conversational AI that answers questions about Chitrank Agnihotri — his experience, projects, skills, and background. It uses RAG to ground every answer in real portfolio data and avoid hallucination.</p>
 <p><strong>Example questions it answers:</strong></p>
 <ul>
 <li>"What projects has Chitrank built?"</li>
 <li>"What is his tech stack?"</li>
 <li>"How many years of experience does he have?"</li>
 <li>"What do his colleagues say about him?"</li>
-<li>"Has he worked with AI companies?"</li>
+<li>"Has he worked with AI products?"</li>
 </ul>
 <hr />
 <h2 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>User question
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    ↓
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Embed question (Voyage AI)
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    ↓
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>Check semantic cache (pgvector similarity search)
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    ↓ hit                        ↓ miss
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>Return cached response      Search knowledge base
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                                ↓
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                            Top 5 relevant chunks
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                                ↓
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                            Build prompt + context
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                                ↓
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                            Groq LLM (Llama 3.1 70B)
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>                                ↓
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                            Store in cache
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>                                ↓
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>                            Stream response
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Cheap safety pre-router
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    ↓ bypass                     ↓ continue
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>Canned response             Embed question (Voyage AI voyage-3-lite)
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>                                ↓
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                        Check semantic cache (pgvector similarity search)
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                                ↓ hit                        ↓ miss
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                        Return cached response      Search knowledge base
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                                                        ↓
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                                                Query-aware local reranking
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                                                        ↓
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                                              Retrieval confidence gate
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>                                                        ↓ pass         ↓ fail
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                                                Build prompt + context  Canned fallback
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>                                                        ↓
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>                                                Groq LLM (Llama 3.3 70B)
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>                                                        ↓
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>                                                Store in cache
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>                                                        ↓
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>                                                Stream response
 </code></pre></div>
 <hr />
-<h2 id="knowledge-base">Knowledge Base<a class="headerlink" href="#knowledge-base" title="Permanent link">&para;</a></h2>
+<h2 id="knowledge-base-shape">Knowledge Base Shape<a class="headerlink" href="#knowledge-base-shape" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
 <th>Source</th>
-<th>Content</th>
-<th>Chunks</th>
+<th>Content type</th>
+<th>Retrieval shape</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Resume PDF</td>
 <td>Experience, skills, education</td>
-<td>6</td>
+<td>Section-aware chunks</td>
 </tr>
 <tr>
 <td>Sanity CMS</td>
 <td>Projects</td>
-<td>9</td>
+<td>Overview, contribution, and link evidence documents</td>
 </tr>
 <tr>
 <td>Testimonials</td>
 <td>Colleague recommendations</td>
-<td>3</td>
+<td>One evidence document per testimonial</td>
 </tr>
 <tr>
 <td>LinkedIn</td>
-<td>Recommendations, positions, skills</td>
-<td>4</td>
-</tr>
-<tr>
-<td><strong>Total</strong></td>
-<td></td>
-<td><strong>22</strong></td>
+<td>Profile summary, links, recommendations</td>
+<td>Compact profile and recommendation evidence documents</td>
 </tr>
 </tbody>
 </table>
+<p>Exact chunk counts vary as source content changes and as structured evidence documents are emitted during ingestion.</p>
+<hr />
+<h2 id="recent-roi-improvements">Recent ROI Improvements<a class="headerlink" href="#recent-roi-improvements" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Structured feature extraction now creates retrieval-friendly evidence documents instead of relying only on broad source blobs.</li>
+<li>Retrieval now combines vector search with cheap local reranking, improving relevance without increasing provider spend.</li>
+<li>Chat now uses a cheap pre-router plus a retrieval confidence gate, improving safety and saving tokens on unsupported questions.</li>
+<li><code>DEV_MODE</code> now supports fictional seeded data and local fake providers so local API work does not burn Groq or Voyage quota.</li>
+</ul>
 <hr />
 <h2 id="roadmap">Roadmap<a class="headerlink" href="#roadmap" title="Permanent link">&para;</a></h2>
 <ul>
@@ -1481,16 +1613,17 @@
 <li>[x] Phase 3 — Retrieval layer (vector search + semantic cache)</li>
 <li>[x] Phase 4 — Chat layer (prompt engineering + Groq LLM)</li>
 <li>[x] Phase 5 — FastAPI + streaming (SSE chat endpoint)</li>
-<li>[ ] Phase 6 — Sanity webhook auto-sync + Railway deployment</li>
-<li>[ ] Phase 7 — Frontend chat widget (Next.js)</li>
+<li>[x] Phase 7 — Sanity webhook auto-sync</li>
+<li>[ ] Phase 6 — Frontend chat widget (Next.js)</li>
 </ul>
 <hr />
 <h2 id="known-limitations">Known Limitations<a class="headerlink" href="#known-limitations" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Groq free tier: 6000 tokens/minute — sufficient for personal portfolio traffic</li>
-<li>Supabase free tier pauses after 1 week inactivity — first request after pause is slow (~2-3 seconds)</li>
-<li>Response cache threshold (0.95) may miss semantically similar but differently phrased questions</li>
-<li>voyage-3-lite similarity scores are lower than OpenAI embeddings numerically — ranking is correct even when scores appear low</li>
+<li>Groq free tier rate limits still apply in production mode</li>
+<li>Supabase free tier can pause after inactivity, making the first request slower</li>
+<li>The semantic cache threshold of <code>0.95</code> is intentionally strict and may miss some near-duplicates</li>
+<li>Local reranking is heuristic-based, so it should still be tuned against real production queries over time</li>
+<li>Safety pre-routing and retrieval confidence are heuristic-based and should also be tuned against real production traffic</li>
 </ul>
 <hr />
 <h2 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>

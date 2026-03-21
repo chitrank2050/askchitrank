@@ -12,13 +12,13 @@
         <meta name="author" content="Chitrank Agnihotri">
       
       
-        <link rel="canonical" href="https://chitrank2050.github.io/askchitrank/concepts/overview/">
+        <link rel="canonical" href="https://chitrank2050.github.io/askchitrank/concepts/roi_improvements/">
       
       
-        <link rel="prev" href="../..">
+        <link rel="prev" href="../overview/">
       
       
-        <link rel="next" href="../roi_improvements/">
+        <link rel="next" href="../safety_routing/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>Overview - Ask Chitrank</title>
+        <title>ROI Improvements - Ask Chitrank</title>
       
     
     
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#key-concepts" class="md-skip">
+        <a href="#high-roi-improvements" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Overview
+              ROI Improvements
             
           </span>
         </div>
@@ -252,7 +252,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+        <a href="../overview/" class="md-tabs__link">
           
   
   
@@ -536,6 +536,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -555,7 +583,7 @@
   <span class="md-ellipsis">
     
   
-    Overview
+    ROI Improvements
   
 
     
@@ -573,7 +601,7 @@
   <span class="md-ellipsis">
     
   
-    Overview
+    ROI Improvements
   
 
     
@@ -599,10 +627,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#embeddings" class="md-nav__link">
+  <a href="#the-problem-we-wanted-to-solve" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Embeddings
+        The Problem We Wanted to Solve
       
     </span>
   </a>
@@ -610,10 +638,71 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#vector-database" class="md-nav__link">
+  <a href="#why-these-changes-were-high-roi" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Vector Database
+        Why These Changes Were High ROI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why These Changes Were High ROI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-better-feature-extraction-before-changing-providers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Better feature extraction before changing providers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-cheap-local-reranking-instead-of-more-model-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Cheap local reranking instead of more model calls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-fictional-seeded-dev-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Fictional seeded dev mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-cheap-safety-routing-before-expensive-model-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Cheap safety routing before expensive model calls
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-we-did-not-start-with-internal-embeddings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why We Did Not Start With Internal Embeddings
       
     </span>
   </a>
@@ -621,120 +710,82 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#rag-retrieval-augmented-generation" class="md-nav__link">
+  <a href="#what-improved-in-practice" class="md-nav__link">
     <span class="md-ellipsis">
       
-        RAG (Retrieval-Augmented Generation)
+        What Improved in Practice
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What Improved in Practice">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#project-and-skill-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project and skill questions
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#retrieval-friendly-documents" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#experience-questions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Retrieval-Friendly Documents
+        Experience questions
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#semantic-cache" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#feedback-and-testimonial-questions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Semantic Cache
+        Feedback and testimonial questions
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#prompt-engineering" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#local-development" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Prompt Engineering
+        Local development
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#safety-pre-routing" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#unsupported-and-weakly-grounded-questions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Safety Pre-Routing
+        Unsupported and weakly grounded questions
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#sse-server-sent-events" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        SSE (Server-Sent Events)
-      
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#chunking" class="md-nav__link">
+  <a href="#design-rule-going-forward" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Chunking
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#local-reranking" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Local Reranking
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#retrieval-confidence-gate" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Retrieval Confidence Gate
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cosine-similarity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cosine Similarity
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#why-these-changes-matter" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why These Changes Matter
+        Design Rule Going Forward
       
     </span>
   </a>
@@ -745,34 +796,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../roi_improvements/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    ROI Improvements
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -1457,10 +1480,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#embeddings" class="md-nav__link">
+  <a href="#the-problem-we-wanted-to-solve" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Embeddings
+        The Problem We Wanted to Solve
       
     </span>
   </a>
@@ -1468,10 +1491,71 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#vector-database" class="md-nav__link">
+  <a href="#why-these-changes-were-high-roi" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Vector Database
+        Why These Changes Were High ROI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why These Changes Were High ROI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-better-feature-extraction-before-changing-providers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Better feature extraction before changing providers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-cheap-local-reranking-instead-of-more-model-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Cheap local reranking instead of more model calls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-fictional-seeded-dev-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Fictional seeded dev mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-cheap-safety-routing-before-expensive-model-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Cheap safety routing before expensive model calls
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-we-did-not-start-with-internal-embeddings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why We Did Not Start With Internal Embeddings
       
     </span>
   </a>
@@ -1479,120 +1563,82 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#rag-retrieval-augmented-generation" class="md-nav__link">
+  <a href="#what-improved-in-practice" class="md-nav__link">
     <span class="md-ellipsis">
       
-        RAG (Retrieval-Augmented Generation)
+        What Improved in Practice
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What Improved in Practice">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#project-and-skill-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project and skill questions
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#retrieval-friendly-documents" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#experience-questions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Retrieval-Friendly Documents
+        Experience questions
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#semantic-cache" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#feedback-and-testimonial-questions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Semantic Cache
+        Feedback and testimonial questions
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#prompt-engineering" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#local-development" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Prompt Engineering
+        Local development
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#safety-pre-routing" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#unsupported-and-weakly-grounded-questions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Safety Pre-Routing
+        Unsupported and weakly grounded questions
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#sse-server-sent-events" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        SSE (Server-Sent Events)
-      
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#chunking" class="md-nav__link">
+  <a href="#design-rule-going-forward" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Chunking
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#local-reranking" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Local Reranking
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#retrieval-confidence-gate" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Retrieval Confidence Gate
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cosine-similarity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cosine Similarity
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#why-these-changes-matter" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why These Changes Matter
+        Design Rule Going Forward
       
     </span>
   </a>
@@ -1619,152 +1665,128 @@
   
 
 
-<h1 id="key-concepts">Key Concepts<a class="headerlink" href="#key-concepts" title="Permanent link">&para;</a></h1>
-<p>This page explains the core ideas behind Ask Chitrank in plain language.</p>
+<h1 id="high-roi-improvements">High-ROI Improvements<a class="headerlink" href="#high-roi-improvements" title="Permanent link">&para;</a></h1>
+<p>This page explains the recent retrieval, safety, and development-mode improvements, and why they were the best return on effort for this project.</p>
 <hr />
-<h2 id="embeddings">Embeddings<a class="headerlink" href="#embeddings" title="Permanent link">&para;</a></h2>
-<p>An embedding converts text into a list of numbers that captures meaning.</p>
-<p><strong>Simple example:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>&quot;I love dogs&quot;     → [0.2, 0.8, 0.1, 0.5, ...]
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>&quot;I adore dogs&quot;    → [0.2, 0.8, 0.1, 0.5, ...]
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>&quot;The sky is blue&quot; → [0.9, 0.1, 0.7, 0.2, ...]
-</code></pre></div>
-<p>The first two are close because they mean nearly the same thing. The third is far away because it is a different topic.</p>
-<p><strong>In this project:</strong> production uses Voyage AI <code>voyage-3-lite</code> with 512 dimensions. In <code>DEV_MODE</code>, a deterministic local embedder is used so local testing does not spend tokens.</p>
+<h2 id="the-problem-we-wanted-to-solve">The Problem We Wanted to Solve<a class="headerlink" href="#the-problem-we-wanted-to-solve" title="Permanent link">&para;</a></h2>
+<p>The original RAG pipeline was already simple and cost-aware, but it had four practical limits:</p>
+<ol>
+<li>
+<p>Source documents were too flat.
+   Projects, testimonials, and LinkedIn records were mostly stored as broad plain-text blobs. That made retrieval work, but it reduced precision for questions like "What technologies did he use?" or "What do colleagues say about him?"</p>
+</li>
+<li>
+<p>Vector search alone was sometimes too blunt.
+   Pure cosine similarity is great for semantic matching, but narrative chunks can rank well for many unrelated questions. In a small portfolio corpus, that can crowd out the most factual evidence.</p>
+</li>
+<li>
+<p>Local iteration still cost tokens.
+   Even when testing small API or prompt changes, the app could hit Voyage and Groq unless the whole stack was mocked manually.</p>
+</li>
+<li>
+<p>Unsupported questions still took the expensive path.
+   Identity questions, salary questions, prompt-injection attempts, and explicit prompts could still travel too far through the pipeline even though they did not need retrieval or generation.</p>
+</li>
+</ol>
 <hr />
-<h2 id="vector-database">Vector Database<a class="headerlink" href="#vector-database" title="Permanent link">&para;</a></h2>
-<p>A normal database searches by exact values:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;Chitrank&quot;</span>
-</code></pre></div>
-<p>A vector database searches by meaning:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">embedding</span><span class="w"> </span><span class="o">&lt;=&gt;</span><span class="w"> </span><span class="n">question_embedding</span>
-</code></pre></div>
-<p><strong>In this project:</strong> Supabase PostgreSQL with the pgvector extension stores and searches embedding vectors.</p>
-<hr />
-<h2 id="rag-retrieval-augmented-generation">RAG (Retrieval-Augmented Generation)<a class="headerlink" href="#rag-retrieval-augmented-generation" title="Permanent link">&para;</a></h2>
-<p>RAG means retrieving relevant facts first, then giving them to the LLM before asking for an answer.</p>
-<p>Without RAG:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>User: What has Chitrank built?
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>LLM: [guesses, hallucinates, or says it does not know]
-</code></pre></div>
-<p>With RAG:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Step 1 — Retrieve relevant facts
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>Step 2 — Add them to the prompt as context
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>Step 3 — Ask the LLM to answer only from that context
-</code></pre></div>
-<p><strong>In this project:</strong> the knowledge base comes from the resume, Sanity CMS, testimonials, and LinkedIn exports.</p>
-<hr />
-<h2 id="retrieval-friendly-documents">Retrieval-Friendly Documents<a class="headerlink" href="#retrieval-friendly-documents" title="Permanent link">&para;</a></h2>
-<p>Good retrieval depends on more than the embedding model. It also depends on what gets embedded.</p>
-<p>Instead of storing every source as one broad text blob, the ingestion layer now creates bounded evidence documents such as:</p>
+<h2 id="why-these-changes-were-high-roi">Why These Changes Were High ROI<a class="headerlink" href="#why-these-changes-were-high-roi" title="Permanent link">&para;</a></h2>
+<h3 id="1-better-feature-extraction-before-changing-providers">1. Better feature extraction before changing providers<a class="headerlink" href="#1-better-feature-extraction-before-changing-providers" title="Permanent link">&para;</a></h3>
+<p>The biggest gain did not come from swapping the embedding vendor.</p>
+<p>It came from improving what the system embeds:</p>
 <ul>
-<li>project overview</li>
-<li>project contributions</li>
-<li>project links</li>
-<li>testimonial quotes</li>
-<li>LinkedIn profile summary</li>
-<li>LinkedIn links</li>
-<li>LinkedIn recommendations</li>
+<li>project overview, contribution, and links are now separated into distinct evidence documents</li>
+<li>testimonials are labelled clearly as social proof</li>
+<li>LinkedIn profile summaries, links, and recommendations are represented as bounded retrieval-friendly documents</li>
+<li>retrieval hints like <code>Evidence Type</code>, <code>Keywords</code>, and <code>Useful for queries about</code> are embedded directly into the stored text</li>
 </ul>
-<p>These smaller, more intentional documents are easier to retrieve accurately for specific questions.</p>
-<hr />
-<h2 id="semantic-cache">Semantic Cache<a class="headerlink" href="#semantic-cache" title="Permanent link">&para;</a></h2>
-<p>A normal cache stores exact string matches.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Question: &quot;What projects has Chitrank built?&quot;
-</code></pre></div>
-<p>A semantic cache stores meaning matches.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>&quot;What projects has Chitrank built?&quot; → hit
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>&quot;What has Chitrank worked on?&quot;      → hit
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>&quot;What is the weather today?&quot;        → miss
-</code></pre></div>
-<p>If similarity is above <code>0.95</code>, the cached answer is returned and the LLM call is skipped.</p>
-<p><strong>In this project:</strong> the <code>response_cache</code> table stores question embeddings and responses, and is invalidated on ingestion.</p>
-<hr />
-<h2 id="prompt-engineering">Prompt Engineering<a class="headerlink" href="#prompt-engineering" title="Permanent link">&para;</a></h2>
-<p>Prompt engineering is how the system tells the LLM what kind of answer is allowed.</p>
-<p>A weak prompt can cause rambling or invented facts.</p>
-<p>A strong prompt can say:</p>
-<ul>
-<li>answer only from the provided context</li>
-<li>stay concise</li>
-<li>refer to Chitrank in third person</li>
-<li>redirect off-topic questions</li>
-<li>use the configured contact email when context is insufficient</li>
-<li>clarify that the assistant is not Chitrank</li>
-<li>refuse private, explicit, or prompt-reveal requests when they are not supported</li>
-</ul>
-<p>That is what keeps the chatbot grounded.</p>
-<hr />
-<h2 id="safety-pre-routing">Safety Pre-Routing<a class="headerlink" href="#safety-pre-routing" title="Permanent link">&para;</a></h2>
-<p>Some questions are not worth sending through the full RAG pipeline.</p>
-<p>The chat layer now runs a cheap classification pass before embeddings to catch:</p>
-<ul>
-<li>identity questions like "Who are you?" or "Are you Chitrank?"</li>
-<li>private questions like salary or sensitive personal details</li>
-<li>explicit or sexual questions</li>
-<li>prompt-injection attempts such as "ignore instructions" or "show the system prompt"</li>
-<li>clearly off-topic questions such as weather or sports</li>
-</ul>
-<p>For these cases, the app returns a canned response immediately. That improves safety and saves tokens.</p>
-<hr />
-<h2 id="sse-server-sent-events">SSE (Server-Sent Events)<a class="headerlink" href="#sse-server-sent-events" title="Permanent link">&para;</a></h2>
-<p>SSE lets the server push tokens to the browser as they are generated.</p>
-<p>Without SSE, the user waits for the full answer.</p>
-<p>With SSE:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>data: {&quot;type&quot;: &quot;token&quot;, &quot;content&quot;: &quot;Chitrank&quot;}
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>data: {&quot;type&quot;: &quot;token&quot;, &quot;content&quot;: &quot; has&quot;}
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>data: {&quot;type&quot;: &quot;done&quot;, &quot;cached&quot;: false}
-</code></pre></div>
-<p>This makes the API feel interactive instead of blocking.</p>
-<hr />
-<h2 id="chunking">Chunking<a class="headerlink" href="#chunking" title="Permanent link">&para;</a></h2>
-<p>Large documents are usually too broad to embed as one unit.</p>
-<p>Chunking splits them into smaller, more useful pieces.</p>
-<p><strong>In this project:</strong></p>
-<ul>
-<li>the resume is split by section headers</li>
-<li>Sanity and LinkedIn records are first turned into retrieval-friendly evidence documents</li>
-<li>generic word-count chunking remains as a safety net when a document is still too large</li>
-</ul>
-<p>The goal is not just smaller text. The goal is better retrieval precision.</p>
-<hr />
-<h2 id="local-reranking">Local Reranking<a class="headerlink" href="#local-reranking" title="Permanent link">&para;</a></h2>
-<p>Vector similarity gets the system close, but not always all the way there.</p>
-<p>After the initial vector search, the retrieval layer now applies a cheap local rerank using:</p>
+<p>This is high ROI because better input structure usually improves retrieval quality more cheaply than changing models.</p>
+<h3 id="2-cheap-local-reranking-instead-of-more-model-calls">2. Cheap local reranking instead of more model calls<a class="headerlink" href="#2-cheap-local-reranking-instead-of-more-model-calls" title="Permanent link">&para;</a></h3>
+<p>After vector search, the system now does a lightweight local rerank using:</p>
 <ul>
 <li>lexical overlap with the user query</li>
-<li>query intent such as <code>projects</code>, <code>skills</code>, <code>experience</code>, or <code>feedback</code></li>
-<li>source-aware caps so narrative testimonial text does not drown out factual sources</li>
+<li>query intent like <code>projects</code>, <code>skills</code>, <code>experience</code>, or <code>feedback</code></li>
+<li>source-aware caps so testimonials do not dominate factual questions</li>
 </ul>
-<p>This improves answer quality without adding more provider calls.</p>
-<hr />
-<h2 id="retrieval-confidence-gate">Retrieval Confidence Gate<a class="headerlink" href="#retrieval-confidence-gate" title="Permanent link">&para;</a></h2>
-<p>Even after vector search and local reranking, the system should not guess when evidence is weak.</p>
-<p>The retrieval layer now checks signals such as:</p>
+<p>This is high ROI because it improves precision without:</p>
 <ul>
-<li>top vector similarity</li>
-<li>lexical coverage of the user question</li>
-<li>whether the match is strong enough semantically to trust without exact word overlap</li>
+<li>an extra LLM call</li>
+<li>an external reranker API</li>
+<li>a second embedding pass</li>
 </ul>
-<p>If confidence is too low, the chat layer returns a safe fallback instead of sending weak context to the LLM.</p>
-<hr />
-<h2 id="cosine-similarity">Cosine Similarity<a class="headerlink" href="#cosine-similarity" title="Permanent link">&para;</a></h2>
-<p>Cosine similarity measures how closely two vectors point in the same direction.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>&quot;React developer&quot;   → very close to &quot;Frontend engineer&quot;
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>&quot;React developer&quot;   → much farther from &quot;Database admin&quot;
-</code></pre></div>
-<p>In this project, pgvector uses cosine distance via <code>&lt;=&gt;</code>, and the app converts that to similarity with <code>1 - distance</code>.</p>
-<hr />
-<h2 id="why-these-changes-matter">Why These Changes Matter<a class="headerlink" href="#why-these-changes-matter" title="Permanent link">&para;</a></h2>
-<p>The recent improvements were chosen for return on effort, not novelty.</p>
-<p>The highest-value changes were:</p>
+<h3 id="3-fictional-seeded-dev-mode">3. Fictional seeded dev mode<a class="headerlink" href="#3-fictional-seeded-dev-mode" title="Permanent link">&para;</a></h3>
+<p><code>DEV_MODE=true</code> now enables:</p>
 <ul>
-<li>improving how source data is represented</li>
-<li>improving how retrieval chooses chunks</li>
-<li>adding cheap safety routing and confidence gating before expensive generation</li>
-<li>adding a fictional seeded dev mode to avoid token spend during local work</li>
+<li>deterministic local embeddings</li>
+<li>fictional seeded responses instead of Groq</li>
+<li>fictional seeded content for Sanity, LinkedIn, and resume flows</li>
+<li>chat startup without a database for quick API iteration</li>
 </ul>
-<p>For the full reasoning, see <a href="../roi_improvements/">ROI Improvements</a>.</p>
+<p>This is high ROI because it cuts token spend and removes setup friction while preserving realistic local workflows.</p>
+<h3 id="4-cheap-safety-routing-before-expensive-model-calls">4. Cheap safety routing before expensive model calls<a class="headerlink" href="#4-cheap-safety-routing-before-expensive-model-calls" title="Permanent link">&para;</a></h3>
+<p>The chat layer now adds:</p>
+<ul>
+<li>a pre-router for identity, private, explicit, prompt-injection, and clearly off-topic questions</li>
+<li>a retrieval confidence gate that stops weak evidence from reaching the LLM</li>
+<li>a fallback path so the bot still answers when generation or backing services are unavailable</li>
+</ul>
+<p>This is high ROI because it improves safety and lowers spend at the same time. Unsupported questions now get deterministic answers without paying for the full RAG pipeline.</p>
+<hr />
+<h2 id="why-we-did-not-start-with-internal-embeddings">Why We Did Not Start With Internal Embeddings<a class="headerlink" href="#why-we-did-not-start-with-internal-embeddings" title="Permanent link">&para;</a></h2>
+<p>Running embeddings internally is possible, but it was not the first lever to pull.</p>
+<p>For this project, retrieval quality was more constrained by:</p>
+<ul>
+<li>how the source material was represented</li>
+<li>how chunks were selected</li>
+<li>how unsupported questions were routed</li>
+<li>how much provider-backed testing cost during iteration</li>
+</ul>
+<p>Changing the embedding provider first would have required re-embedding data and revisiting vector dimensions, but it would not automatically fix weak feature extraction or poor chunk selection.</p>
+<hr />
+<h2 id="what-improved-in-practice">What Improved in Practice<a class="headerlink" href="#what-improved-in-practice" title="Permanent link">&para;</a></h2>
+<h3 id="project-and-skill-questions">Project and skill questions<a class="headerlink" href="#project-and-skill-questions" title="Permanent link">&para;</a></h3>
+<p>These benefit from:</p>
+<ul>
+<li>structured project evidence</li>
+<li>technology-heavy mini-documents</li>
+<li>source bias toward resume and project content</li>
+</ul>
+<h3 id="experience-questions">Experience questions<a class="headerlink" href="#experience-questions" title="Permanent link">&para;</a></h3>
+<p>These benefit from:</p>
+<ul>
+<li>stronger weighting for resume and LinkedIn profile evidence</li>
+<li>less interference from testimonial-style narrative text</li>
+</ul>
+<h3 id="feedback-and-testimonial-questions">Feedback and testimonial questions<a class="headerlink" href="#feedback-and-testimonial-questions" title="Permanent link">&para;</a></h3>
+<p>These benefit from:</p>
+<ul>
+<li>explicit testimonial and recommendation labelling</li>
+<li>local reranking that boosts social-proof sources when the question asks for feedback</li>
+</ul>
+<h3 id="local-development">Local development<a class="headerlink" href="#local-development" title="Permanent link">&para;</a></h3>
+<p>This benefits from:</p>
+<ul>
+<li>no accidental provider spend</li>
+<li>no need to keep database credentials configured for basic API work</li>
+<li>deterministic seeded behaviour that is easier to debug</li>
+</ul>
+<h3 id="unsupported-and-weakly-grounded-questions">Unsupported and weakly grounded questions<a class="headerlink" href="#unsupported-and-weakly-grounded-questions" title="Permanent link">&para;</a></h3>
+<p>These now benefit from:</p>
+<ul>
+<li>cheap canned responses for obvious identity, private, explicit, and off-topic requests</li>
+<li>a retrieval confidence gate that avoids weak-context hallucinations</li>
+<li>a safe fallback answer instead of a dead-end provider error</li>
+</ul>
+<hr />
+<h2 id="design-rule-going-forward">Design Rule Going Forward<a class="headerlink" href="#design-rule-going-forward" title="Permanent link">&para;</a></h2>
+<p>For this codebase, prefer improvements in this order:</p>
+<ol>
+<li>Better source representation</li>
+<li>Better chunk selection</li>
+<li>Better safety routing and confidence gating</li>
+<li>Better caching and cheaper local iteration</li>
+<li>Provider swaps</li>
+</ol>
+<p>That order usually produces the best quality-per-effort ratio for a small RAG system with strict cost limits.</p>
 <hr />
 <p>Developed by <a href="https://www.chitrankagnihotri.com">Chitrank Agnihotri</a></p>
 
