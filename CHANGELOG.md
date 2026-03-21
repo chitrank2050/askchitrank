@@ -2,6 +2,23 @@
 
 All notable changes to Ask Chitrank.
 
+## [0.6.2] - 2026-03-21
+
+### Documentation
+
+- Updated documentation
+
+### Features
+
+- Update bruno api documentation
+- Added testing for BL
+- Introduce dev mode for local development and enhance chat safety with new routing and prompt hardening.
+- Update README with Vite chat widget details and enhance chat safety tests to include latency verification in done events.
+
+### Maintenance
+
+- Added seeded data for testing mode under /src/dev
+
 ## [0.6.1] - 2026-03-18
 
 ### Documentation
