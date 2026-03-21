@@ -4,22 +4,20 @@ meta {
   seq: 5
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# POST /v1/chat  (multi-turn conversation)
-#
-# Run 02_chat_stream.bru or 03_chat_full.bru first to establish context.
-# This request asks a follow-up question using the SAME session_id.
-#
-# The API fetches the last 6 messages from the conversations table
-# and includes them in the prompt — giving the LLM context from earlier
-# in the conversation.
-#
-# Expected behaviour:
-#   - LLM references context from previous question about projects
-#   - Response is coherent as a follow-up, not starting from scratch
-#
-# Uses the same {{sessionId}} environment variable as previous requests.
-# ─────────────────────────────────────────────────────────────────────────────
+docs {
+  # Chat — Multi-turn Follow-up
+
+  Run `02_chat_stream.bru` or `03_chat_full.bru` first to establish context.
+  This request asks a follow-up question using the **SAME** `session_id`.
+
+  The API fetches the last 6 messages from the conversations table and includes them in the prompt — giving the LLM context from earlier in the conversation.
+
+  ## Expected Behaviour
+  - LLM references context from previous question about projects
+  - Response is coherent as a follow-up, not starting from scratch
+  
+  Uses the same `{{sessionId}}` environment variable as previous requests.
+}
 
 post {
   url: {{baseUrl}}/v1/chat

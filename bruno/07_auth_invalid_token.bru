@@ -4,23 +4,25 @@ meta {
   seq: 7
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# POST /v1/chat  (wrong Bearer token)
-#
-# Tests that the API correctly rejects requests with a wrong token.
-# Authorization header is present but token value is intentionally wrong.
-#
-# Expected response:
-#   HTTP 401
-#   {
-#     "error": {
-#       "code": 401,
-#       "type": "INVALID_TOKEN",
-#       "message": "Invalid API token...",
-#       "request_id": "abc12345"
-#     }
-#   }
-# ─────────────────────────────────────────────────────────────────────────────
+docs {
+  # Auth — Invalid Token
+
+  Tests that the API correctly rejects requests with a wrong token.
+  `Authorization` header is present but token value is intentionally wrong.
+
+  ## Expected Response
+  **HTTP 401 Unauthorized**
+  ```json
+  {
+    "error": {
+      "code": 401,
+      "type": "INVALID_TOKEN",
+      "message": "Invalid API token...",
+      "request_id": "abc12345"
+    }
+  }
+  ```
+}
 
 post {
   url: {{baseUrl}}/v1/chat

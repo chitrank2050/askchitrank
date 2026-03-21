@@ -4,32 +4,35 @@ meta {
   seq: 11
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# POST /v1/ingest?token=API_TOKEN
-#
-# Simulates a Sanity CMS webhook call.
-# Protected by API_TOKEN passed as a query parameter — NOT Bearer header.
-# This is because Sanity webhooks cannot send custom Authorization headers.
-#
-# Configure your Sanity webhook URL as:
-#   https://your-api.railway.app/v1/ingest?token=YOUR_API_TOKEN
-#
-# What this endpoint does:
-#   1. Verifies token query parameter against API_TOKEN
-#   2. Calls invalidate_cache() — clears all response_cache entries
-#   3. Calls ingest_sanity() — re-fetches Projects + Testimonials from Sanity
-#   4. Returns counts of chunks ingested and cache entries invalidated
-#
-# Expected response:
-#   {
-#     "status": "ok",
-#     "chunks_ingested": 12,
-#     "cache_invalidated": 5
-#   }
-#
-# NOTE: This triggers real re-ingestion — Voyage AI embed calls will be made.
-# Use sparingly to avoid burning free tier quota.
-# ─────────────────────────────────────────────────────────────────────────────
+docs {
+  # Ingest — Sanity Webhook
+
+  Simulates a Sanity CMS webhook call.
+  Protected by `API_TOKEN` passed as a query parameter — **NOT** Bearer header.
+  This is because Sanity webhooks cannot send custom Authorization headers.
+
+  Configure your Sanity webhook URL as:
+  `https://your-api.railway.app/v1/ingest?token=YOUR_API_TOKEN`
+
+  ## What this endpoint does:
+  1. Verifies token query parameter against `API_TOKEN`
+  2. Calls `invalidate_cache()` — clears all `response_cache` entries
+  3. Calls `ingest_sanity()` — re-fetches Projects + Testimonials from Sanity
+  4. Returns counts of chunks ingested and cache entries invalidated
+
+  ## Expected Response
+  ```json
+  {
+    "status": "ok",
+    "chunks_ingested": 12,
+    "cache_invalidated": 5
+  }
+  ```
+
+  > [!IMPORTANT]
+  > This triggers real re-ingestion — Voyage AI embed calls will be made.
+  > Use sparingly to avoid burning free tier quota.
+}
 
 post {
   url: {{baseUrl}}/v1/ingest?token={{apiToken}}

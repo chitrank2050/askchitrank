@@ -4,23 +4,25 @@ meta {
   seq: 9
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# POST /v1/chat  (question exceeds 500 character limit)
-#
-# Tests that Pydantic schema validation rejects questions over 500 chars.
-# The ChatRequest schema enforces max_length=500 on question.
-#
-# Expected response:
-#   HTTP 422
-#   {
-#     "error": {
-#       "code": 422,
-#       "type": "VALIDATION_ERROR",
-#       "message": "Request validation failed: ...",
-#       "request_id": "abc12345"
-#     }
-#   }
-# ─────────────────────────────────────────────────────────────────────────────
+docs {
+  # Validation — Question Too Long
+
+  Tests that Pydantic schema validation rejects questions over 500 characters.
+  The `ChatRequest` schema enforces `max_length=500` on the question field.
+
+  ## Expected Response
+  **HTTP 422 Unprocessable Entity**
+  ```json
+  {
+    "error": {
+      "code": 422,
+      "type": "VALIDATION_ERROR",
+      "message": "Request validation failed: ...",
+      "request_id": "abc12345"
+    }
+  }
+  ```
+}
 
 post {
   url: {{baseUrl}}/v1/chat

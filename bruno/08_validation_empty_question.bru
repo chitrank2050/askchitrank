@@ -4,23 +4,25 @@ meta {
   seq: 8
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# POST /v1/chat  (empty question field)
-#
-# Tests that Pydantic schema validation rejects empty questions.
-# The ChatRequest schema enforces min_length=2 on question.
-#
-# Expected response:
-#   HTTP 422
-#   {
-#     "error": {
-#       "code": 422,
-#       "type": "VALIDATION_ERROR",
-#       "message": "Request validation failed: ...",
-#       "request_id": "abc12345"
-#     }
-#   }
-# ─────────────────────────────────────────────────────────────────────────────
+docs {
+  # Validation — Empty Question
+
+  Tests that Pydantic schema validation rejects empty questions.
+  The `ChatRequest` schema enforces `min_length=2` on the question field.
+
+  ## Expected Response
+  **HTTP 422 Unprocessable Entity**
+  ```json
+  {
+    "error": {
+      "code": 422,
+      "type": "VALIDATION_ERROR",
+      "message": "Request validation failed: ...",
+      "request_id": "abc12345"
+    }
+  }
+  ```
+}
 
 post {
   url: {{baseUrl}}/v1/chat

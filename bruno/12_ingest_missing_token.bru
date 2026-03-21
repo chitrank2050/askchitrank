@@ -4,24 +4,27 @@ meta {
   seq: 12
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# POST /v1/ingest  (no token query parameter)
-#
-# Tests that the ingest endpoint rejects calls without a token.
-# The token must be in the query string: /v1/ingest?token=YOUR_TOKEN
-# Calling /v1/ingest with no token returns 401 MISSING_TOKEN.
-#
-# Expected response:
-#   HTTP 401
-#   {
-#     "error": {
-#       "code": 401,
-#       "type": "MISSING_TOKEN",
-#       "message": "API token is required...",
-#       "request_id": "abc12345"
-#     }
-#   }
-# ─────────────────────────────────────────────────────────────────────────────
+docs {
+  # Ingest — Missing Token
+
+  Tests that the ingest endpoint rejects calls without a token.
+  The token must be in the query string: `/v1/ingest?token=YOUR_TOKEN`
+
+  Calling `/v1/ingest` with no token returns **401 MISSING_TOKEN**.
+
+  ## Expected Response
+  **HTTP 401 Unauthorized**
+  ```json
+  {
+    "error": {
+      "code": 401,
+      "type": "MISSING_TOKEN",
+      "message": "API token is required...",
+      "request_id": "abc12345"
+    }
+  }
+  ```
+}
 
 post {
   url: {{baseUrl}}/v1/ingest

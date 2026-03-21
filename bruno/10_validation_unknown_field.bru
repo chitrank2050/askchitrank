@@ -4,26 +4,26 @@ meta {
   seq: 10
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# POST /v1/chat  (unexpected field in request body)
-#
-# Tests that the schema rejects extra fields.
-# ChatRequest uses extra="forbid" in model_config — any field
-# not defined in the schema causes a 422 validation error.
-#
-# This prevents clients from accidentally sending sensitive data
-# in extra fields that the API silently ignores.
-#
-# Expected response:
-#   HTTP 422
-#   {
-#     "error": {
-#       "code": 422,
-#       "type": "VALIDATION_ERROR",
-#       ...
-#     }
-#   }
-# ─────────────────────────────────────────────────────────────────────────────
+docs {
+  # Validation — Unknown Field
+
+  Tests that the schema rejects extra fields.
+  `ChatRequest` uses `extra="forbid"` in `model_config` — any field not defined in the schema causes a **422 Validation Error**.
+
+  This prevents clients from accidentally sending sensitive data in extra fields that the API silently ignores.
+
+  ## Expected Response
+  **HTTP 422 Unprocessable Entity**
+  ```json
+  {
+    "error": {
+      "code": 422,
+      "type": "VALIDATION_ERROR",
+      ...
+    }
+  }
+  ```
+}
 
 post {
   url: {{baseUrl}}/v1/chat

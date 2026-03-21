@@ -4,19 +4,17 @@ meta {
   seq: 4
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# POST /v1/chat  (verifying semantic cache)
-#
-# Run 03_chat_full.bru first to populate the cache.
-# Then run this request — it asks a semantically similar question
-# and should return cached: true if similarity > 0.95.
-#
-# "What technologies does Chitrank use?" is semantically close to
-# "What is Chitrank's tech stack?" from the previous request.
-#
-# If cached: false, the questions were not similar enough.
-# Adjust the CACHE_SIMILARITY_THRESHOLD in config if needed.
-# ─────────────────────────────────────────────────────────────────────────────
+docs {
+  # Chat — Cached Response
+
+  Run `03_chat_full.bru` first to populate the cache.
+  Then run this request — it asks a semantically similar question and should return `cached: true` if similarity > 0.95.
+
+  "What technologies does Chitrank use?" is semantically close to "What is Chitrank's tech stack?" from the previous request.
+
+  If `cached: false`, the questions were not similar enough.
+  Adjust the `CACHE_SIMILARITY_THRESHOLD` in config if needed.
+}
 
 post {
   url: {{baseUrl}}/v1/chat

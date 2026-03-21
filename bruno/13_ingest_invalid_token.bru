@@ -4,23 +4,25 @@ meta {
   seq: 13
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# POST /v1/ingest?token=wrong-token
-#
-# Tests that the ingest endpoint rejects calls with a wrong token.
-# Token query param is present but value is intentionally wrong.
-#
-# Expected response:
-#   HTTP 401
-#   {
-#     "error": {
-#       "code": 401,
-#       "type": "INVALID_TOKEN",
-#       "message": "Invalid API token...",
-#       "request_id": "abc12345"
-#     }
-#   }
-# ─────────────────────────────────────────────────────────────────────────────
+docs {
+  # Ingest — Invalid Token
+
+  Tests that the ingest endpoint rejects calls with a wrong token.
+  The `token` query parameter is present but the value is intentionally wrong.
+
+  ## Expected Response
+  **HTTP 401 Unauthorized**
+  ```json
+  {
+    "error": {
+      "code": 401,
+      "type": "INVALID_TOKEN",
+      "message": "Invalid API token...",
+      "request_id": "abc12345"
+    }
+  }
+  ```
+}
 
 post {
   url: {{baseUrl}}/v1/ingest?token=deliberately-wrong-token-abc123

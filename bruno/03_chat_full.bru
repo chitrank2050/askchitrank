@@ -4,23 +4,6 @@ meta {
   seq: 3
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# POST /v1/chat  (stream: false)
-#
-# Authenticated endpoint — requires Bearer token.
-# Returns the complete LLM response as a single JSON object.
-# Useful for testing, simple integrations, or non-streaming clients.
-#
-# cache is disabled (use_cache: false) so we always hit the LLM
-# and can verify the response content is correct.
-#
-# Expected response:
-#   {
-#     "response": "Chitrank's tech stack includes React, TypeScript...",
-#     "cached": false
-#   }
-# ─────────────────────────────────────────────────────────────────────────────
-
 post {
   url: {{baseUrl}}/v1/chat
   body: json
@@ -38,6 +21,24 @@ body:json {
     "use_cache": false,
     "stream": false
   }
+}
+
+docs {
+  # Chat — Full Response
+
+  Authenticated endpoint — requires Bearer token.
+  Returns the complete LLM response as a single JSON object.
+  Useful for testing, simple integrations, or non-streaming clients.
+
+  `cache` is disabled (`use_cache: false`) so we always hit the LLM and can verify the response content is correct.
+
+  ## Expected Response
+  ```json
+  {
+    "response": "Chitrank's tech stack includes React, TypeScript...",
+    "cached": false
+  }
+  ```
 }
 
 tests {

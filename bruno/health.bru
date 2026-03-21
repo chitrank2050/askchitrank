@@ -4,26 +4,28 @@ meta {
   seq: 1
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# GET /v1/health
-#
-# Public endpoint — no authentication required.
-# Used by Railway health checks, uptime monitors, and load balancers.
-#
-# Expected response:
-#   {
-#     "status": "healthy",
-#     "version": "0.4.0",
-#     "timestamp": "2026-03-18T10:00:00+00:00"
-#   }
-#
-# This is the ONLY endpoint that works without an API token.
-# ─────────────────────────────────────────────────────────────────────────────
-
 get {
   url: {{baseUrl}}/v1/health
   body: none
   auth: none
+}
+
+docs {
+  # Health Check
+
+  Public endpoint — no authentication required.
+  Used by Railway health checks, uptime monitors, and load balancers.
+
+  ## Expected Response
+  ```json
+  {
+    "status": "healthy",
+    "version": "0.4.0",
+    "timestamp": "2026-03-18T10:00:00+00:00"
+  }
+  ```
+
+  This is the **ONLY** endpoint that works without an API token.
 }
 
 tests {
