@@ -105,7 +105,7 @@ class _Settings(BaseSettings):
     CHUNK_SIZE: int = 500
     CHUNK_OVERLAP: int = 50
     TOP_K_RESULTS: int = 8
-    RETRIEVAL_MIN_SIMILARITY: float = 0.58
+    RETRIEVAL_MIN_SIMILARITY: float = 0.50
     RETRIEVAL_STRONG_SIMILARITY: float = 0.72
     RETRIEVAL_MIN_QUERY_COVERAGE: float = 0.18
 
