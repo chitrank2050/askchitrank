@@ -341,12 +341,12 @@ def assess_retrieval_confidence(
     )
 
     if not query_tokens:
-        is_confident = top_similarity >= settings.RETRIEVAL_MIN_SIMILARITY
+        is_confident = top_score >= settings.RETRIEVAL_MIN_SIMILARITY
         reason = "ok" if is_confident else "low_similarity"
-    elif top_similarity >= settings.RETRIEVAL_STRONG_SIMILARITY:
+    elif top_score >= settings.RETRIEVAL_STRONG_SIMILARITY:
         is_confident = True
         reason = "ok"
-    elif top_similarity < settings.RETRIEVAL_MIN_SIMILARITY:
+    elif top_score < settings.RETRIEVAL_MIN_SIMILARITY:
         is_confident = False
         reason = "low_similarity"
     elif best_query_coverage < settings.RETRIEVAL_MIN_QUERY_COVERAGE:

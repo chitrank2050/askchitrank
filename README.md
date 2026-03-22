@@ -85,9 +85,9 @@ Every LLM response is cached in two stages to maximize speed and minimize API li
 
 Cache is invalidated automatically when Sanity CMS content changes via webhook.
 
-Retrieval is also reranked locally using cheap lexical and source-intent signals, so relevance can improve without adding more model calls.
+Retrieval is also reranked locally using cheap lexical and source-intent signals. The final `score` incorporates both semantic cosine similarity and query term overlap.
 
-The chat layer now adds a cheap safety pre-router before embeddings and a retrieval confidence gate after search, so unsupported or weakly grounded questions can be answered safely without always paying for a provider call.
+The chat layer now adds a cheap safety pre-router before embeddings, and a retrieval confidence gate after search. Crucially, the confidence gate evaluates the boosted `top_score` rather than raw semantic similarity alone. This ensures perfectly valid answers correctly pass the threshold by factoring in exact keyword matches and source credibility.
 
 ---
 
