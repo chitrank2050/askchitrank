@@ -62,7 +62,7 @@ init:
 
 install:
 	@echo "📥 Installing dependencies..."
-	$(UV) sync --all-groups
+	$(UV) sync --all-groups --all-extras
 	@echo "✅ Done."
 
 install-prod:

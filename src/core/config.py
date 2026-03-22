@@ -79,9 +79,10 @@ class _Settings(BaseSettings):
     # ----------------------------------------------------------------
     # 🧠  Embeddings
     # ----------------------------------------------------------------
+    EMBEDDING_PROVIDER: Literal["voyage", "local"] = "voyage"
     VOYAGE_API_KEY: str = ""
     VOYAGE_MODEL: str = "voyage-3-lite"
-    EMBEDDING_DIMENSIONS: int = 512
+    EMBEDDING_DIMENSIONS: int = 512  # 512 for Voyage, 384 for local (MiniLM)
 
     # ----------------------------------------------------------------
     # 🗄️  Database

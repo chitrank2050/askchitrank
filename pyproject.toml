@@ -34,6 +34,9 @@ dependencies = [
   "voyageai>=0.3.0",
 ]
 
+[project.optional-dependencies]
+local-embed = ["sentence-transformers>=3.0.0"]
+
 [project.scripts]
 dev = "src.main:main"
 

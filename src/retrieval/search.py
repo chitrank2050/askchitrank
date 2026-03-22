@@ -26,6 +26,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.config import settings
 from src.core.logger import logger
+from src.retrieval.synonyms import expand_tokens
 
 _STOP_WORDS = {
     "a",
@@ -295,11 +296,12 @@ async def search_knowledge_base(
 
     if query_text:
         query_tokens = _tokenize(query_text)
+        expanded_tokens = expand_tokens(query_tokens)
         for chunk in chunks:
-            matches, coverage = _query_overlap(chunk["content"], query_tokens)
+            matches, coverage = _query_overlap(chunk["content"], expanded_tokens)
             chunk["query_term_matches"] = matches
             chunk["query_term_coverage"] = round(coverage, 4)
-            chunk["score"] = round(_score_chunk(chunk, query_tokens), 4)
+            chunk["score"] = round(_score_chunk(chunk, expanded_tokens), 4)
         chunks = _select_diverse_chunks(chunks, query_tokens, top_k, top_k_per_source)
     else:
         chunks = chunks[:top_k]

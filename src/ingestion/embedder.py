@@ -1,9 +1,10 @@
 """
-Text embedding via Voyage AI.
+Text embedding via Voyage AI or local sentence-transformers fallback.
 
 Converts text chunks into vector representations for
-similarity search. Uses voyage-3-lite for cost efficiency
-on the free tier (200M tokens/month).
+similarity search. Default provider is Voyage AI (voyage-3-lite)
+for cost efficiency on the free tier. Falls back to local
+all-MiniLM-L6-v2 when EMBEDDING_PROVIDER=local.
 
 Responsibility: embed text. Nothing else.
 Does NOT: store embeddings, chunk text, or load documents.
@@ -28,11 +29,32 @@ from src.dev.local_embeddings import (
 
 # Voyage AI async client — initialised once, reused across calls
 _client = (
-    None if settings.DEV_MODE else voyageai.AsyncClient(api_key=settings.VOYAGE_API_KEY)
+    None
+    if settings.DEV_MODE or settings.EMBEDDING_PROVIDER == "local"
+    else voyageai.AsyncClient(api_key=settings.VOYAGE_API_KEY)
 )
 
 # Voyage AI maximum texts per batch request
 _BATCH_SIZE = 128
+
+
+def _use_local_provider() -> bool:
+    """Check if the local sentence-transformers provider is configured."""
+    return settings.EMBEDDING_PROVIDER == "local"
+
+
+async def _embed_texts_local_provider(texts: list[str]) -> Sequence[Sequence[float]]:
+    """Embed texts using the local sentence-transformers model."""
+    from src.ingestion.local_embedder import embed_texts as st_embed_texts
+
+    return await st_embed_texts(texts)
+
+
+async def _embed_query_local_provider(query: str) -> Sequence[float]:
+    """Embed a query using the local sentence-transformers model."""
+    from src.ingestion.local_embedder import embed_query as st_embed_query
+
+    return await st_embed_query(query)
 
 
 async def embed_texts(texts: list[str]) -> Sequence[Sequence[float]]:
@@ -62,6 +84,9 @@ async def embed_texts(texts: list[str]) -> Sequence[Sequence[float]]:
     if settings.DEV_MODE:
         logger.info(f"Embedded {len(texts)} chunks via local dev embedder")
         return embed_texts_local(texts, settings.EMBEDDING_DIMENSIONS)
+
+    if _use_local_provider():
+        return await _embed_texts_local_provider(texts)
 
     all_embeddings = []
 
@@ -105,6 +130,9 @@ async def embed_query(query: str) -> Sequence[float]:
     if settings.DEV_MODE:
         logger.debug("Embedded query via local dev embedder")
         return embed_text_local(query, settings.EMBEDDING_DIMENSIONS)
+
+    if _use_local_provider():
+        return await _embed_query_local_provider(query)
 
     assert _client is not None
 
