@@ -43,11 +43,13 @@ User question
     ↓
 Cheap safety pre-router
     ↓ bypass                     ↓ continue
-Canned response             Embed question (Voyage AI voyage-3-lite)
-                                ↓
-                            Check semantic cache (pgvector cosine similarity > 0.95)
+Canned response             Check exact string cache (zero API calls)
                                 ↓ hit                        ↓ miss
-                            Return cached response      Search knowledge_chunks
+                            Return cached response      Embed question (Voyage AI)
+                                                            ↓
+                                                        Check semantic cache (pgvector cosine similarity > 0.95)
+                                                            ↓ hit                        ↓ miss
+                                                        Return cached response      Search knowledge_chunks
                                                             ↓
                                                     Query-aware reranked chunks
                                                             ↓
@@ -77,7 +79,9 @@ Canned response             Embed question (Voyage AI voyage-3-lite)
 
 ## Semantic Caching
 
-Every LLM response is cached by question embedding. When a new question has cosine similarity > 0.95 with a cached question, the cached response is returned immediately — zero LLM cost, near-zero latency.
+Every LLM response is cached in two stages to maximize speed and minimize API limits:
+1. **Exact Match Cache**: If the exact same question was asked before, the cached response is instantly returned. This costs absolutely zero API calls (no embedding, no LLM), protecting provider rate limits for frequent queries.
+2. **Semantic Cache**: If the exact text isn't cached, the user's question is embedded. If the embedding has a cosine similarity > 0.95 with a previously cached question, the cached response is returned. Zero LLM cost, near-zero latency.
 
 Cache is invalidated automatically when Sanity CMS content changes via webhook.
 
