@@ -122,6 +122,58 @@ async def find_cached_response(
     }
 
 
+async def find_exact_cached_response(
+    question: str,
+    db: AsyncSession,
+) -> dict | None:
+    """Find a cached response for the exact same question.
+
+    Checks for exact case-insensitive match before embedding to save LLM/Embedding
+    API calls and avoid Rate Limits for repeated questions.
+    """
+    ttl_cutoff = datetime.now(UTC) - timedelta(days=settings.CACHE_TTL_DAYS)
+
+    result = await db.execute(
+        text("""
+            SELECT
+                id::text,
+                question,
+                response,
+                hit_count
+            FROM response_cache
+            WHERE invalidated_at IS NULL
+              AND created_at > :ttl_cutoff
+              AND LOWER(question) = LOWER(:question)
+            ORDER BY created_at DESC
+            LIMIT 1
+        """),
+        {
+            "question": question.strip(),
+            "ttl_cutoff": ttl_cutoff,
+        },
+    )
+
+    row = result.fetchone()
+    if not row:
+        return None
+
+    await db.execute(
+        update(ResponseCache)
+        .where(ResponseCache.id == row.id)
+        .values(hit_count=row.hit_count + 1)
+    )
+    await db.commit()
+
+    logger.info(f"Exact cache hit — hit_count: {row.hit_count + 1}")
+
+    return {
+        "id": row.id,
+        "question": row.question,
+        "response": row.response,
+        "hit_count": row.hit_count + 1,
+    }
+
+
 async def store_cached_response(
     question: str,
     question_embedding: Sequence[float],

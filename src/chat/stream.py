@@ -31,6 +31,7 @@ Typical usage:
 import json
 import re
 import time
+import traceback
 from collections.abc import AsyncGenerator
 from datetime import UTC, datetime
 
@@ -49,7 +50,11 @@ from src.core.logger import logger
 from src.db.models import Conversation
 from src.dev.seed_data import get_seeded_context_chunks
 from src.ingestion.embedder import embed_query
-from src.retrieval.cache import find_cached_response, store_cached_response
+from src.retrieval.cache import (
+    find_cached_response,
+    find_exact_cached_response,
+    store_cached_response,
+)
 from src.retrieval.search import assess_retrieval_confidence, search_knowledge_base
 
 
@@ -153,6 +158,30 @@ async def stream_chat_response(
             latency = (time.perf_counter() - pipeline_start) * 1000
             yield _sse_event("done", "", cached=False, latency_ms=latency)
             return
+
+        # ── Step 0.5: Exact match cache check ──────────────────────────────
+        if use_cache and db is not None:
+            exact_cached = await find_exact_cached_response(question, db)
+            if exact_cached:
+                logger.info(
+                    "Exact cache hit — returning cached response without embedding"
+                )
+
+                # Store conversation turn even for exact cached responses
+                await _emit_answer(
+                    question=question,
+                    response=exact_cached["response"],
+                    session_id=session_id,
+                    db=db,
+                )
+                safety_metrics.record_response_route("cache_hit")
+
+                latency = (time.perf_counter() - pipeline_start) * 1000
+                async for event in _stream_text_response(
+                    exact_cached["response"], cached=True, latency_ms=latency
+                ):
+                    yield event
+                return
 
         # ── Step 1: Embed the question ─────────────────────────────────────
         logger.info(f"Processing question: {question[:60]}...")
@@ -290,7 +319,9 @@ async def stream_chat_response(
         yield _sse_event("done", "", cached=False, latency_ms=latency)
 
     except Exception as e:
-        logger.error("Chat pipeline failed before completion: {}", e)
+        logger.error(
+            "Chat pipeline failed before completion: {}\n{}", e, traceback.format_exc()
+        )
         safety_metrics.record_fallback("pipeline_failure")
         safety_metrics.record_response_route("error_fallback")
         fallback = build_pipeline_fallback_response()
