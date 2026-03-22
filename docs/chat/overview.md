@@ -18,7 +18,7 @@ Canned response              Exact cache → Embed → Semantic cache → Search
                             build_messages()      Canned fallback
                                    ↓
                             stream_response()
-                            Groq API — Llama 3.3 70B
+                            Groq API — Llama 4 Scout 17B-16E
                             or DEV_MODE seeded response
                                    ↓
                             Token stream → SSE events
@@ -95,7 +95,7 @@ If confidence is too low, the chat layer returns a safe fallback instead of send
 
 ## Generation
 
-Production generation uses Groq with `llama-3.3-70b-versatile`.
+Production generation uses Groq with `meta-llama/llama-4-scout-17b-16e-instruct` (Llama 4 Scout), a 17B-parameter mixture-of-experts model with 16 experts that offers improved instruction following over Llama 3.3 70B at zero additional cost.
 
 | Setting | Value | Reason |
 |---------|-------|--------|

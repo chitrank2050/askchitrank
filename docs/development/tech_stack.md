@@ -6,7 +6,7 @@
 
 | Layer | Tool | Why |
 |------|------|-----|
-| LLM | Groq (`llama-3.3-70b-versatile`) | fast streaming and practical free tier |
+| LLM | Groq (`meta-llama/llama-4-scout-17b-16e-instruct`) | MoE architecture, better instruction following, fast streaming, and practical free tier |
 | Embeddings | Voyage AI `voyage-3-lite` | compact 512-dim vectors and good free tier |
 | Vector store | Supabase pgvector | PostgreSQL extension, no extra vector service |
 | Semantic cache | pgvector similarity search | reduces repeated LLM calls |

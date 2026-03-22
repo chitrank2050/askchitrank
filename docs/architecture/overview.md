@@ -67,7 +67,7 @@ For a small knowledge base and low traffic, a dedicated vector database would ad
 
 ### Why Groq for generation
 
-Groq provides fast response streaming and a practical free tier for portfolio traffic. The app currently uses `llama-3.3-70b-versatile`.
+Groq provides fast response streaming and a practical free tier for portfolio traffic. The app currently uses `meta-llama/llama-4-scout-17b-16e-instruct` (Llama 4 Scout), a 17B-parameter mixture-of-experts model with 16 experts that offers improved instruction following over the previous Llama 3.3 70B at zero additional cost.
 
 ### Why two-stage caching
 

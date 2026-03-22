@@ -72,7 +72,7 @@ class _Settings(BaseSettings):
     # 🤖  LLM
     # ----------------------------------------------------------------
     GROQ_API_KEY: str = ""
-    GROQ_MODEL: str = "llama-3.3-70b-versatile"
+    GROQ_MODEL: str = "meta-llama/llama-4-scout-17b-16e-instruct"
     LLM_MAX_TOKENS: int = 1024
     LLM_TEMPERATURE: float = 0.1  # low — factual answers only
 
