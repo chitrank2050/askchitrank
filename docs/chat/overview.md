@@ -11,7 +11,7 @@ User question
       ↓
 Cheap safety pre-router
       ↓ bypass                     ↓ continue
-Canned response              Embed + cache + retrieval
+Canned response              Exact cache → Embed → Semantic cache → Search
                                    ↓
                             Retrieval confidence gate
                                    ↓ pass         ↓ fail
@@ -85,9 +85,9 @@ After retrieval, the chat layer now checks whether the selected chunks are stron
 
 The decision uses signals from the retrieval layer such as:
 
-- top similarity
+- top_score (boosted semantic relevance)
 - lexical coverage of the question
-- whether the semantic match is strong enough to trust without literal overlap
+- whether the boosted score is strong enough to trust without literal overlap
 
 If confidence is too low, the chat layer returns a safe fallback instead of sending weak context to the LLM.
 

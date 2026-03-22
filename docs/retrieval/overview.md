@@ -9,12 +9,14 @@ The retrieval layer finds relevant knowledge chunks for a question, keeps repeat
 ```text
 User question
       ↓
-embed_query()
-      ↓
-find_cached_response() — similarity > 0.95?
+find_exact_cached_response() — exact match?
       ↓ hit                          ↓ miss
-Return cached response         search_knowledge_base()
+Return cached response         embed_query()
 Increment hit_count                   ↓
+                               find_cached_response() — similarity > 0.95?
+                                      ↓ hit                          ↓ miss
+                               Return cached response         search_knowledge_base()
+                               Increment hit_count                   ↓
                          Wider vector candidate set
                                       ↓
                          Query-aware local reranking
@@ -75,9 +77,9 @@ The retrieval layer now exposes an explicit confidence assessment so the chat la
 
 The confidence gate checks:
 
-- `top_similarity`
+- `top_score` (base similarity + custom keyword/source boosts)
 - `best_query_coverage`
-- whether the semantic match is strong enough to allow low literal overlap
+- whether the boosted score is strong enough to allow low literal overlap
 
 Current configuration comes from:
 
@@ -105,17 +107,20 @@ The current retrieval design gives most of the practical benefit for this corpus
 
 ---
 
-## Semantic Cache
+## Caching (Exact & Semantic)
 
-The response cache stores question → response pairs. Before calling the LLM, the current question embedding is compared against cached question embeddings.
+The response cache stores question → response pairs in two stages to maximize speed and protect API rate limits:
 
-If a cached question is similar enough:
+1. **Exact Match Cache**: Before embedding, the system checks for a case-insensitive exact string match. If found, it returns the cached response immediately using absolutely zero API calls.
+2. **Semantic Cache**: If no exact match exists, the question is embedded. It is then compared against previously cached question embeddings.
+
+If a cached question is similar enough (cosine similarity > 0.95):
 
 - the cached response is returned
 - `hit_count` is incremented
 - no LLM call is made
 
-### Why the threshold is `0.95`
+### Why the semantic threshold is `0.95`
 
 The threshold is intentionally strict. A slightly different portfolio question can deserve a meaningfully different answer, so the cache prefers false negatives over stale or over-broad hits.
 
