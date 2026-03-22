@@ -36,11 +36,11 @@ Cheap safety pre-router
     ↓ bypass                     ↓ continue
 Canned response             Exact cache (Case-insensitive match)
                                 ↓ hit                        ↓ miss
-                        Return cached response      Embed question (Voyage AI)
+                        Return cached response      Embed question (Voyage AI / Local Fallback)
                                                         ↓
                                                 Check semantic cache (Similarity > 0.95)
                                                         ↓ hit                        ↓ miss
-                                                Return cached response      Search knowledge base
+                                                Return cached response      Expand query & Search chunks
                                                                                 ↓
                                                                         Query-aware local reranking
                                                                                 ↓
@@ -48,7 +48,7 @@ Canned response             Exact cache (Case-insensitive match)
                                                                                 ↓ pass         ↓ fail
                                                                         Build prompt + context  Canned fallback
                                                                                 ↓
-                                                                        Groq LLM (Llama 3.3 70B)
+                                                                        Groq LLM (Llama 4 Scout 17B-16E)
                                                                                 ↓
                                                                         Store in cache
                                                                                 ↓
@@ -72,6 +72,9 @@ Exact chunk counts vary as source content changes and as structured evidence doc
 
 ## Recent ROI Improvements
 
+- **LLM Upgrade**: Migrated to **Llama 4 Scout 17B-16E** on Groq for improved reasoning and response quality.
+- **Query Expansion**: Synonym-based expansion improves retrieval recall for short or ambiguous queries.
+- **Provider Fallback**: Support for local embeddings (`all-MiniLM-L6-v2`) provides a resilient alternative to Voyage AI.
 - Structured feature extraction now creates retrieval-friendly evidence documents instead of relying only on broad source blobs.
 - Retrieval now combines vector search with cheap local reranking, improving relevance without increasing provider spend.
 - Chat now uses a cheap pre-router plus a retrieval confidence gate, improving safety and saving tokens on unsupported questions.

@@ -7,9 +7,10 @@
 | Layer | Tool | Why |
 |------|------|-----|
 | LLM | Groq (`meta-llama/llama-4-scout-17b-16e-instruct`) | MoE architecture, better instruction following, fast streaming, and practical free tier |
-| Embeddings | Voyage AI `voyage-3-lite` | compact 512-dim vectors and good free tier |
+| Embeddings | Voyage AI `voyage-3-lite` or Local `all-MiniLM-L6-v2` | high-quality 512-dim or zero-cost local 384-dim fallback |
 | Vector store | Supabase pgvector | PostgreSQL extension, no extra vector service |
 | Semantic cache | pgvector similarity search | reduces repeated LLM calls |
+| Retrieval expansion | local synonym-based mapping | improves recall for short/ambiguous queries without API calls |
 | Retrieval reranking | local query-aware heuristics | improves relevance without more provider spend |
 | API | FastAPI | async, typed, streaming-friendly |
 | Database | Supabase PostgreSQL | free tier and strong dashboard |

@@ -4,11 +4,11 @@
 
 ![Python](https://img.shields.io/badge/Python-3.12-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green)
-![Groq](https://img.shields.io/badge/Groq-Llama_3.3_70B-orange)
+![Groq](https://img.shields.io/badge/Groq-Llama_4_Scout_17B--16E-orange)
 ![Voyage AI](https://img.shields.io/badge/Voyage_AI-voyage--3--lite-purple)
 ![Supabase](https://img.shields.io/badge/Supabase-pgvector-green)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-![Version](https://img.shields.io/badge/version-0.6.3-brightgreen)
+![Version](https://img.shields.io/badge/version-0.7.0-brightgreen)
 
 ---
 
@@ -45,11 +45,11 @@ Cheap safety pre-router
     ↓ bypass                     ↓ continue
 Canned response             Exact cache (Case-insensitive match)
                                 ↓ hit                        ↓ miss
-                            Return cached response      Embed question (Voyage AI)
+                            Return cached response      Embed question (Voyage AI / Local Fallback)
                                                             ↓
                                                         Check semantic cache (Similarity > 0.95)
                                                             ↓ hit                        ↓ miss
-                                                        Return cached response      Search knowledge_chunks
+                                                        Return cached response      Expand query & Search chunks
                                                                                 ↓
                                                                         Query-aware local reranking
                                                                                 ↓
@@ -57,7 +57,7 @@ Canned response             Exact cache (Case-insensitive match)
                                                                                 ↓ pass         ↓ fail
                                                                         Build prompt + context  Canned fallback
                                                                                 ↓
-                                                                        Groq LLM (Llama 3.3 70B)
+                                                                        Groq LLM (Llama 4 Scout 17B-16E)
                                                                                 ↓
                                                                         Store in cache
                                                                                 ↓
@@ -86,7 +86,7 @@ Every LLM response is cached in two stages to maximize speed and minimize API li
 
 Cache is invalidated automatically when Sanity CMS content changes via webhook.
 
-Retrieval is also reranked locally using cheap lexical and source-intent signals. The final `score` incorporates both semantic cosine similarity and query term overlap.
+Retrieval is also expanded using synonym-based query expansion and reranked locally using cheap lexical and source-intent signals. The final `score` incorporates both semantic cosine similarity and query term overlap. Local embedding fallback via `sentence-transformers` (`all-MiniLM-L6-v2`) ensures the app keeps working even if Voyage AI is unavailable.
 
 The chat layer now adds a cheap safety pre-router before embeddings, and a retrieval confidence gate after search. Crucially, the confidence gate evaluates the boosted `top_score` rather than raw semantic similarity alone. This ensures perfectly valid answers correctly pass the threshold by factoring in exact keyword matches and source credibility.
 

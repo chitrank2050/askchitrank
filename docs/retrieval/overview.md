@@ -11,12 +11,14 @@ User question
       ↓
 find_exact_cached_response() — exact match?
       ↓ hit                          ↓ miss
-Return cached response         embed_query()
+Return cached response         embed_query() (Voyage / Local fallback)
 Increment hit_count                   ↓
                                find_cached_response() — similarity > 0.95?
                                       ↓ hit                          ↓ miss
                                Return cached response         search_knowledge_base()
                                Increment hit_count                   ↓
+                         expand_query_tokens()
+                                      ↓
                          Wider vector candidate set
                                       ↓
                          Query-aware local reranking
@@ -53,11 +55,24 @@ The difference is that top vector hits are no longer used blindly.
 
 ---
 
+## Query Expansion
+
+Before lexical scoring, the retrieval layer expands the user's question tokens using a local synonym mapping (`src/retrieval/synonyms.py`). This is a zero-cost way to improve recall for short or ambiguous queries.
+
+Example expansion:
+- `stack` → `technology`, `tools`, `languages`
+- `experience` → `years`, `career`, `roles`
+- `build` → `projects`, `projects`, `apps`
+
+This improves the count of "exact matches" during reranking without needing a cross-encoder model.
+
+---
+
 ## Local Reranking
 
 After vector search, the app reranks candidates using:
 
-- lexical overlap with the user question
+- lexical overlap with the user's expanded query tokens
 - query intent like `projects`, `skills`, `experience`, or `feedback`
 - source-aware caps so testimonial-heavy content does not dominate every query
 
@@ -176,9 +191,11 @@ ORDER BY hit_count DESC;
 
 | File | Responsibility |
 |------|----------------|
+| `src/retrieval/synonyms.py` | local synonym mapping for query expansion |
 | `src/retrieval/search.py` | pgvector candidate search, local reranking, and retrieval confidence assessment |
 | `src/retrieval/cache.py` | semantic cache lookup, store, and invalidation |
-| `src/ingestion/embedder.py` | shared embedding interface for ingestion and retrieval |
+| `src/ingestion/embedder.py` | shared embedding interface with voyage/local provider fallback |
+| `src/ingestion/local_embedder.py` | sentence-transformers (all-MiniLM-L6-v2) local embedding logic |
 
 ---
 

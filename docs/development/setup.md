@@ -59,6 +59,22 @@ In this mode:
 
 This is the recommended default for day-to-day local iteration.
 
+### Option C — Local embedding fallback
+
+If you want to use real local embeddings instead of Voyage AI (e.g., to save quota or work offline):
+
+1. Install extra dependencies:
+   ```bash
+   uv sync --extra local-embed
+   ```
+2. Update your `.env.dev`:
+   ```bash
+   EMBEDDING_PROVIDER=local
+   EMBEDDING_DIMENSIONS=384
+   ```
+
+In this mode, `sentence-transformers` (`all-MiniLM-L6-v2`) handles all embedding tasks locally on your machine.
+
 ### Option B — Full provider-backed development
 
 If you want to exercise the full production-style pipeline, fill in:
