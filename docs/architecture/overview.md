@@ -24,8 +24,8 @@ Ask Chitrank is a RAG system built for a small, cost-sensitive portfolio knowled
                           │
 ┌─────────────────────────▼───────────────────────────────────┐
 │                   Retrieval Layer                            │
-│   Embed question → Cache lookup → Vector search → Rerank    │
-│   → Confidence gate                                          │
+│   Exact match check → Embed → Semantic cache → Vector search │
+│   → Local Rerank → Confidence gate                           │
 └─────────────────────────┬───────────────────────────────────┘
                           │
 ┌─────────────────────────▼───────────────────────────────────┐
@@ -69,9 +69,14 @@ For a small knowledge base and low traffic, a dedicated vector database would ad
 
 Groq provides fast response streaming and a practical free tier for portfolio traffic. The app currently uses `llama-3.3-70b-versatile`.
 
-### Why semantic caching
+### Why two-stage caching
 
-Many portfolio questions are repeated in slightly different wording. Semantic caching reduces repeated LLM calls and keeps latency low.
+Many portfolio questions are repeated exactly or with very similar wording. The system uses a two-stage cache:
+
+1. **Exact Match**: Case-insensitive string match. Zero API cost (no embedding, no LLM).
+2. **Semantic Cache**: Cosine similarity match (> 0.95). Zero LLM cost.
+
+This maximizes speed and protects provider rate limits for popular queries.
 
 ### Why improve feature extraction before changing providers
 
@@ -156,14 +161,15 @@ In `DEV_MODE`, fictional seed content can stand in for the real resume, Sanity, 
 ```
 1. User sends question via POST /v1/chat
 2. A cheap pre-router checks for identity, private, explicit, prompt-injection, and clearly off-topic questions
-3. If the question is not pre-routed, it is embedded
-4. response_cache is checked for a near-duplicate question
-5. knowledge_chunks is searched for a wider vector candidate set
-6. Candidates are reranked locally using query-aware heuristics
-7. Retrieval confidence is assessed before the LLM is called
-8. Prompt is built from the selected chunks
-9. Groq generates and streams the answer
-10. Cache and conversation history are updated
+3. If not pre-routed, the system checks for an Case-Insensitive **Exact Match Cache** hit
+4. If no exact match, the question is embedded
+5. **Semantic Cache** is checked for a near-duplicate question (similarity > 0.95)
+6. `knowledge_chunks` is searched for a wider vector candidate set if cache misses
+7. Candidates are reranked locally using query-aware heuristics
+8. Retrieval confidence is assessed before the LLM is called
+9. Prompt is built from the selected chunks
+10. Groq generates and streams the answer
+11. Cache and conversation history are updated
 ```
 
 In `DEV_MODE`, embeddings and generation are handled locally and the API can respond from fictional seeded data without provider calls.

@@ -34,23 +34,25 @@ User question
     ↓
 Cheap safety pre-router
     ↓ bypass                     ↓ continue
-Canned response             Embed question (Voyage AI voyage-3-lite)
-                                ↓
-                        Check semantic cache (pgvector similarity search)
+Canned response             Exact cache (Case-insensitive match)
                                 ↓ hit                        ↓ miss
-                        Return cached response      Search knowledge base
+                        Return cached response      Embed question (Voyage AI)
                                                         ↓
-                                                Query-aware local reranking
-                                                        ↓
-                                              Retrieval confidence gate
-                                                        ↓ pass         ↓ fail
-                                                Build prompt + context  Canned fallback
-                                                        ↓
-                                                Groq LLM (Llama 3.3 70B)
-                                                        ↓
-                                                Store in cache
-                                                        ↓
-                                                Stream response
+                                                Check semantic cache (Similarity > 0.95)
+                                                        ↓ hit                        ↓ miss
+                                                Return cached response      Search knowledge base
+                                                                                ↓
+                                                                        Query-aware local reranking
+                                                                                ↓
+                                                                      Retrieval confidence gate
+                                                                                ↓ pass         ↓ fail
+                                                                        Build prompt + context  Canned fallback
+                                                                                ↓
+                                                                        Groq LLM (Llama 3.3 70B)
+                                                                                ↓
+                                                                        Store in cache
+                                                                                ↓
+                                                                        Stream response
 ```
 
 ---

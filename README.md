@@ -8,7 +8,7 @@
 ![Voyage AI](https://img.shields.io/badge/Voyage_AI-voyage--3--lite-purple)
 ![Supabase](https://img.shields.io/badge/Supabase-pgvector-green)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-![Version](https://img.shields.io/badge/version-0.6.2-brightgreen)
+![Version](https://img.shields.io/badge/version-0.6.3-brightgreen)
 
 ---
 
@@ -43,25 +43,25 @@ User question
     ↓
 Cheap safety pre-router
     ↓ bypass                     ↓ continue
-Canned response             Check exact string cache (zero API calls)
+Canned response             Exact cache (Case-insensitive match)
                                 ↓ hit                        ↓ miss
                             Return cached response      Embed question (Voyage AI)
                                                             ↓
-                                                        Check semantic cache (pgvector cosine similarity > 0.95)
+                                                        Check semantic cache (Similarity > 0.95)
                                                             ↓ hit                        ↓ miss
                                                         Return cached response      Search knowledge_chunks
-                                                            ↓
-                                                    Query-aware reranked chunks
-                                                            ↓
-                                                  Retrieval confidence gate
-                                                            ↓ pass         ↓ fail
-                                                    Build prompt + context  Canned fallback
-                                                            ↓
-                                                    Groq LLM (Llama 3.3 70B)
-                                                            ↓
-                                                    Store in cache
-                                                            ↓
-                                                    Stream response
+                                                                                ↓
+                                                                        Query-aware local reranking
+                                                                                ↓
+                                                                      Retrieval confidence gate
+                                                                                ↓ pass         ↓ fail
+                                                                        Build prompt + context  Canned fallback
+                                                                                ↓
+                                                                        Groq LLM (Llama 3.3 70B)
+                                                                                ↓
+                                                                        Store in cache
+                                                                                ↓
+                                                                        Stream response
 ```
 
 ---
@@ -70,6 +70,7 @@ Canned response             Check exact string cache (zero API calls)
 
 - [Setup & Installation](https://chitrank2050.github.io/askchitrank/development/setup/)
 - [Architecture Overview](https://chitrank2050.github.io/askchitrank/architecture/overview/)
+- [High-ROI Improvements](https://chitrank2050.github.io/askchitrank/concepts/roi_improvements/)
 - [Tech Stack](https://chitrank2050.github.io/askchitrank/development/tech_stack/)
 - [Database Setup](https://chitrank2050.github.io/askchitrank/development/database/)
 - [Ingestion Pipeline](https://chitrank2050.github.io/askchitrank/ingestion/overview/)
@@ -130,9 +131,19 @@ To keep the app safe and stay inside free-tier constraints, the chat flow now in
 - a cheap pre-router for identity, private, explicit, prompt-injection, and clearly off-topic questions
 - a retrieval confidence gate that refuses to guess when evidence is too weak
 - stronger prompt rules for identity confusion, private data, explicit content, and prompt-reveal attempts
-- in-process safety metrics exposed at `GET /v1/chat/safety-metrics`
-
 The chat endpoint now prefers a safe fallback answer over returning a provider error, so the bot keeps responding even when retrieval or generation cannot produce a trustworthy answer.
+
+Pipeline errors and generation failures now log **full tracebacks**, making production debugging much faster without requiring local reproduction.
+
+---
+
+## Deployment (PaaS)
+
+When deploying to platforms like Railway, Render, or Fly.io:
+
+- Use **Supabase PGBouncer/Supavisor (port 6543)** instead of direct connections for better pool management.
+- Append `?sslmode=require` to your `DATABASE_URL` if connecting from an IPv4-only environment.
+- Set `APP_ENV=prod` to disable hot-reloading and enable production logging levels.
 
 ---
 

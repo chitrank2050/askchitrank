@@ -124,6 +124,33 @@ If a cached question is similar enough (cosine similarity > 0.95):
 
 The threshold is intentionally strict. A slightly different portfolio question can deserve a meaningfully different answer, so the cache prefers false negatives over stale or over-broad hits.
 
+---
+
+## Scoring Mechanics (top_score)
+
+The retrieval layer does not use raw cosine similarity alone. The final `top_score` used for confidence gating and reranking is calculated as:
+
+`score = semantic_similarity + (lexical_overlap * 0.18) + source_boost`
+
+### Lexical Overlap
+
+The system tokenizes the user question and each context chunk (removing stop words). It then calculates the percentage of question tokens present in the chunk. This gives a massive boost to chunks that contain the exact technical terms or project names mentioned by the user.
+
+### Source & Intent Boosts
+
+Based on keyword intent detection, specific sources receive a `+0.05` to `+0.08` boost:
+
+| Intent | Preferred Sources | Boost |
+|--------|-------------------|-------|
+| `projects` | `sanity` | +0.08 |
+| `skills` | `resume`, `sanity`, `linkedin` | +0.05 |
+| `experience`| `resume`, `linkedin` | +0.06 |
+| `feedback` | `testimonial`, `linkedin` | +0.08 |
+
+Conversely, some sources receive a **negative boost** (`-0.03` to `-0.05`) if they are unlikely to be the primary factual source for a specific intent (e.g., testimonials for technical project details).
+
+---
+
 ### Cache invalidation
 
 | Trigger | Action |

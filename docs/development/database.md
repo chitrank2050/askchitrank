@@ -91,6 +91,22 @@ Supabase free tier can pause the database after inactivity. The first request af
 
 ---
 
+## Connection Pooling (IPv4 Poolers)
+
+When deploying to PaaS platforms (like Render, Fly.io, or Railway), you should use Supabase's built-in connection pooler (PGBouncer or Supavisor) rather than the direct database port (5432).
+
+Direct connections are limited and can fluctuate as the database pauses. The pooler manages thousands of concurrent connections and is more robust for serverless or ephemeral environments.
+
+| Type | Host | Port | SSL |
+|------|------|------|-----|
+| Direct | `db.[REF].supabase.co` | `5432` | Optional |
+| Pooler (Session) | `db.[REF].supabase.co` | `6543` | Required |
+| Pooler (Transaction)| `db.[REF].supabase.co` | `6543` | Required |
+
+Note: If your PaaS uses an IPv4-only network but your Supabase hostname resolves only to IPv6, you **must** use the pooler connection string and append `?sslmode=require` to the `DATABASE_URL`.
+
+---
+
 ## DEV_MODE Note
 
 The database is optional only for chat-only local development in `DEV_MODE`.
