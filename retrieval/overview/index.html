@@ -1089,6 +1089,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#query-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Query Expansion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#local-reranking" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1491,6 +1502,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#query-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Query Expansion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#local-reranking" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1651,22 +1673,24 @@
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>      ↓
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>find_exact_cached_response() — exact match?
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>      ↓ hit                          ↓ miss
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>Return cached response         embed_query()
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>Return cached response         embed_query() (Voyage / Local fallback)
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>Increment hit_count                   ↓
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                               find_cached_response() — similarity &gt; 0.95?
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                                      ↓ hit                          ↓ miss
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                               Return cached response         search_knowledge_base()
 <a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                               Increment hit_count                   ↓
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                         Wider vector candidate set
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                         expand_query_tokens()
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                                      ↓
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                         Query-aware local reranking
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                         Wider vector candidate set
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>                                      ↓
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                         Retrieval confidence assessment
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>                                      ↓ pass         ↓ fail
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>                         Feed selected chunks        Return safe fallback
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>                         to chat layer
-<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>                                      ↓
-<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>                         store_cached_response()
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                         Query-aware local reranking
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>                                      ↓
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>                         Retrieval confidence assessment
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>                                      ↓ pass         ↓ fail
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>                         Feed selected chunks        Return safe fallback
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>                         to chat layer
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>                                      ↓
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>                         store_cached_response()
 </code></pre></div>
 <hr />
 <h2 id="vector-search">Vector Search<a class="headerlink" href="#vector-search" title="Permanent link">&para;</a></h2>
@@ -1685,10 +1709,18 @@
 </code></pre></div>
 <p>The difference is that top vector hits are no longer used blindly.</p>
 <hr />
+<h2 id="query-expansion">Query Expansion<a class="headerlink" href="#query-expansion" title="Permanent link">&para;</a></h2>
+<p>Before lexical scoring, the retrieval layer expands the user's question tokens using a local synonym mapping (<code>src/retrieval/synonyms.py</code>). This is a zero-cost way to improve recall for short or ambiguous queries.</p>
+<p>Example expansion:
+- <code>stack</code> → <code>technology</code>, <code>tools</code>, <code>languages</code>
+- <code>experience</code> → <code>years</code>, <code>career</code>, <code>roles</code>
+- <code>build</code> → <code>projects</code>, <code>projects</code>, <code>apps</code></p>
+<p>This improves the count of "exact matches" during reranking without needing a cross-encoder model.</p>
+<hr />
 <h2 id="local-reranking">Local Reranking<a class="headerlink" href="#local-reranking" title="Permanent link">&para;</a></h2>
 <p>After vector search, the app reranks candidates using:</p>
 <ul>
-<li>lexical overlap with the user question</li>
+<li>lexical overlap with the user's expanded query tokens</li>
 <li>query intent like <code>projects</code>, <code>skills</code>, <code>experience</code>, or <code>feedback</code></li>
 <li>source-aware caps so testimonial-heavy content does not dominate every query</li>
 </ul>
@@ -1824,6 +1856,10 @@
 </thead>
 <tbody>
 <tr>
+<td><code>src/retrieval/synonyms.py</code></td>
+<td>local synonym mapping for query expansion</td>
+</tr>
+<tr>
 <td><code>src/retrieval/search.py</code></td>
 <td>pgvector candidate search, local reranking, and retrieval confidence assessment</td>
 </tr>
@@ -1833,7 +1869,11 @@
 </tr>
 <tr>
 <td><code>src/ingestion/embedder.py</code></td>
-<td>shared embedding interface for ingestion and retrieval</td>
+<td>shared embedding interface with voyage/local provider fallback</td>
+</tr>
+<tr>
+<td><code>src/ingestion/local_embedder.py</code></td>
+<td>sentence-transformers (all-MiniLM-L6-v2) local embedding logic</td>
 </tr>
 </tbody>
 </table>

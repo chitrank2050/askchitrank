@@ -1479,13 +1479,13 @@
 <tbody>
 <tr>
 <td>LLM</td>
-<td>Groq (<code>llama-3.3-70b-versatile</code>)</td>
-<td>fast streaming and practical free tier</td>
+<td>Groq (<code>meta-llama/llama-4-scout-17b-16e-instruct</code>)</td>
+<td>MoE architecture, better instruction following, fast streaming, and practical free tier</td>
 </tr>
 <tr>
 <td>Embeddings</td>
-<td>Voyage AI <code>voyage-3-lite</code></td>
-<td>compact 512-dim vectors and good free tier</td>
+<td>Voyage AI <code>voyage-3-lite</code> or Local <code>all-MiniLM-L6-v2</code></td>
+<td>high-quality 512-dim or zero-cost local 384-dim fallback</td>
 </tr>
 <tr>
 <td>Vector store</td>
@@ -1496,6 +1496,11 @@
 <td>Semantic cache</td>
 <td>pgvector similarity search</td>
 <td>reduces repeated LLM calls</td>
+</tr>
+<tr>
+<td>Retrieval expansion</td>
+<td>local synonym-based mapping</td>
+<td>improves recall for short/ambiguous queries without API calls</td>
 </tr>
 <tr>
 <td>Retrieval reranking</td>

@@ -1646,7 +1646,7 @@
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                            build_messages()      Canned fallback
 <a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                                   ↓
 <a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                            stream_response()
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                            Groq API — Llama 3.3 70B
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                            Groq API — Llama 4 Scout 17B-16E
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                            or DEV_MODE seeded response
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>                                   ↓
 <a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                            Token stream → SSE events
@@ -1726,7 +1726,7 @@
 <p>If confidence is too low, the chat layer returns a safe fallback instead of sending weak context to the LLM.</p>
 <hr />
 <h2 id="generation">Generation<a class="headerlink" href="#generation" title="Permanent link">&para;</a></h2>
-<p>Production generation uses Groq with <code>llama-3.3-70b-versatile</code>.</p>
+<p>Production generation uses Groq with <code>meta-llama/llama-4-scout-17b-16e-instruct</code> (Llama 4 Scout), a 17B-parameter mixture-of-experts model with 16 experts that offers improved instruction following over Llama 3.3 70B at zero additional cost.</p>
 <table>
 <thead>
 <tr>

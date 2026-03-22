@@ -800,6 +800,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#option-c-local-embedding-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option C — Local embedding fallback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#option-b-full-provider-backed-development" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1536,6 +1547,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#option-c-local-embedding-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option C — Local embedding fallback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#option-b-full-provider-backed-development" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1724,23 +1746,35 @@
 <li>fictional seeded data is used for local responses</li>
 </ul>
 <p>This is the recommended default for day-to-day local iteration.</p>
+<h3 id="option-c-local-embedding-fallback">Option C — Local embedding fallback<a class="headerlink" href="#option-c-local-embedding-fallback" title="Permanent link">&para;</a></h3>
+<p>If you want to use real local embeddings instead of Voyage AI (e.g., to save quota or work offline):</p>
+<ol>
+<li>Install extra dependencies:
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>uv<span class="w"> </span>sync<span class="w"> </span>--extra<span class="w"> </span>local-embed
+</code></pre></div></li>
+<li>Update your <code>.env.dev</code>:
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nv">EMBEDDING_PROVIDER</span><span class="o">=</span><span class="nb">local</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nv">EMBEDDING_DIMENSIONS</span><span class="o">=</span><span class="m">384</span>
+</code></pre></div></li>
+</ol>
+<p>In this mode, <code>sentence-transformers</code> (<code>all-MiniLM-L6-v2</code>) handles all embedding tasks locally on your machine.</p>
 <h3 id="option-b-full-provider-backed-development">Option B — Full provider-backed development<a class="headerlink" href="#option-b-full-provider-backed-development" title="Permanent link">&para;</a></h3>
 <p>If you want to exercise the full production-style pipeline, fill in:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nv">GROQ_API_KEY</span><span class="o">=</span>your-groq-api-key
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nv">VOYAGE_API_KEY</span><span class="o">=</span>your-voyage-api-key
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql+asyncpg://postgres:<span class="o">[</span>PASSWORD<span class="o">]</span>@db.<span class="o">[</span>REF<span class="o">]</span>.supabase.co:5432/postgres
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nv">DATABASE_URL_SYNC</span><span class="o">=</span>postgresql+psycopg2://postgres:<span class="o">[</span>PASSWORD<span class="o">]</span>@db.<span class="o">[</span>REF<span class="o">]</span>.supabase.co:5432/postgres
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nv">SUPABASE_URL</span><span class="o">=</span>https://<span class="o">[</span>REF<span class="o">]</span>.supabase.co
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="nv">SUPABASE_KEY</span><span class="o">=</span>your-supabase-anon-key
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="nv">SANITY_PROJECT_ID</span><span class="o">=</span>your-project-id
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="nv">SANITY_API_TOKEN</span><span class="o">=</span>your-api-token
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="nv">API_TOKEN</span><span class="o">=</span>your-generated-token
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="nv">DEV_MODE</span><span class="o">=</span><span class="nb">false</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nv">GROQ_API_KEY</span><span class="o">=</span>your-groq-api-key
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nv">VOYAGE_API_KEY</span><span class="o">=</span>your-voyage-api-key
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql+asyncpg://postgres:<span class="o">[</span>PASSWORD<span class="o">]</span>@db.<span class="o">[</span>REF<span class="o">]</span>.supabase.co:5432/postgres
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="nv">DATABASE_URL_SYNC</span><span class="o">=</span>postgresql+psycopg2://postgres:<span class="o">[</span>PASSWORD<span class="o">]</span>@db.<span class="o">[</span>REF<span class="o">]</span>.supabase.co:5432/postgres
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="nv">SUPABASE_URL</span><span class="o">=</span>https://<span class="o">[</span>REF<span class="o">]</span>.supabase.co
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="nv">SUPABASE_KEY</span><span class="o">=</span>your-supabase-anon-key
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="nv">SANITY_PROJECT_ID</span><span class="o">=</span>your-project-id
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="nv">SANITY_API_TOKEN</span><span class="o">=</span>your-api-token
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="nv">API_TOKEN</span><span class="o">=</span>your-generated-token
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="nv">DEV_MODE</span><span class="o">=</span><span class="nb">false</span>
 </code></pre></div>
 <hr />
 <h2 id="4-database-setup">4. Database Setup<a class="headerlink" href="#4-database-setup" title="Permanent link">&para;</a></h2>
 <p>For the full pipeline, follow <a href="../database/">Database Setup</a> and run:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>make<span class="w"> </span>db-migrate
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>make<span class="w"> </span>db-migrate
 </code></pre></div>
 <p>If you stay in token-free <code>DEV_MODE</code>, chat-only API work does not require the database.</p>
 <hr />
@@ -1757,7 +1791,7 @@
 <p>No manual content export is needed. Data is fetched via the Sanity API during ingestion.</p>
 <hr />
 <h2 id="6-ingest-data">6. Ingest Data<a class="headerlink" href="#6-ingest-data" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>make<span class="w"> </span>ingest
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>make<span class="w"> </span>ingest
 </code></pre></div>
 <p>Notes:</p>
 <ul>
@@ -1767,7 +1801,7 @@
 </ul>
 <hr />
 <h2 id="7-start-the-api">7. Start the API<a class="headerlink" href="#7-start-the-api" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>make<span class="w"> </span>api
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>make<span class="w"> </span>api
 </code></pre></div>
 <p>If <code>DEV_MODE=true</code>, the API can start and serve fictional seeded chat responses even without database credentials.</p>
 <hr />
