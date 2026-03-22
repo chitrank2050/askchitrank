@@ -2,6 +2,18 @@
 
 All notable changes to Ask Chitrank.
 
+## [0.7.0] - 2026-03-22
+
+### Features
+
+- Upgrade Groq LLM from Llama 3.3 to Llama 4 Scout 17B-16E across configuration and documentation.
+- Add local query expansion and embedding provider fallback. Add synonym-based query expansion to improve retrieval recall for short/ambiguous queries without extra API calls. Add local embedding fallback (all-MiniLM-L6-v2) via EMBEDDING_PROVIDER config so the app degrades gracefully if Voyage AI's free tier changes.
+- Upgrade LLM to Llama 4 Scout, add local embedding fallback, and implement synonym-based query expansion.
+
+### Maintenance
+
+- Bump askchitrank package version to 0.6.3 in uv.lock.
+
 ## [0.6.3] - 2026-03-22
 
 ### Documentation
