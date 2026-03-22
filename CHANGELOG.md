@@ -2,6 +2,24 @@
 
 All notable changes to Ask Chitrank.
 
+## [0.6.3] - 2026-03-22
+
+### Documentation
+
+- Document PaaS ipv4 pooler requirements and exact-match cache architecture
+- Clarify top_score mechanics in retrieval layer
+- Expand detailed Mkdocs documentation regarding exact match cache & top_score
+
+### Features
+
+- Implement exact match cache lookup in the chat pipeline to serve identical questions directly from cache and add traceback to error logging.
+- Implement advanced retrieval scoring with lexical and source boosts, update architecture diagrams, and add PaaS deployment and connection pooling documentation.
+
+### Maintenance
+
+- 🔒 pypdf has inefficient decoding of array-based streams
+- Decrease retrieval minimum similarity threshold.
+
 ## [0.6.2] - 2026-03-21
 
 ### Documentation
