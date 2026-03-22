@@ -894,6 +894,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#connection-pooling-ipv4-poolers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connection Pooling (IPv4 Poolers)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#dev_mode-note" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1580,6 +1591,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#connection-pooling-ipv4-poolers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connection Pooling (IPv4 Poolers)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#dev_mode-note" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1791,6 +1813,41 @@
 <h2 id="free-tier-behaviour">Free Tier Behaviour<a class="headerlink" href="#free-tier-behaviour" title="Permanent link">&para;</a></h2>
 <p>Supabase free tier can pause the database after inactivity. The first request after a pause may be slower while the database wakes up.</p>
 <p><code>pool_pre_ping=True</code> is used to help connection reuse behave cleanly after wake-up.</p>
+<hr />
+<h2 id="connection-pooling-ipv4-poolers">Connection Pooling (IPv4 Poolers)<a class="headerlink" href="#connection-pooling-ipv4-poolers" title="Permanent link">&para;</a></h2>
+<p>When deploying to PaaS platforms (like Render, Fly.io, or Railway), you should use Supabase's built-in connection pooler (PGBouncer or Supavisor) rather than the direct database port (5432).</p>
+<p>Direct connections are limited and can fluctuate as the database pauses. The pooler manages thousands of concurrent connections and is more robust for serverless or ephemeral environments.</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Host</th>
+<th>Port</th>
+<th>SSL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Direct</td>
+<td><code>db.[REF].supabase.co</code></td>
+<td><code>5432</code></td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>Pooler (Session)</td>
+<td><code>db.[REF].supabase.co</code></td>
+<td><code>6543</code></td>
+<td>Required</td>
+</tr>
+<tr>
+<td>Pooler (Transaction)</td>
+<td><code>db.[REF].supabase.co</code></td>
+<td><code>6543</code></td>
+<td>Required</td>
+</tr>
+</tbody>
+</table>
+<p>Note: If your PaaS uses an IPv4-only network but your Supabase hostname resolves only to IPv6, you <strong>must</strong> use the pooler connection string and append <code>?sslmode=require</code> to the <code>DATABASE_URL</code>.</p>
 <hr />
 <h2 id="dev_mode-note">DEV_MODE Note<a class="headerlink" href="#dev_mode-note" title="Permanent link">&para;</a></h2>
 <p>The database is optional only for chat-only local development in <code>DEV_MODE</code>.</p>

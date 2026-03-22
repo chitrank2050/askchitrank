@@ -1122,22 +1122,61 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#semantic-cache" class="md-nav__link">
+  <a href="#caching-exact-semantic" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Semantic Cache
+        Caching (Exact &amp; Semantic)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Semantic Cache">
+    <nav class="md-nav" aria-label="Caching (Exact &amp; Semantic)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#why-the-threshold-is-095" class="md-nav__link">
+  <a href="#why-the-semantic-threshold-is-095" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why the threshold is 0.95
+        Why the semantic threshold is 0.95
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scoring-mechanics-top_score" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scoring Mechanics (top_score)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scoring Mechanics (top_score)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lexical-overlap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lexical Overlap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#source-intent-boosts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source &amp; Intent Boosts
       
     </span>
   </a>
@@ -1485,22 +1524,61 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#semantic-cache" class="md-nav__link">
+  <a href="#caching-exact-semantic" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Semantic Cache
+        Caching (Exact &amp; Semantic)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Semantic Cache">
+    <nav class="md-nav" aria-label="Caching (Exact &amp; Semantic)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#why-the-threshold-is-095" class="md-nav__link">
+  <a href="#why-the-semantic-threshold-is-095" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why the threshold is 0.95
+        Why the semantic threshold is 0.95
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scoring-mechanics-top_score" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scoring Mechanics (top_score)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scoring Mechanics (top_score)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lexical-overlap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lexical Overlap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#source-intent-boosts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source &amp; Intent Boosts
       
     </span>
   </a>
@@ -1571,22 +1649,24 @@
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>User question
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>      ↓
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>embed_query()
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>      ↓
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>find_cached_response() — similarity &gt; 0.95?
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>      ↓ hit                          ↓ miss
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>Return cached response         search_knowledge_base()
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>Increment hit_count                   ↓
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                         Wider vector candidate set
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                                      ↓
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                         Query-aware local reranking
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>find_exact_cached_response() — exact match?
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>      ↓ hit                          ↓ miss
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>Return cached response         embed_query()
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>Increment hit_count                   ↓
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                               find_cached_response() — similarity &gt; 0.95?
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                                      ↓ hit                          ↓ miss
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                               Return cached response         search_knowledge_base()
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                               Increment hit_count                   ↓
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                         Wider vector candidate set
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                                      ↓
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                         Retrieval confidence assessment
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>                                      ↓ pass         ↓ fail
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                         Feed selected chunks        Return safe fallback
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>                         to chat layer
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>                                      ↓
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>                         store_cached_response()
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                         Query-aware local reranking
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>                                      ↓
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                         Retrieval confidence assessment
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>                                      ↓ pass         ↓ fail
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>                         Feed selected chunks        Return safe fallback
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>                         to chat layer
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>                                      ↓
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>                         store_cached_response()
 </code></pre></div>
 <hr />
 <h2 id="vector-search">Vector Search<a class="headerlink" href="#vector-search" title="Permanent link">&para;</a></h2>
@@ -1624,9 +1704,9 @@
 <p>The retrieval layer now exposes an explicit confidence assessment so the chat layer can avoid answering from weak evidence.</p>
 <p>The confidence gate checks:</p>
 <ul>
-<li><code>top_similarity</code></li>
+<li><code>top_score</code> (base similarity + custom keyword/source boosts)</li>
 <li><code>best_query_coverage</code></li>
-<li>whether the semantic match is strong enough to allow low literal overlap</li>
+<li>whether the boosted score is strong enough to allow low literal overlap</li>
 </ul>
 <p>Current configuration comes from:</p>
 <ul>
@@ -1648,16 +1728,61 @@
 <li>unsupported questions are common enough that confidence gating pays for itself</li>
 </ul>
 <hr />
-<h2 id="semantic-cache">Semantic Cache<a class="headerlink" href="#semantic-cache" title="Permanent link">&para;</a></h2>
-<p>The response cache stores question → response pairs. Before calling the LLM, the current question embedding is compared against cached question embeddings.</p>
-<p>If a cached question is similar enough:</p>
+<h2 id="caching-exact-semantic">Caching (Exact &amp; Semantic)<a class="headerlink" href="#caching-exact-semantic" title="Permanent link">&para;</a></h2>
+<p>The response cache stores question → response pairs in two stages to maximize speed and protect API rate limits:</p>
+<ol>
+<li><strong>Exact Match Cache</strong>: Before embedding, the system checks for a case-insensitive exact string match. If found, it returns the cached response immediately using absolutely zero API calls.</li>
+<li><strong>Semantic Cache</strong>: If no exact match exists, the question is embedded. It is then compared against previously cached question embeddings.</li>
+</ol>
+<p>If a cached question is similar enough (cosine similarity &gt; 0.95):</p>
 <ul>
 <li>the cached response is returned</li>
 <li><code>hit_count</code> is incremented</li>
 <li>no LLM call is made</li>
 </ul>
-<h3 id="why-the-threshold-is-095">Why the threshold is <code>0.95</code><a class="headerlink" href="#why-the-threshold-is-095" title="Permanent link">&para;</a></h3>
+<h3 id="why-the-semantic-threshold-is-095">Why the semantic threshold is <code>0.95</code><a class="headerlink" href="#why-the-semantic-threshold-is-095" title="Permanent link">&para;</a></h3>
 <p>The threshold is intentionally strict. A slightly different portfolio question can deserve a meaningfully different answer, so the cache prefers false negatives over stale or over-broad hits.</p>
+<hr />
+<h2 id="scoring-mechanics-top_score">Scoring Mechanics (top_score)<a class="headerlink" href="#scoring-mechanics-top_score" title="Permanent link">&para;</a></h2>
+<p>The retrieval layer does not use raw cosine similarity alone. The final <code>top_score</code> used for confidence gating and reranking is calculated as:</p>
+<p><code>score = semantic_similarity + (lexical_overlap * 0.18) + source_boost</code></p>
+<h3 id="lexical-overlap">Lexical Overlap<a class="headerlink" href="#lexical-overlap" title="Permanent link">&para;</a></h3>
+<p>The system tokenizes the user question and each context chunk (removing stop words). It then calculates the percentage of question tokens present in the chunk. This gives a massive boost to chunks that contain the exact technical terms or project names mentioned by the user.</p>
+<h3 id="source-intent-boosts">Source &amp; Intent Boosts<a class="headerlink" href="#source-intent-boosts" title="Permanent link">&para;</a></h3>
+<p>Based on keyword intent detection, specific sources receive a <code>+0.05</code> to <code>+0.08</code> boost:</p>
+<table>
+<thead>
+<tr>
+<th>Intent</th>
+<th>Preferred Sources</th>
+<th>Boost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>projects</code></td>
+<td><code>sanity</code></td>
+<td>+0.08</td>
+</tr>
+<tr>
+<td><code>skills</code></td>
+<td><code>resume</code>, <code>sanity</code>, <code>linkedin</code></td>
+<td>+0.05</td>
+</tr>
+<tr>
+<td><code>experience</code></td>
+<td><code>resume</code>, <code>linkedin</code></td>
+<td>+0.06</td>
+</tr>
+<tr>
+<td><code>feedback</code></td>
+<td><code>testimonial</code>, <code>linkedin</code></td>
+<td>+0.08</td>
+</tr>
+</tbody>
+</table>
+<p>Conversely, some sources receive a <strong>negative boost</strong> (<code>-0.03</code> to <code>-0.05</code>) if they are unlikely to be the primary factual source for a specific intent (e.g., testimonials for technical project details).</p>
+<hr />
 <h3 id="cache-invalidation">Cache invalidation<a class="headerlink" href="#cache-invalidation" title="Permanent link">&para;</a></h3>
 <table>
 <thead>

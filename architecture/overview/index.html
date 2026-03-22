@@ -956,10 +956,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#why-semantic-caching" class="md-nav__link">
+  <a href="#why-two-stage-caching" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why semantic caching
+        Why two-stage caching
       
     </span>
   </a>
@@ -1552,10 +1552,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#why-semantic-caching" class="md-nav__link">
+  <a href="#why-two-stage-caching" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why semantic caching
+        Why two-stage caching
       
     </span>
   </a>
@@ -1696,8 +1696,8 @@
 <a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                          │
 <a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>┌─────────────────────────▼───────────────────────────────────┐
 <a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>│                   Retrieval Layer                            │
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>│   Embed question → Cache lookup → Vector search → Rerank    │
-<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>│   → Confidence gate                                          │
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>│   Exact match check → Embed → Semantic cache → Vector search │
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>│   → Local Rerank → Confidence gate                           │
 <a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>└─────────────────────────┬───────────────────────────────────┘
 <a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>                          │
 <a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>┌─────────────────────────▼───────────────────────────────────┐
@@ -1731,8 +1731,13 @@
 </ul>
 <h3 id="why-groq-for-generation">Why Groq for generation<a class="headerlink" href="#why-groq-for-generation" title="Permanent link">&para;</a></h3>
 <p>Groq provides fast response streaming and a practical free tier for portfolio traffic. The app currently uses <code>llama-3.3-70b-versatile</code>.</p>
-<h3 id="why-semantic-caching">Why semantic caching<a class="headerlink" href="#why-semantic-caching" title="Permanent link">&para;</a></h3>
-<p>Many portfolio questions are repeated in slightly different wording. Semantic caching reduces repeated LLM calls and keeps latency low.</p>
+<h3 id="why-two-stage-caching">Why two-stage caching<a class="headerlink" href="#why-two-stage-caching" title="Permanent link">&para;</a></h3>
+<p>Many portfolio questions are repeated exactly or with very similar wording. The system uses a two-stage cache:</p>
+<ol>
+<li><strong>Exact Match</strong>: Case-insensitive string match. Zero API cost (no embedding, no LLM).</li>
+<li><strong>Semantic Cache</strong>: Cosine similarity match (&gt; 0.95). Zero LLM cost.</li>
+</ol>
+<p>This maximizes speed and protects provider rate limits for popular queries.</p>
 <h3 id="why-improve-feature-extraction-before-changing-providers">Why improve feature extraction before changing providers<a class="headerlink" href="#why-improve-feature-extraction-before-changing-providers" title="Permanent link">&para;</a></h3>
 <p>The highest-ROI quality improvement was not switching embedding vendors. It was improving what the system stores and retrieves.</p>
 <p>The older approach relied more heavily on broad plain-text source documents. The newer approach creates smaller evidence documents, such as:</p>
@@ -1798,14 +1803,15 @@
 <h2 id="data-flow-query">Data Flow — Query<a class="headerlink" href="#data-flow-query" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>1. User sends question via POST /v1/chat
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>2. A cheap pre-router checks for identity, private, explicit, prompt-injection, and clearly off-topic questions
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>3. If the question is not pre-routed, it is embedded
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>4. response_cache is checked for a near-duplicate question
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>5. knowledge_chunks is searched for a wider vector candidate set
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>6. Candidates are reranked locally using query-aware heuristics
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>7. Retrieval confidence is assessed before the LLM is called
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>8. Prompt is built from the selected chunks
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>9. Groq generates and streams the answer
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>10. Cache and conversation history are updated
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>3. If not pre-routed, the system checks for an Case-Insensitive **Exact Match Cache** hit
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>4. If no exact match, the question is embedded
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>5. **Semantic Cache** is checked for a near-duplicate question (similarity &gt; 0.95)
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>6. `knowledge_chunks` is searched for a wider vector candidate set if cache misses
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>7. Candidates are reranked locally using query-aware heuristics
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>8. Retrieval confidence is assessed before the LLM is called
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>9. Prompt is built from the selected chunks
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>10. Groq generates and streams the answer
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>11. Cache and conversation history are updated
 </code></pre></div>
 <p>In <code>DEV_MODE</code>, embeddings and generation are handled locally and the API can respond from fictional seeded data without provider calls.</p>
 <hr />
