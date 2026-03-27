@@ -1,10 +1,35 @@
 # Database Setup
 
-Ask Chitrank uses Supabase PostgreSQL with the pgvector extension for vector similarity search.
+Ask Chitrank uses PostgreSQL with the pgvector extension for vector similarity search.
+For local development, use a local PostgreSQL instance. For production, Supabase
+is a good hosted option.
 
 ---
 
-## Supabase Setup
+## Local Development Setup
+
+Create a local database first:
+
+```sql
+CREATE DATABASE askchitrank;
+```
+
+Then configure your local env file:
+
+```bash
+DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/askchitrank
+DATABASE_URL_SYNC=postgresql+psycopg2://postgres:postgres@localhost:5432/askchitrank
+```
+
+Enable `pgvector` in that database:
+
+```sql
+CREATE EXTENSION IF NOT EXISTS vector;
+```
+
+---
+
+## Production Setup With Supabase
 
 ### 1. Create a Supabase project
 
@@ -20,9 +45,13 @@ CREATE EXTENSION IF NOT EXISTS vector;
 
 ### 3. Get connection strings
 
+Store these in your production env file, not your local dev env:
+
 ```bash
 DATABASE_URL=postgresql+asyncpg://postgres:[PASSWORD]@db.[REF].supabase.co:5432/postgres
 DATABASE_URL_SYNC=postgresql+psycopg2://postgres:[PASSWORD]@db.[REF].supabase.co:5432/postgres
+SUPABASE_URL=https://[REF].supabase.co
+SUPABASE_KEY=your-supabase-anon-key
 ```
 
 ---

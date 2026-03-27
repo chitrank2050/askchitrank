@@ -141,6 +141,7 @@ Pipeline errors and generation failures now log **full tracebacks**, making prod
 
 When deploying to platforms like Railway, Render, or Fly.io:
 
+- Use local PostgreSQL for development and keep Supabase connection strings in production-only env files.
 - Use **Supabase PGBouncer/Supavisor (port 6543)** instead of direct connections for better pool management.
 - Append `?sslmode=require` to your `DATABASE_URL` if connecting from an IPv4-only environment.
 - Set `APP_ENV=prod` to disable hot-reloading and enable production logging levels.

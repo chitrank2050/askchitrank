@@ -82,15 +82,15 @@ If you want to exercise the full production-style pipeline, fill in:
 ```bash
 GROQ_API_KEY=your-groq-api-key
 VOYAGE_API_KEY=your-voyage-api-key
-DATABASE_URL=postgresql+asyncpg://postgres:[PASSWORD]@db.[REF].supabase.co:5432/postgres
-DATABASE_URL_SYNC=postgresql+psycopg2://postgres:[PASSWORD]@db.[REF].supabase.co:5432/postgres
-SUPABASE_URL=https://[REF].supabase.co
-SUPABASE_KEY=your-supabase-anon-key
+DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/askchitrank
+DATABASE_URL_SYNC=postgresql+psycopg2://postgres:postgres@localhost:5432/askchitrank
 SANITY_PROJECT_ID=your-project-id
 SANITY_API_TOKEN=your-api-token
 API_TOKEN=your-generated-token
 DEV_MODE=false
 ```
+
+Use local PostgreSQL for development by default. Reserve Supabase connection strings for production-only env files such as `.env.prod`.
 
 ---
 
