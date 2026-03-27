@@ -37,6 +37,7 @@ from datetime import UTC, datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.chat.context_fallback import build_context_fallback_response
 from src.chat.groq_client import stream_response
 from src.chat.prompt import build_messages
 from src.chat.safety import (
@@ -272,9 +273,13 @@ async def stream_chat_response(
         if generation_failed or not full_response.strip():
             safety_metrics.record_fallback("generation_failure")
             safety_metrics.record_response_route("error_fallback")
-            fallback = build_pipeline_fallback_response(
-                has_partial_response=bool(full_response.strip())
-            )
+            fallback = ""
+            if not full_response.strip():
+                fallback = build_context_fallback_response(question, chunks) or ""
+            if not fallback:
+                fallback = build_pipeline_fallback_response(
+                    has_partial_response=bool(full_response.strip())
+                )
             streamed_fallback = (
                 fallback if not full_response.strip() else f" {fallback}"
             )

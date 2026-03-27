@@ -165,7 +165,65 @@ async def test_generation_failure_still_returns_answer(
 
     text = "".join(event["content"] for event in events if event["type"] == "token")
 
-    assert "don't want to guess" in text
+    assert "Ask Chitrank" in text
+    assert "FastAPI" in text
+    last_event = events[-1]
+    assert last_event["type"] == "done"
+    assert last_event["content"] == ""
+    assert last_event["cached"] is False
+    assert last_event["latency_ms"] >= 0
+
+
+@pytest.mark.asyncio
+async def test_generation_failure_answers_experience_from_context(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(settings, "DEV_MODE", False)
+
+    async def fake_embed(_: str) -> list[float]:
+        return [0.1, 0.2, 0.3]
+
+    async def fake_search(**_: object) -> list[dict]:
+        return [
+            {
+                "id": "resume-strong-1",
+                "source": "resume",
+                "source_id": "resume-summary",
+                "content": (
+                    "Resume Section: Summary\n"
+                    "Senior Software Engineer with 8+ years of experience "
+                    "building frontend and full-stack products."
+                ),
+                "chunk_index": 0,
+                "similarity": 0.83,
+                "score": 0.9,
+                "query_term_matches": 2,
+                "query_term_coverage": 0.5,
+            }
+        ]
+
+    async def fake_history(*_: object, **__: object) -> list[dict]:
+        return []
+
+    async def fail_stream(_: list[dict]):
+        raise RuntimeError("provider timeout")
+        yield
+
+    monkeypatch.setattr(stream_module, "embed_query", fake_embed)
+    monkeypatch.setattr(stream_module, "search_knowledge_base", fake_search)
+    monkeypatch.setattr(stream_module, "_get_conversation_history", fake_history)
+    monkeypatch.setattr(stream_module, "stream_response", fail_stream)
+
+    events = await _collect_stream(
+        question="How many years of experience does he have?",
+        session_id="session-experience-fallback",
+        db=object(),
+        use_cache=False,
+    )
+
+    text = "".join(event["content"] for event in events if event["type"] == "token")
+
+    assert "8+ years of experience" in text
     last_event = events[-1]
     assert last_event["type"] == "done"
     assert last_event["content"] == ""

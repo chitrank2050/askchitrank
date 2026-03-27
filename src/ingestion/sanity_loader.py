@@ -146,16 +146,24 @@ def _build_project_documents(project: dict) -> list[dict]:
         overview_parts.append(f"Technologies: {techs}")
     if keyword_line:
         overview_parts.append(keyword_line)
+    overview_prefix = "\n".join(overview_parts)
+
+    overview_body_parts = []
     if project.get("overview"):
-        overview_parts.append(f"Overview: {project['overview']}")
+        overview_body_parts.append(f"Overview: {project['overview']}")
     if project.get("vision"):
-        overview_parts.append(f"Vision: {project['vision']}")
+        overview_body_parts.append(f"Vision: {project['vision']}")
 
     documents.append(
         {
-            "text": "\n".join(overview_parts),
+            "text": "\n".join(
+                part
+                for part in [overview_prefix, "\n".join(overview_body_parts).strip()]
+                if part.strip()
+            ),
             "source": "sanity",
             "source_id": f"{source_id}#overview",
+            "chunk_prefix": overview_prefix,
         }
     )
 
@@ -174,14 +182,16 @@ def _build_project_documents(project: dict) -> list[dict]:
             contribution_parts.append(f"Technologies: {techs}")
         if keyword_line:
             contribution_parts.append(keyword_line)
+        contribution_parts.append("Key Contributions:")
+        contribution_prefix = "\n".join(contribution_parts)
         contribution_text = "\n- ".join(contributions)
-        contribution_parts.append(f"Key Contributions:\n- {contribution_text}")
 
         documents.append(
             {
-                "text": "\n".join(contribution_parts),
+                "text": f"{contribution_prefix}\n- {contribution_text}",
                 "source": "sanity",
                 "source_id": f"{source_id}#contributions",
+                "chunk_prefix": contribution_prefix,
             }
         )
 
@@ -197,12 +207,14 @@ def _build_project_documents(project: dict) -> list[dict]:
             link_parts.append(f"GitHub: {project['githubUrl']}")
         if keyword_line:
             link_parts.append(keyword_line)
+        link_prefix = "\n".join(link_parts)
 
         documents.append(
             {
-                "text": "\n".join(link_parts),
+                "text": link_prefix,
                 "source": "sanity",
                 "source_id": f"{source_id}#links",
+                "chunk_prefix": link_prefix,
             }
         )
 
@@ -235,18 +247,20 @@ def _build_testimonial_document(testimonial: dict) -> dict:
     """Create a retrieval-friendly testimonial document."""
     parts = ["Evidence Type: testimonial"]
     parts.append("Useful for queries about: feedback, collaboration, communication")
-
-    if testimonial.get("quote"):
-        parts.append(f'Testimonial: "{testimonial["quote"]}"')
     if testimonial.get("author"):
         parts.append(f"From: {testimonial['author']}")
     if testimonial.get("role"):
         parts.append(f"Role: {testimonial['role']}")
+    prefix = "\n".join(parts)
+    body = ""
+    if testimonial.get("quote"):
+        body = f'Testimonial: "{testimonial["quote"]}"'
 
     return {
-        "text": "\n".join(parts),
+        "text": "\n".join(part for part in [prefix, body] if part),
         "source": "testimonial",
         "source_id": testimonial["_id"],
+        "chunk_prefix": prefix,
     }
 
 

@@ -24,8 +24,10 @@ Typical usage:
     await ingest_linkedin(db)
 """
 
+import re
 from collections.abc import Sequence
 from pathlib import Path
+from textwrap import shorten
 
 from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -34,13 +36,43 @@ from src.core.config import settings
 from src.core.logger import logger
 from src.db.models import KnowledgeChunk
 from src.dev.seed_data import SEED_RESUME_TEXT
-from src.ingestion.chunker import chunk_document
+from src.ingestion.chunker import chunk_document, chunk_loaded_document
 from src.ingestion.embedder import embed_texts
 from src.ingestion.sanity_loader import load_sanity_documents
 from src.retrieval import invalidate_cache
 from src.utils.paths import get_data_path
 
 from .pdf_loader import load_pdf_from_data
+
+
+def _preview_chunk_content(content: str, width: int = 160) -> str:
+    """Return a compact single-line preview for logging."""
+    normalized = " ".join(content.split())
+    return shorten(normalized, width=width, placeholder="...")
+
+
+def _log_chunk_preview(source_label: str, chunks: list[dict]) -> None:
+    """Log a readable preview of chunks before embedding."""
+    if not chunks:
+        logger.warning(f"No {source_label} chunks to preview before embedding")
+        return
+
+    lines = [f"{source_label.title()} chunk preview before embeddings:"]
+    for chunk in chunks:
+        word_count = len(chunk["content"].split())
+        lines.append(
+            "\n".join(
+                [
+                    (
+                        f"  - [{chunk['source_id']}#{chunk['chunk_index']}] "
+                        f"{word_count} words"
+                    ),
+                    f"    {_preview_chunk_content(chunk['content'])}",
+                ]
+            )
+        )
+
+    logger.info("\n" + "\n".join(lines))
 
 
 async def _clear_source(source: list[str], db: AsyncSession) -> None:
@@ -167,16 +199,14 @@ async def ingest_linkedin(db: AsyncSession) -> int:
 
     all_chunks = []
     for doc in documents:
-        chunks = chunk_document(
-            doc["text"],
-            source=doc["source"],
-            source_id=doc["source_id"],
-        )
+        chunks = chunk_loaded_document(doc)
         all_chunks.extend(chunks)
 
     logger.info(
         f"Produced {len(all_chunks)} chunks from {len(documents)} LinkedIn documents"
     )
+
+    _log_chunk_preview("linkedin", all_chunks)
 
     texts = [c["content"] for c in all_chunks]
     embeddings = await embed_texts(texts)
@@ -222,14 +252,12 @@ async def ingest_sanity(db: AsyncSession) -> int:
     # Chunk all documents into 500-word segments
     all_chunks = []
     for doc in documents:
-        chunks = chunk_document(
-            doc["text"],
-            source=doc["source"],
-            source_id=doc["source_id"],
-        )
+        chunks = chunk_loaded_document(doc)
         all_chunks.extend(chunks)
 
     logger.info(f"Produced {len(all_chunks)} chunks from {len(documents)} documents")
+
+    _log_chunk_preview("sanity", all_chunks)
 
     # Embed all chunks in batches via Voyage AI
     texts = [c["content"] for c in all_chunks]
@@ -285,6 +313,8 @@ async def ingest_resume(db: AsyncSession) -> int:
         logger.warning("No chunks produced from resume PDF — check file content")
         return 0
 
+    _log_chunk_preview("resume", chunks)
+
     texts = [c["content"] for c in chunks]
     embeddings = await embed_texts(texts)
 
@@ -311,64 +341,68 @@ def _chunk_resume_by_section(text: str) -> list[dict]:
         List of chunk dicts with content, source, source_id,
         chunk_index keys.
     """
-    # Known section headers in order of appearance
-    section_headers = [
-        "Summary",
-        "Professional Experience",
-        "Professional  Experience",  # double space fallback
-        "Employment History",
-        "Education",
-        "Technical Skills",
+    header_patterns = [
+        ("Summary", re.compile(r"(?im)^\s*summary\s*$")),
+        (
+            "Professional Experience",
+            re.compile(r"(?im)^\s*professional\s+experience\s*$"),
+        ),
+        ("Employment History", re.compile(r"(?im)^\s*employment\s+history\s*$")),
+        ("Education", re.compile(r"(?im)^\s*education\s*$")),
+        ("Technical Skills", re.compile(r"(?im)^\s*technical\s+skills\s*$")),
     ]
+    matches: list[tuple[int, int, str]] = []
 
-    # Split text into sections by finding header positions
-    sections = []
-    remaining = text
+    for header, pattern in header_patterns:
+        for match in pattern.finditer(text):
+            matches.append((match.start(), match.end(), header))
 
-    for _, header in enumerate(section_headers):
-        if header in remaining:
-            # Split at this header
-            parts = remaining.split(header, 1)
-            pre = parts[0].strip()
+    matches.sort(key=lambda item: item[0])
 
-            # Pre-header text is the previous section's content
-            if pre and sections:
-                sections[-1]["content"] += f"\n{pre}"
-            elif pre:
-                # Content before first header — add as intro chunk
-                sections.append(
-                    {
-                        "content": pre,
-                        "header": "Introduction",
-                    }
-                )
-
-            sections.append(
-                {
-                    "content": header,
-                    "header": header,
-                }
-            )
-            remaining = parts[1] if len(parts) > 1 else ""
-
-    # Remaining text belongs to the last section
-    if remaining.strip() and sections:
-        sections[-1]["content"] += f"\n{remaining.strip()}"
-
-    if not sections:
+    if not matches:
         # No sections detected — fall back to word-count chunking
         logger.warning(
             "No resume sections detected — falling back to word-count chunking"
         )
         return chunk_document(text, source="resume", source_id="resume.pdf")
 
+    section_documents: list[dict[str, str]] = []
+    intro = text[: matches[0][0]].strip()
+    if intro:
+        intro_prefix = "Resume Section: Introduction"
+        section_documents.append(
+            {
+                "text": f"{intro_prefix}\n{intro}",
+                "source": "resume",
+                "source_id": "resume-introduction",
+                "chunk_prefix": intro_prefix,
+            }
+        )
+
+    for index, (_, header_end, header) in enumerate(matches):
+        next_start = matches[index + 1][0] if index + 1 < len(matches) else len(text)
+        section_body = text[header_end:next_start].strip()
+        if not section_body:
+            continue
+
+        slug = header.lower().replace(" ", "-")
+        prefix = f"Resume Section: {header}"
+        section_documents.append(
+            {
+                "text": f"{prefix}\n{section_body}",
+                "source": "resume",
+                "source_id": f"resume-{slug}",
+                "chunk_prefix": prefix,
+            }
+        )
+
     return [
         {
-            "content": section["content"].strip(),
+            "content": chunk["content"],
             "source": "resume",
-            "source_id": f"resume-{section['header'].lower().replace(' ', '-')}",
-            "chunk_index": i,
+            "source_id": chunk["source_id"],
+            "chunk_index": chunk["chunk_index"],
         }
-        for i, section in enumerate(sections)
-        if section["content"].strip()
+        for section_document in section_documents
+        for chunk in chunk_loaded_document(section_document)
     ]

@@ -131,18 +131,22 @@ def _build_profile_documents(profile: dict) -> list[dict]:
 
     if profile.get("Headline"):
         summary_parts.append(f"Headline: {profile['Headline'].strip()}")
-    if profile.get("Summary"):
-        summary_parts.append(f"Summary: {profile['Summary'].strip()}")
     if profile.get("Industry"):
         summary_parts.append(f"Industry: {profile['Industry'].strip()}")
     if profile.get("Geo Location"):
         summary_parts.append(f"Location: {profile['Geo Location'].strip()}")
+    summary_prefix = "\n".join(summary_parts)
+
+    summary_body = ""
+    if profile.get("Summary"):
+        summary_body = f"Summary: {profile['Summary'].strip()}"
 
     documents.append(
         {
-            "text": "\n".join(summary_parts),
+            "text": "\n".join(part for part in [summary_prefix, summary_body] if part),
             "source": "linkedin",
             "source_id": "linkedin-profile#summary",
+            "chunk_prefix": summary_prefix,
         }
     )
 
@@ -157,17 +161,19 @@ def _build_profile_documents(profile: dict) -> list[dict]:
                 full_urls.append(parts_split[1].strip())
 
         if full_urls:
+            links_prefix = "\n".join(
+                [
+                    "Evidence Type: linkedin-links",
+                    "Useful for queries about: links, profile, portfolio, github",
+                    f"Websites: {', '.join(full_urls)}",
+                ]
+            )
             documents.append(
                 {
-                    "text": "\n".join(
-                        [
-                            "Evidence Type: linkedin-links",
-                            "Useful for queries about: links, profile, portfolio, github",
-                            f"Websites: {', '.join(full_urls)}",
-                        ]
-                    ),
+                    "text": links_prefix,
                     "source": "linkedin",
                     "source_id": "linkedin-profile#links",
+                    "chunk_prefix": links_prefix,
                 }
             )
 
@@ -229,13 +235,15 @@ def _build_recommendation_document(rec: dict, index: int) -> dict:
         parts.append(f"Their role: {rec['Job Title'].strip()}")
     if rec.get("Company"):
         parts.append(f"Company: {rec['Company'].strip()}")
+    prefix = "\n".join(parts)
 
-    parts.append(f'"{rec["Text"].strip()}"')
+    body = f'"{rec["Text"].strip()}"'
 
     return {
-        "text": "\n".join(parts),
+        "text": "\n".join(part for part in [prefix, body] if part),
         "source": "linkedin",
         "source_id": f"linkedin-recommendation-{index}",
+        "chunk_prefix": prefix,
     }
 
 
