@@ -18,7 +18,7 @@ Ask Chitrank is a RAG system built for a small, cost-sensitive portfolio knowled
 └─────────────────────────┬───────────────────────────────────┘
                           │
 ┌─────────────────────────▼───────────────────────────────────┐
-│              Supabase PostgreSQL + pgvector                  │
+│              PostgreSQL + pgvector                           │
 │   knowledge_chunks    response_cache    conversations        │
 └─────────────────────────┬───────────────────────────────────┘
                           │
@@ -55,7 +55,7 @@ Fine-tuning a model on personal data is expensive, slow to update, and unnecessa
 
 ### Why pgvector over a dedicated vector database
 
-For a small knowledge base and low traffic, a dedicated vector database would add operational overhead without much benefit. pgvector keeps the system inside the existing Supabase PostgreSQL setup.
+For a small knowledge base and low traffic, a dedicated vector database would add operational overhead without much benefit. pgvector keeps the system inside ordinary PostgreSQL, which works well both with local development databases and with hosted options like Supabase in production.
 
 ### Why Voyage AI for embeddings
 
@@ -148,10 +148,11 @@ The system is still a fixed pipeline: parse, structure, embed, retrieve, generat
 2. Resume is split by section headers
 3. Sanity project and testimonial records are transformed into retrieval-friendly evidence docs
 4. LinkedIn profile and recommendation records are transformed into compact evidence docs
-5. If any evidence doc is still too large, chunker.py acts as a safety net
+5. If any evidence doc is still too large, chunker.py applies block-aware semantic grouping and chunk packing
 6. Evidence documents are embedded with Voyage AI
-7. Chunks are stored in knowledge_chunks
-8. Ingestion is idempotent and invalidates stale cache entries
+7. Chunk previews are logged before embeddings are created
+8. Chunks are stored in knowledge_chunks
+9. Ingestion is idempotent and invalidates stale cache entries
 ```
 
 In `DEV_MODE`, fictional seed content can stand in for the real resume, Sanity, and LinkedIn sources.

@@ -249,7 +249,7 @@ async def ingest_sanity(db: AsyncSession) -> int:
         logger.warning("No documents fetched from Sanity CMS — check credentials")
         return 0
 
-    # Chunk all documents into 500-word segments
+    # Chunk structured evidence documents with semantic grouping fallback
     all_chunks = []
     for doc in documents:
         chunks = chunk_loaded_document(doc)
@@ -326,9 +326,12 @@ async def ingest_resume(db: AsyncSession) -> int:
 def _chunk_resume_by_section(text: str) -> list[dict]:
     """Split resume text into chunks by section header.
 
-    Produces one chunk per section so each chunk answers a
+    Produces section-scoped documents so each chunk answers a
     distinct type of question — experience vs skills vs education.
-    Falls back to word-count chunking if no sections are detected.
+    If a section is still too large, the shared chunker preserves
+    the section prefix while splitting it into smaller chunks.
+    If no sections are detected, the shared chunker is used over
+    the full document as a fallback.
 
     Section headers detected:
         Summary, Professional Experience, Employment History,
@@ -360,10 +363,8 @@ def _chunk_resume_by_section(text: str) -> list[dict]:
     matches.sort(key=lambda item: item[0])
 
     if not matches:
-        # No sections detected — fall back to word-count chunking
-        logger.warning(
-            "No resume sections detected — falling back to word-count chunking"
-        )
+        # No sections detected — fall back to the shared semantic chunker
+        logger.warning("No resume sections detected — falling back to shared chunking")
         return chunk_document(text, source="resume", source_id="resume.pdf")
 
     section_documents: list[dict[str, str]] = []

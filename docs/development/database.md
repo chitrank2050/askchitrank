@@ -14,11 +14,11 @@ Create a local database first:
 CREATE DATABASE askchitrank;
 ```
 
-Then configure your local env file:
+Then configure your local env file. Use the role that actually exists on your machine:
 
 ```bash
-DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/askchitrank
-DATABASE_URL_SYNC=postgresql+psycopg2://postgres:postgres@localhost:5432/askchitrank
+DATABASE_URL=postgresql+asyncpg://<local-user>[:password]@localhost:5432/askchitrank
+DATABASE_URL_SYNC=postgresql+psycopg2://<local-user>[:password]@localhost:5432/askchitrank
 ```
 
 Enable `pgvector` in that database:
@@ -26,6 +26,8 @@ Enable `pgvector` in that database:
 ```sql
 CREATE EXTENSION IF NOT EXISTS vector;
 ```
+
+The initial migration also attempts `CREATE EXTENSION IF NOT EXISTS vector`, but the extension must still be installed on the local PostgreSQL server first.
 
 ---
 

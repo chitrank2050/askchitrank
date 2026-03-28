@@ -86,7 +86,7 @@ Every LLM response is cached in two stages to maximize speed and minimize API li
 
 Cache is invalidated automatically when Sanity CMS content changes via webhook.
 
-Retrieval is also expanded using synonym-based query expansion and reranked locally using cheap lexical and source-intent signals. The final `score` incorporates both semantic cosine similarity and query term overlap. Local embedding fallback via `sentence-transformers` (`all-MiniLM-L6-v2`) ensures the app keeps working even if Voyage AI is unavailable.
+Retrieval is also expanded using synonym-based query expansion and reranked locally using cheap lexical and source-intent signals. The final `score` incorporates both semantic cosine similarity and query term overlap. For fully local runs, the app can use `sentence-transformers` (`all-MiniLM-L6-v2`) outside `DEV_MODE`, while `DEV_MODE` uses deterministic fake embeddings for token-free iteration.
 
 The chat layer now adds a cheap safety pre-router before embeddings, and a retrieval confidence gate after search. Crucially, the confidence gate evaluates the boosted `top_score` rather than raw semantic similarity alone. This ensures perfectly valid answers correctly pass the threshold by factoring in exact keyword matches and source credibility.
 
@@ -94,12 +94,13 @@ The chat layer now adds a cheap safety pre-router before embeddings, and a retri
 
 ## Data Sources
 
-| Source       | Content                                | Chunks |
-|--------------|----------------------------------------|--------|
-| Resume PDF   | Experience, skills, education          | 6      |
-| Sanity CMS   | Projects                               | 9      |
-| Testimonials | Colleague recommendations              | 3      |
-| LinkedIn     | Recommendations, positions, skills     | 4      |
+| Source       | Content                                | Retrieval shape |
+|--------------|----------------------------------------|-----------------|
+| Resume PDF   | Experience, skills, education          | Section-aware chunks with repeated section prefixes |
+| Sanity CMS   | Projects and testimonials              | Structured evidence documents plus semantic chunk fallback |
+| LinkedIn     | Profile, links, recommendations        | Compact evidence documents plus semantic chunk fallback |
+
+Exact chunk counts vary as source content changes and as grouped evidence documents are emitted during ingestion.
 
 ---
 

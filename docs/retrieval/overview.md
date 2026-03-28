@@ -195,7 +195,8 @@ ORDER BY hit_count DESC;
 | `src/retrieval/search.py` | pgvector candidate search, local reranking, and retrieval confidence assessment |
 | `src/retrieval/cache.py` | semantic cache lookup, store, and invalidation |
 | `src/ingestion/embedder.py` | shared embedding interface with voyage/local provider fallback |
-| `src/ingestion/local_embedder.py` | sentence-transformers (all-MiniLM-L6-v2) local embedding logic |
+| `src/ingestion/local_embedder.py` | sentence-transformers (all-MiniLM-L6-v2) local embedding provider |
+| `src/dev/local_embeddings.py` | deterministic zero-cost local embeddings for `DEV_MODE` and ingestion chunk grouping |
 
 ---
 

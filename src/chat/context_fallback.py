@@ -1,4 +1,10 @@
-"""Deterministic fallback answers built directly from retrieved context."""
+"""Deterministic fallback answers built directly from retrieved context.
+
+This module is used when retrieval succeeded well enough to be useful,
+but the normal generation step failed or returned no answer. The goal is
+to degrade gracefully by answering a few common portfolio-style question
+types directly from prefixed fields already present in stored chunks.
+"""
 
 from __future__ import annotations
 
@@ -68,10 +74,12 @@ def build_context_fallback_response(question: str, chunks: list[dict]) -> str | 
 
 
 def _tokenize(text: str) -> list[str]:
+    """Tokenize text into lowercase alphanumeric-ish terms."""
     return re.findall(r"[a-z0-9][a-z0-9+#.-]*", text.lower())
 
 
 def _prefixed_values(chunks: Iterable[dict], prefix: str) -> list[str]:
+    """Collect values from chunk lines that start with a stable prefix."""
     values: list[str] = []
     for chunk in chunks:
         for line in chunk["content"].splitlines():
@@ -83,6 +91,7 @@ def _prefixed_values(chunks: Iterable[dict], prefix: str) -> list[str]:
 
 
 def _dedupe(values: Iterable[str]) -> list[str]:
+    """Preserve order while removing case-insensitive duplicates."""
     seen: set[str] = set()
     unique: list[str] = []
 
@@ -97,6 +106,7 @@ def _dedupe(values: Iterable[str]) -> list[str]:
 
 
 def _split_csv(values: Iterable[str]) -> list[str]:
+    """Split comma-separated values from prefixed chunk fields."""
     items: list[str] = []
     for value in values:
         for item in value.split(","):
@@ -107,6 +117,7 @@ def _split_csv(values: Iterable[str]) -> list[str]:
 
 
 def _quoted_lines(chunks: Iterable[dict]) -> list[str]:
+    """Extract quoted testimonial-like lines from retrieved chunks."""
     quotes: list[str] = []
     for chunk in chunks:
         for line in chunk["content"].splitlines():
@@ -121,6 +132,7 @@ def _quoted_lines(chunks: Iterable[dict]) -> list[str]:
 
 
 def _first_match(chunks: Iterable[dict], pattern: re.Pattern[str]) -> str | None:
+    """Return the first regex match found across retrieved chunks."""
     for chunk in chunks:
         match = pattern.search(chunk["content"])
         if match:

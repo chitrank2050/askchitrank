@@ -129,7 +129,7 @@ That means:
 
 - unsupported questions return canned responses
 - weak retrieval returns a fallback response
-- generation failures return a fallback response
+- generation failures first try a deterministic answer built directly from the retrieved context, then fall back further if needed
 - production chat can degrade safely even if the database is unavailable
 
 This is important for a public portfolio widget, where silence feels broken.

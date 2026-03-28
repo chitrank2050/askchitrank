@@ -82,8 +82,8 @@ If you want to exercise the full production-style pipeline, fill in:
 ```bash
 GROQ_API_KEY=your-groq-api-key
 VOYAGE_API_KEY=your-voyage-api-key
-DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/askchitrank
-DATABASE_URL_SYNC=postgresql+psycopg2://postgres:postgres@localhost:5432/askchitrank
+DATABASE_URL=postgresql+asyncpg://<local-user>[:password]@localhost:5432/askchitrank
+DATABASE_URL_SYNC=postgresql+psycopg2://<local-user>[:password]@localhost:5432/askchitrank
 SANITY_PROJECT_ID=your-project-id
 SANITY_API_TOKEN=your-api-token
 API_TOKEN=your-generated-token
@@ -155,7 +155,8 @@ If `DEV_MODE=true`, the API can start and serve fictional seeded chat responses 
 |---------|-----|------|
 | Groq | [console.groq.com](https://console.groq.com) | free tier |
 | Voyage AI | [voyageai.com](https://www.voyageai.com) | generous free tier |
-| Supabase | [supabase.com](https://supabase.com) | free tier |
+| PostgreSQL | local install | local development default |
+| Supabase | [supabase.com](https://supabase.com) | hosted production option |
 | Sanity | [sanity.io/manage](https://sanity.io/manage) | depends on workspace plan |
 
 ---

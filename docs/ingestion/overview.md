@@ -7,13 +7,13 @@ The ingestion pipeline loads source content, turns it into retrieval-friendly ev
 ## Overview
 
 ```
-data/resume.pdf            → pdf_loader.py       → section-aware resume chunks
+data/resume.pdf            → pdf_loader.py       → section-aware resume documents
 Sanity CMS API             → sanity_loader.py    → project/testimonial evidence docs
 data/linkedin/ CSVs        → linkedin_loader.py  → profile/recommendation evidence docs
                                        ↓
-                           chunker.py as a safety net for oversized text
+                 chunker.py → block-aware semantic grouping + chunk packing
                                        ↓
-                            embedder.py (Voyage AI or DEV_MODE local embedder)
+                            embedder.py (Voyage AI or local providers)
                                        ↓
                                knowledge_chunks table
 ```
@@ -123,21 +123,28 @@ This is the main retrieval ROI improvement because it produces:
 - cleaner technology and role matching
 - less cross-topic noise in search results
 
-### Word-count chunking — Safety net
+### Block-aware semantic chunking — Safety net
 
-`chunker.py` still exists and still supports overlapping word-count chunking. It is now mostly a fallback for any evidence document that grows too large.
+`chunker.py` now acts as a smarter second-stage chunker:
+
+- it preserves paragraph and line-group boundaries when possible
+- it semantically groups adjacent related blocks before final packing
+- it splits early when labeled blocks clearly change topic
+- it repeats stable prefixes like `Resume Section: ...` or `Project: ...` on derived chunks
+
+Word overlap still exists, but the default behavior is no longer a plain word slicer.
 
 ---
 
 ## Embeddings
 
-Production ingestion uses Voyage AI `voyage-3-lite`:
+Production ingestion uses Voyage AI `voyage-3-lite` by default:
 
 - 512 dimensions
 - `document` input type for stored chunks
 - batched up to 128 texts per request
 
-In `DEV_MODE`, the embedder switches to a deterministic local implementation so local development does not spend tokens.
+In `DEV_MODE`, the embedder switches to a deterministic local implementation so local development does not spend tokens. Outside `DEV_MODE`, you can also opt into the local `sentence-transformers` provider for fully local embeddings.
 
 ---
 

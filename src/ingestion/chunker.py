@@ -1,9 +1,15 @@
 """
 Text chunking for the ingestion pipeline.
 
-Splits long documents into overlapping chunks so each chunk fits
-within the embedding model's context window and contains enough
-context to be meaningful in isolation.
+Splits long documents into retrieval-friendly chunks while preserving
+structure and grouping adjacent related blocks when possible.
+
+The chunker is intentionally hybrid:
+- keep paragraph and line-group boundaries where possible
+- semantically merge nearby related blocks
+- split early when labeled blocks clearly change topic
+- fall back to sentence or word slicing only for oversized blocks
+- repeat stable prefixes later via chunk_document() when needed
 
 Responsibility: split text into chunks. Nothing else.
 Does NOT: embed, store, or load documents.
@@ -16,22 +22,82 @@ Typical usage:
 
 import re
 from collections.abc import Mapping
+from functools import lru_cache
 
 from src.core.config import settings
 from src.core.logger import logger
+from src.dev.local_embeddings import embed_text
+
+_SEMANTIC_GROUP_DIMENSIONS = 128
+_SEMANTIC_MERGE_THRESHOLD = 0.16
+_SEMANTIC_SPLIT_THRESHOLD = 0.08
+_MIN_CHUNK_FILL_RATIO_FOR_EARLY_SPLIT = 0.35
+_MIN_WORDS_FOR_EARLY_SPLIT = 8
 
 
 def _word_count(text: str) -> int:
+    """Return a simple whitespace word count."""
     return len(text.split())
 
 
 def _clean_block(text: str) -> str:
+    """Normalize whitespace inside a candidate block while keeping lines."""
     lines = [line.strip() for line in text.splitlines()]
     non_empty_lines = [line for line in lines if line]
     return "\n".join(non_empty_lines).strip()
 
 
+@lru_cache(maxsize=2048)
+def _block_embedding(text: str) -> tuple[float, ...]:
+    """Cache local embeddings used only for intra-document grouping."""
+    return tuple(embed_text(text, _SEMANTIC_GROUP_DIMENSIONS))
+
+
+def _semantic_similarity(left: str, right: str) -> float:
+    """Return cosine-like similarity for two blocks using local embeddings."""
+    if not left.strip() or not right.strip():
+        return 0.0
+
+    left_embedding = _block_embedding(left.strip())
+    right_embedding = _block_embedding(right.strip())
+    return sum(x * y for x, y in zip(left_embedding, right_embedding, strict=False))
+
+
+def _block_prefix(block: str) -> str | None:
+    """Extract a lightweight structural label from a block when present."""
+    for line in block.splitlines():
+        cleaned = line.strip()
+        if not cleaned:
+            continue
+
+        if cleaned.startswith("- "):
+            return "bullet"
+
+        match = re.match(r"([A-Za-z][A-Za-z /&+-]{1,40}):", cleaned)
+        if match:
+            return match.group(1).strip().lower()
+
+        if len(cleaned.split()) <= 6 and cleaned == cleaned.title():
+            return cleaned.lower()
+
+        return None
+
+    return None
+
+
+def _same_block_family(left: str, right: str) -> bool:
+    """Check whether two blocks appear to belong to the same labeled family."""
+    left_prefix = _block_prefix(left)
+    right_prefix = _block_prefix(right)
+
+    if not left_prefix or not right_prefix:
+        return False
+
+    return left_prefix == right_prefix
+
+
 def _pack_units(units: list[str], max_words: int, joiner: str) -> list[str]:
+    """Pack already-split units into chunks without exceeding the word budget."""
     chunks: list[str] = []
     current: list[str] = []
     current_words = 0
@@ -54,6 +120,7 @@ def _pack_units(units: list[str], max_words: int, joiner: str) -> list[str]:
 
 
 def _split_large_block(block: str, max_words: int) -> list[str]:
+    """Split an oversized block recursively by lines, then sentences, then words."""
     cleaned = _clean_block(block)
     if not cleaned:
         return []
@@ -87,6 +154,7 @@ def _split_large_block(block: str, max_words: int) -> list[str]:
 
 
 def _split_into_blocks(text: str, max_words: int) -> list[str]:
+    """Turn raw text into normalized paragraph-sized blocks."""
     paragraphs = [
         paragraph.strip()
         for paragraph in re.split(r"\n\s*\n", text.strip())
@@ -102,7 +170,45 @@ def _split_into_blocks(text: str, max_words: int) -> list[str]:
     return blocks
 
 
+def _group_blocks_semantically(blocks: list[str], max_words: int) -> list[str]:
+    """Merge adjacent related blocks when doing so stays within chunk size."""
+    if len(blocks) <= 1:
+        return blocks
+
+    groups: list[str] = []
+    current_group: list[str] = [blocks[0]]
+    current_words = _word_count(blocks[0])
+
+    for block in blocks[1:]:
+        block_words = _word_count(block)
+        current_text = "\n\n".join(current_group).strip()
+        similarity = _semantic_similarity(current_text, block)
+        should_merge = current_words + block_words <= max_words and (
+            _same_block_family(current_group[-1], block)
+            or similarity >= _SEMANTIC_MERGE_THRESHOLD
+            or (
+                current_words < max(_MIN_WORDS_FOR_EARLY_SPLIT, max_words // 4)
+                and similarity >= _SEMANTIC_SPLIT_THRESHOLD
+            )
+        )
+
+        if should_merge:
+            current_group.append(block)
+            current_words += block_words
+            continue
+
+        groups.append(current_text)
+        current_group = [block]
+        current_words = block_words
+
+    if current_group:
+        groups.append("\n\n".join(current_group).strip())
+
+    return groups
+
+
 def _overlap_tail(blocks: list[str], target_words: int) -> list[str]:
+    """Return the trailing blocks needed to satisfy overlap for size splits."""
     if not blocks or target_words <= 0:
         return []
 
@@ -117,17 +223,55 @@ def _overlap_tail(blocks: list[str], target_words: int) -> list[str]:
     return overlap
 
 
+def _should_split_for_semantics(
+    current_blocks: list[str],
+    next_block: str,
+    chunk_size: int,
+) -> bool:
+    """Decide whether a topic change warrants splitting before size requires it."""
+    if not current_blocks:
+        return False
+
+    current_text = "\n\n".join(current_blocks).strip()
+    current_words = _word_count(current_text)
+    current_prefix = _block_prefix(current_blocks[-1])
+    next_prefix = _block_prefix(next_block)
+
+    if (
+        current_prefix
+        and next_prefix
+        and current_prefix != next_prefix
+        and _semantic_similarity(current_text, next_block) < _SEMANTIC_SPLIT_THRESHOLD
+    ):
+        return True
+
+    min_words_for_split = max(
+        _MIN_WORDS_FOR_EARLY_SPLIT,
+        int(chunk_size * _MIN_CHUNK_FILL_RATIO_FOR_EARLY_SPLIT),
+    )
+
+    if current_words < min_words_for_split:
+        return False
+
+    if _same_block_family(current_blocks[-1], next_block):
+        return False
+
+    return _semantic_similarity(current_text, next_block) < _SEMANTIC_SPLIT_THRESHOLD
+
+
 def chunk_text(
     text: str,
     chunk_size: int | None = None,
     chunk_overlap: int | None = None,
 ) -> list[str]:
-    """Split text into overlapping chunks while preserving block boundaries.
+    """Split text into chunks while preserving block boundaries.
 
     Paragraphs and line-level blocks are kept together when possible
     so semantic units like fields, bullets, and short sections are not
-    arbitrarily cut apart. Falls back to sentence and word splitting
-    when a single block is still too large.
+    arbitrarily cut apart. Adjacent related blocks are grouped using
+    lightweight local semantic similarity before final chunk packing.
+    Falls back to sentence and word splitting only when a single block
+    is still too large.
 
     Args:
         text: Raw text to split into chunks.
@@ -156,6 +300,7 @@ def chunk_text(
     blocks = _split_into_blocks(text, chunk_size)
     if not blocks:
         return []
+    blocks = _group_blocks_semantically(blocks, chunk_size)
 
     chunks: list[str] = []
     current_blocks: list[str] = []
@@ -164,14 +309,27 @@ def chunk_text(
     for block in blocks:
         block_words = _word_count(block)
 
-        if current_blocks and current_words + block_words > chunk_size:
-            chunks.append("\n\n".join(current_blocks).strip())
-            current_blocks = _overlap_tail(current_blocks, chunk_overlap)
-            current_words = sum(_word_count(item) for item in current_blocks)
+        should_split_by_size = (
+            current_blocks and current_words + block_words > chunk_size
+        )
+        should_split_by_semantics = (
+            current_blocks
+            and not should_split_by_size
+            and _should_split_for_semantics(current_blocks, block, chunk_size)
+        )
 
-            while current_blocks and current_words + block_words > chunk_size:
-                current_words -= _word_count(current_blocks[0])
-                current_blocks = current_blocks[1:]
+        if should_split_by_size or should_split_by_semantics:
+            chunks.append("\n\n".join(current_blocks).strip())
+            if should_split_by_size:
+                current_blocks = _overlap_tail(current_blocks, chunk_overlap)
+                current_words = sum(_word_count(item) for item in current_blocks)
+
+                while current_blocks and current_words + block_words > chunk_size:
+                    current_words -= _word_count(current_blocks[0])
+                    current_blocks = current_blocks[1:]
+            else:
+                current_blocks = []
+                current_words = 0
 
         current_blocks.append(block)
         current_words += block_words
@@ -179,7 +337,11 @@ def chunk_text(
     if current_blocks:
         chunks.append("\n\n".join(current_blocks).strip())
 
-    logger.debug(f"Chunked text into {len(chunks)} chunks")
+    logger.debug(
+        "Chunked text into {} chunks from {} semantic groups",
+        len(chunks),
+        len(blocks),
+    )
     return chunks
 
 
@@ -272,7 +434,14 @@ def chunk_loaded_document(
     chunk_size: int | None = None,
     chunk_overlap: int | None = None,
 ) -> list[dict]:
-    """Chunk a loader-produced document dict with optional repeated context."""
+    """Chunk a loader-produced document dict with optional repeated context.
+
+    Expected document keys:
+        text: Body text to chunk.
+        source: Source label stored in the database.
+        source_id: Stable source identifier for traceability.
+        chunk_prefix: Optional prefix repeated on every emitted chunk.
+    """
     return chunk_document(
         text=document["text"],
         source=document["source"],

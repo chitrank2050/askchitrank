@@ -128,6 +128,7 @@ data: {"type": "done", "cached": false}
 
 - obvious identity, private, explicit, prompt-injection, and clearly off-topic questions are answered by a cheap pre-router before embeddings
 - weak retrieval results are answered with a safe fallback instead of calling the LLM
+- if retrieval is good but generation fails, the API can answer directly from retrieved context for common structured questions
 - provider or database problems prefer a safe fallback answer over a dead-end chat error
 
 **Rate limit:** `30/minute` per IP.

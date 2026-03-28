@@ -16,6 +16,20 @@ def test_chunk_text_preserves_paragraph_boundaries_when_overlap_is_zero() -> Non
     assert chunks == ["alpha beta gamma", "delta epsilon zeta"]
 
 
+def test_chunk_text_splits_unrelated_paragraphs_even_if_they_fit() -> None:
+    text = (
+        "Technologies: React, TypeScript, FastAPI\n\n"
+        "Recommendation from: Neha Kapoor\n"
+        "Avery is collaborative and dependable."
+    )
+
+    chunks = chunk_text(text, chunk_size=40, chunk_overlap=0)
+
+    assert len(chunks) == 2
+    assert chunks[0].startswith("Technologies:")
+    assert chunks[1].startswith("Recommendation from:")
+
+
 def test_chunk_document_repeats_prefix_on_multi_chunk_documents() -> None:
     prefix = "Project: Atlas\nEvidence Type: project"
     text = (
@@ -33,6 +47,27 @@ def test_chunk_document_repeats_prefix_on_multi_chunk_documents() -> None:
     )
 
     assert len(chunks) > 1
+    assert all(chunk["content"].startswith(prefix) for chunk in chunks)
+
+
+def test_chunk_document_repeats_prefix_on_semantic_boundary_split() -> None:
+    prefix = "Project: Atlas\nEvidence Type: project"
+    text = (
+        f"{prefix}\n\nTechnologies: React, TypeScript, FastAPI\n\n"
+        "Recommendation from: Neha Kapoor\n"
+        "Avery is collaborative and dependable."
+    )
+
+    chunks = chunk_document(
+        text=text,
+        source="sanity",
+        source_id="atlas#mixed",
+        chunk_size=80,
+        chunk_overlap=0,
+        chunk_prefix=prefix,
+    )
+
+    assert len(chunks) == 2
     assert all(chunk["content"].startswith(prefix) for chunk in chunks)
 
 

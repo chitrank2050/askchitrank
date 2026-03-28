@@ -6,9 +6,10 @@ Loads documents from three sources:
     sanity   — Projects and Testimonials from Sanity CMS API
     linkedin — CSV exported from LinkedIn at data/linkedin/*.csv
 
-Each source is chunked into 500-word segments with 50-word overlap,
-embedded via Voyage AI voyage-3-lite (512 dimensions), and stored
-in the knowledge_chunks table for vector similarity search.
+Sources are first normalized into retrieval-friendly evidence documents.
+Long documents then pass through a block-aware semantic chunker that
+preserves headings, labeled fields, and repeated prefixes before
+embeddings are stored in the knowledge_chunks table.
 
 Typical usage:
     from src.ingestion import ingest_resume, ingest_sanity, ingest_linkedin

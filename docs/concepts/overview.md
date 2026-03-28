@@ -36,7 +36,7 @@ A vector database searches by meaning:
 ORDER BY embedding <=> question_embedding
 ```
 
-**In this project:** Supabase PostgreSQL with the pgvector extension stores and searches embedding vectors.
+**In this project:** PostgreSQL with the pgvector extension stores and searches embedding vectors. Local development uses local PostgreSQL by default, while Supabase remains a production-friendly hosted option.
 
 ---
 
@@ -167,7 +167,14 @@ Chunking splits them into smaller, more useful pieces.
 
 - the resume is split by section headers
 - Sanity and LinkedIn records are first turned into retrieval-friendly evidence documents
-- generic word-count chunking remains as a safety net when a document is still too large
+- block-aware semantic chunking acts as the safety net when a document is still too large
+
+That fallback is intentionally hybrid:
+
+- keep known source structure first
+- preserve paragraphs and labeled fields where possible
+- group adjacent related blocks semantically
+- only fall back to sentence or word slicing when a single block is still too large
 
 The goal is not just smaller text. The goal is better retrieval precision.
 
