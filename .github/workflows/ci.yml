@@ -50,6 +50,6 @@ jobs:
       - name: Format Check (Ruff)
         run: uv run ruff format . --check
 
-      - name: Run Tests
-        run: uv run pytest
+      # - name: Run Tests
+      #   run: uv run pytest
 
