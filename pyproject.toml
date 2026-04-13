@@ -14,7 +14,7 @@ dependencies = [
   "fastapi>=0.115.0",
   # LLM + Embeddings
   "greenlet>=3.3.2",
-  "groq>=0.11.0",
+  "groq>=1.1.2",
   "httpx>=0.27.0",
   "loguru>=0.7.3",
   "pgvector>=0.4.2",
